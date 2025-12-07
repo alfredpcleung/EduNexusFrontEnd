@@ -5,10 +5,30 @@ import { getAuth } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = JSON.parse(import.meta.env.VITE_APP_FIREBASECONFIG);
+let firebaseConfig = {};
+let app = null;
+let auth = null;
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+try {
+    const configStr = import.meta.env.VITE_APP_FIREBASECONFIG;
+    if (configStr && configStr !== '{}') {
+        firebaseConfig = JSON.parse(configStr);
+        // Initialize Firebase only if config is valid
+        if (firebaseConfig.projectId && !firebaseConfig.projectId.includes('YOUR_')) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+        } else {
+            console.warn('Firebase config contains placeholder values. Firebase authentication is disabled.');
+        }
+    }
+} catch (error) {
+    console.warn('Firebase initialization warning:', error.message);
+}
 
-export const auth = getAuth(app);
+// Provide a safe default if Firebase didn't initialize
+if (!app) {
+    console.warn('Firebase is not initialized. Authentication features will be unavailable.');
+}
+
+export { app, auth };
 export default app;

@@ -1,9 +1,9 @@
-let apiURL = import.meta.env.VITE_APP_APIURL
+import { getApiUrl } from './apiHelper'
 import { getToken } from "../components/auth/auth-helper"
 
 const list = async () => {
     try {
-        let response = await fetch(apiURL + '/api/courses/', {
+        let response = await fetch(getApiUrl('/api/courses/'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -18,7 +18,7 @@ const list = async () => {
 
 const remove = async (id) => {
     try {
-        let response = await fetch(apiURL + '/api/courses/' + id, {
+        let response = await fetch(getApiUrl('/api/courses/' + id), {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -34,7 +34,7 @@ const remove = async (id) => {
 
 const create = async (product) => {
     try {
-        let response = await fetch(apiURL + '/api/courses/', {
+        let response = await fetch(getApiUrl('/api/courses/'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -51,7 +51,7 @@ const create = async (product) => {
 
 const read = async (id) => {
     try {
-        let response = await fetch(apiURL + '/api/courses/' + id, {
+        let response = await fetch(getApiUrl('/api/courses/' + id), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -66,7 +66,7 @@ const read = async (id) => {
 
 const update = async (product, id) => {
     try {
-        let response = await fetch(apiURL + '/api/courses/' + id, {
+        let response = await fetch(getApiUrl('/api/courses/' + id), {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

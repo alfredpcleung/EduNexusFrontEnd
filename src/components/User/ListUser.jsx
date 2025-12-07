@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { list } from '../../services/coursesService.js';
-import ListItemCourse from './ListItemCourse.jsx';
-import { Link } from 'react-router-dom';
+import { list } from '../../services/usersService.js';
+import ListItemUser from './ListItemUser.jsx';
 import {
     Box,
     Button,
     Card,
-    CardContent,
     Table,
     TableBody,
     TableCell,
@@ -20,21 +18,21 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
-const ListCourse = () => {
-    const [courseList, setCourseList] = useState([]);
+const ListUser = () => {
+    const [userList, setUserList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
 
-    const loadCourses = () => {
+    const loadUsers = () => {
         list().then((data) => {
             if (data && Array.isArray(data)) {
-                setCourseList(data || []);
+                setUserList(data || []);
             } else if (data && data.data) {
-                setCourseList(data.data || []);
+                setUserList(data.data || []);
             }
             setIsLoading(false);
         }).catch(err => {
-            setErrorMsg(err.message || 'Error loading courses');
+            setErrorMsg(err.message || 'Error loading users');
             console.log(err);
             setIsLoading(false);
         });
@@ -42,12 +40,12 @@ const ListCourse = () => {
 
     // When the component loads.
     useEffect(() => {
-        loadCourses();
+        loadUsers();
     }, []);
 
-    // When a Course is removed.
+    // When a User is removed.
     const handleRemove = () => {
-        loadCourses();
+        loadUsers();
     };
 
     if (isLoading) {
@@ -60,20 +58,11 @@ const ListCourse = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            {/* Header with Add Button */}
+            {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4" component="h1">
-                    Courses
+                    Users
                 </Typography>
-                <Button
-                    component={Link}
-                    to="/course/add"
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                >
-                    Add Course
-                </Button>
             </Box>
 
             {/* Error Alert */}
@@ -83,33 +72,33 @@ const ListCourse = () => {
                 </Alert>
             )}
 
-            {/* Courses Table */}
+            {/* Users Table */}
             <Card>
                 <TableContainer>
                     <Table>
                         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Instructor</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }} align="center">Credits</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }} align="center">Status</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Display Name</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }} align="center">Role</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Bio</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {courseList.length === 0 ? (
+                            {userList.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                                         <Typography variant="body2" color="textSecondary">
-                                            No courses found
+                                            No users found
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                courseList.map((course) => (
-                                    <ListItemCourse
-                                        key={course.id || course._id}
-                                        course={course}
+                                userList.map((user) => (
+                                    <ListItemUser
+                                        key={user.uid || user._id}
+                                        user={user}
                                         onRemoved={handleRemove}
                                     />
                                 ))
@@ -122,4 +111,4 @@ const ListCourse = () => {
     );
 };
 
-export default ListCourse;
+export default ListUser;

@@ -8,9 +8,18 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '@fortawesome/fontawesome-free/js/all.min.js'
 import App from './App.jsx'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-    {/*SeguVeGa*/}
-  </StrictMode>,
-)
+console.log('App starting...');
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  console.error('Root element not found!');
+} else {
+  console.log('Root element found, rendering app...');
+  createRoot(rootElement).render(
+    <StrictMode>
+      <App />
+      {/*SeguVeGa*/}
+    </StrictMode>,
+  );
+  console.log('App rendered successfully');
+}

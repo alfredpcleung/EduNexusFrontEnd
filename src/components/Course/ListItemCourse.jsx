@@ -1,5 +1,8 @@
-import { remove } from "../../datasource/api-course";
+import { remove } from "../../services/coursesService";
 import { Link } from "react-router-dom";
+import { TableRow, TableCell, Box, Button, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ListItemCourse = ({ course, onRemoved }) => {
 
@@ -7,7 +10,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
         if (window.confirm('Are you sure you want to delete this course?')) {
             remove(id)
                 .then(data => {
-                    if (data && data.success) {
+                    if (data && (data.success || data.deleted)) {
                         if (typeof onRemoved === 'function') onRemoved(id);
                     }
                 })
@@ -18,26 +21,50 @@ const ListItemCourse = ({ course, onRemoved }) => {
         }
     };
 
-    return (
-        <tr >
-            <td className="text-center"> {course.name || ''} </td>
-            <td className="text-center"> {course.status || ''} </td>
-            <td className="text-center">{course.tags.toString() || ''}</td>
-            <td className="text-center">
-                <Link className="btn bg-primary btn-primary btn-sm" to={'/course/edit/' + course.id}>
-                    <i className="fas fa-pencil-alt"></i>
-                </Link>
-            </td>
-            <td className="text-center">
-                <button
-                    className="btn bg-danger btn-danger btn-sm"
-                    onClick={() => handleRemove(course.id)}>
-                    <i className="fas fa-trash-alt"></i>
-                </button>
-            </td>
-        </tr>
-    );
+    const courseId = course.id || course._id;
 
-}
+    return (
+        <TableRow hover>
+            <TableCell>{course.title || 'N/A'}</TableCell>
+            <TableCell>{course.instructor || 'N/A'}</TableCell>
+            <TableCell align="center">{course.credits || 0}</TableCell>
+            <TableCell align="center">
+                <span
+                    style={{
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        backgroundColor: course.status === 'active' ? '#c8e6c9' : '#ffccbc',
+                        color: course.status === 'active' ? '#2e7d32' : '#d84315',
+                    }}
+                >
+                    {course.status || 'unknown'}
+                </span>
+            </TableCell>
+            <TableCell align="center">
+                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                    <IconButton
+                        component={Link}
+                        to={'/course/edit/' + courseId}
+                        size="small"
+                        color="primary"
+                        title="Edit course"
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleRemove(courseId)}
+                        title="Delete course"
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+            </TableCell>
+        </TableRow>
+    );
+};
 
 export default ListItemCourse;

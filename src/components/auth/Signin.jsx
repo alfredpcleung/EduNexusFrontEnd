@@ -1,16 +1,32 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react"
-import { signin } from "../../datasource/api-user.js";
+import { signin } from "../../services/usersService.js";
 import { authenticate } from './auth-helper.js';
 import { auth } from "../../firebase.js";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    TextField,
+    Typography,
+    Grid,
+    Container,
+    Alert,
+    Divider,
+    Stack,
+} from '@mui/material';
+import LoginIcon from '@mui/icons-material/Login';
+import GoogleIcon from '@mui/icons-material/Google';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 const Signin = () => {
     const { state } = useLocation();
     const { from } = state || { from: { pathname: '/' } };
     let navigate = useNavigate();
 
-    const [errorMsg, setErrorMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState('');
     const [user, setUser] = useState({
         email: '',
         password: ''
@@ -19,7 +35,7 @@ const Signin = () => {
     const handleChange = (event) => {
         const { name, value } = event.target;
         setUser(formData => ({ ...formData, [name]: value }));
-    }
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -40,8 +56,7 @@ const Signin = () => {
                 setErrorMsg(err.message);
                 console.log(err);
             });
-
-    }
+    };
 
     const handleGoogleSignIn = () => {
         const provider = new GoogleAuthProvider();
@@ -60,59 +75,96 @@ const Signin = () => {
     };
 
     return (
-        <div className="container" style={{ paddingTop: 10 }}>
-            <div className="row">
-                <div className="offset-md-3 col-md-6">
-                    <h1>Signin</h1>
-                    <p className="flash"><span>{errorMsg}</span></p>
-                    <form onSubmit={handleSubmit} className="form card p-3">
-                        <div className="form-group">
-                            <label htmlFor="emailTextField">Email</label>
-                            <input type="text" className="form-control"
-                                id="emailTextField"
-                                placeholder="Enter your email"
+        <Container maxWidth="sm" sx={{ py: 6 }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h4" component="div" sx={{ mb: 3, textAlign: 'center', fontWeight: 'bold' }}>
+                        Sign In
+                    </Typography>
+
+                    {errorMsg && (
+                        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setErrorMsg('')}>
+                            {errorMsg}
+                        </Alert>
+                    )}
+
+                    <form onSubmit={handleSubmit}>
+                        <Stack spacing={2}>
+                            {/* Email Field */}
+                            <TextField
+                                fullWidth
+                                label="Email"
                                 name="email"
+                                type="email"
+                                placeholder="Enter your email"
                                 value={user.email || ''}
                                 onChange={handleChange}
-                                required>
-                            </input>
-                        </div>
-                        <br />
-                        <div className="form-group">
-                            <label htmlFor="passowordTextField">Password</label>
-                            <input type="password" className="form-control"
-                                id="passowordTextField"
-                                placeholder=""
+                                required
+                                variant="outlined"
+                            />
+
+                            {/* Password Field */}
+                            <TextField
+                                fullWidth
+                                label="Password"
                                 name="password"
+                                type="password"
+                                placeholder="Enter your password"
                                 value={user.password || ''}
                                 onChange={handleChange}
-                                required>
-                            </input>
-                        </div>
-                        <br />
-                        &nbsp;
-                        <button className="btn btn-primary" type="submit">
-                            <i className="fas fa-edit"></i>
-                            Submit
-                        </button>
-                        &nbsp;
-                        <button
-                            type="button"
-                            onClick={handleGoogleSignIn}
-                            className="btn btn-danger"
-                        >
-                            <i className="fab fa-google"></i> Sign in with Google
-                        </button>
-                        &nbsp;
-                        <Link to="/users/signup" style={{ textDecoration: 'none' }}>
-                            <i className="fas fa-user-plus"></i> Sign-up
-                        </Link>
+                                required
+                                variant="outlined"
+                            />
 
+                            {/* Submit Button */}
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                size="large"
+                                startIcon={<LoginIcon />}
+                                sx={{ mt: 2 }}
+                                disabled
+                            >
+                                Sign In (Placeholder)
+                            </Button>
+
+                            {/* Divider */}
+                            <Divider sx={{ my: 2 }}>OR</Divider>
+
+                            {/* Google Sign In Button */}
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                color="error"
+                                size="large"
+                                startIcon={<GoogleIcon />}
+                                disabled
+                            >
+                                Sign in with Google (Placeholder)
+                            </Button>
+
+                            {/* Sign Up Link */}
+                            <Box sx={{ textAlign: 'center', mt: 3 }}>
+                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                    Don't have an account?
+                                </Typography>
+                                <Button
+                                    component={Link}
+                                    to="/users/signup"
+                                    variant="text"
+                                    color="primary"
+                                    startIcon={<PersonAddIcon />}
+                                >
+                                    Sign Up
+                                </Button>
+                            </Box>
+                        </Stack>
                     </form>
-                </div>
-
-            </div>
-        </div>
+                </CardContent>
+            </Card>
+        </Container>
     );
 }
 

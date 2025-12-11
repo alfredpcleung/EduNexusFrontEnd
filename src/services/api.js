@@ -33,6 +33,6 @@ export const getApiUrl = (path) => {
         
         // Remove trailing slash from baseUrl if present to avoid double slashes
         const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-        return `${cleanBaseUrl}/api${path}`;
+        return `${cleanBaseUrl}${path}`;
     }
 };

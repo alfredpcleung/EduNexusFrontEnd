@@ -12,7 +12,7 @@ import { getToken } from '../components/auth/auth-helper';
  */
 const signin = async (user) => {
     try {
-        let response = await fetch(getApiUrl('/auth/signin'), {
+        let response = await fetch(getApiUrl('/api/auth/signin'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -34,7 +34,7 @@ const signin = async (user) => {
  */
 const create = async (user) => {
     try {
-        let response = await fetch(getApiUrl('/users'), {
+        let response = await fetch(getApiUrl('/api/users'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -55,7 +55,7 @@ const create = async (user) => {
  */
 const list = async () => {
     try {
-        let response = await fetch(getApiUrl('/users'), {
+        let response = await fetch(getApiUrl('/api/users'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -77,7 +77,7 @@ const list = async () => {
  */
 const read = async (uid) => {
     try {
-        let response = await fetch(getApiUrl(`/users/${uid}`), {
+        let response = await fetch(getApiUrl(`/api/users/${uid}`), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -100,7 +100,7 @@ const read = async (uid) => {
  */
 const update = async (uid, user) => {
     try {
-        let response = await fetch(getApiUrl(`/users/${uid}`), {
+        let response = await fetch(getApiUrl(`/api/users/${uid}`), {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -123,7 +123,7 @@ const update = async (uid, user) => {
  */
 const remove = async (uid) => {
     try {
-        let response = await fetch(getApiUrl(`/users/${uid}`), {
+        let response = await fetch(getApiUrl(`/api/users/${uid}`), {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

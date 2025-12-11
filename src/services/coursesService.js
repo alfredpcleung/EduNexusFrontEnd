@@ -11,7 +11,7 @@ import { getToken } from '../components/auth/auth-helper';
  */
 const list = async () => {
     try {
-        let response = await fetch(getApiUrl('/api/courses'), {
+        let response = await fetch(getApiUrl('/courses'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -32,7 +32,7 @@ const list = async () => {
  */
 const read = async (id) => {
     try {
-        let response = await fetch(getApiUrl(`/api/courses/${id}`), {
+        let response = await fetch(getApiUrl(`/courses/${id}`), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -53,7 +53,7 @@ const read = async (id) => {
  */
 const create = async (course) => {
     try {
-        let response = await fetch(getApiUrl('/api/courses'), {
+        let response = await fetch(getApiUrl('/courses'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -77,7 +77,7 @@ const create = async (course) => {
  */
 const update = async (id, course) => {
     try {
-        let response = await fetch(getApiUrl(`/api/courses/${id}`), {
+        let response = await fetch(getApiUrl(`/courses/${id}`), {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -100,7 +100,7 @@ const update = async (id, course) => {
  */
 const remove = async (id) => {
     try {
-        let response = await fetch(getApiUrl(`/api/courses/${id}`), {
+        let response = await fetch(getApiUrl(`/courses/${id}`), {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

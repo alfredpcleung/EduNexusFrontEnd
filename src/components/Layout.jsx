@@ -15,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
+import PeopleIcon from '@mui/icons-material/People';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useState } from 'react';
@@ -85,6 +86,21 @@ function Layout() {
                             Courses
                         </Button>
 
+                        {/* Users Link */}
+                        <Button
+                            component={Link}
+                            to="/users/list"
+                            color="inherit"
+                            startIcon={<PeopleIcon />}
+                            sx={{
+                                textTransform: 'none',
+                                fontSize: '1rem',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                            }}
+                        >
+                            Users
+                        </Button>
+
                         {/* Auth Buttons */}
                         {!isAuth ? (
                             <>
@@ -153,6 +169,9 @@ function Layout() {
                             </MenuItem>
                             <MenuItem component={Link} to="/course/list" onClick={handleMenuClose}>
                                 <BookIcon sx={{ mr: 1 }} /> Courses
+                            </MenuItem>
+                            <MenuItem component={Link} to="/users/list" onClick={handleMenuClose}>
+                                <PeopleIcon sx={{ mr: 1 }} /> Users
                             </MenuItem>
                             {!isAuth ? (
                                 <>

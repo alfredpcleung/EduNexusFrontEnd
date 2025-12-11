@@ -29,11 +29,14 @@ const AddCourse = () => {
 
         create(submitCourse)
             .then(data => {
-                if (data && (data.id || data._id)) {
-                    alert(`Course added successfully with id ${data.id || data._id}`);
+                if (data && data.title) {
+                    // Backend returns the created course object directly
+                    alert(`Course added successfully: ${data.title}`);
                     navigate("/course/list");
-                } else {
+                } else if (data && (data.success === false || data.error)) {
                     setErrorMsg(data.message || 'Failed to create course');
+                } else {
+                    setErrorMsg('Unexpected response from server');
                 }
             })
             .catch(err => {

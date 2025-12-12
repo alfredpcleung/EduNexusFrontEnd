@@ -13,6 +13,7 @@ import {
 import SchoolIcon from '@mui/icons-material/School';
 import BookIcon from '@mui/icons-material/Book';
 import PersonIcon from '@mui/icons-material/Person';
+import FolderIcon from '@mui/icons-material/Folder';
 
 function Home() {
     const navigate = useNavigate();
@@ -35,12 +36,13 @@ function Home() {
             </Box>
 
             {/* Feature Cards */}
-            <Grid container spacing={4} sx={{ mb: 8, justifyContent: 'center' }}>
+            <Grid container spacing={3} sx={{ mb: 8 }}>
                 {/* Courses Card */}
-                <Grid item xs={12} sm={12} md={3.5}>
+                <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
                     <Card 
                         sx={{ 
-                            height: 300, 
+                            width: '100%',
+                            height: 320, 
                             display: 'flex', 
                             flexDirection: 'column',
                             transition: 'all 0.3s ease',
@@ -76,51 +78,12 @@ function Home() {
                     </Card>
                 </Grid>
 
-                {/* Learn Card */}
-                <Grid item xs={12} sm={12} md={3.5}>
+                {/* Users Card */}
+                <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
                     <Card 
                         sx={{ 
-                            height: 300, 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                                transform: 'translateY(-8px)',
-                                boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
-                            },
-                            borderRadius: 2
-                        }}
-                    >
-                        <CardContent sx={{ flexGrow: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                <SchoolIcon sx={{ fontSize: 56, color: '#1976d2' }} />
-                            </Box>
-                            <Typography variant="h6" component="div" sx={{ fontWeight: 600, mb: 1 }}>
-                                Learn
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary" sx={{ lineHeight: 1.6 }}>
-                                Access high-quality educational content from expert instructors.
-                            </Typography>
-                        </CardContent>
-                        <Box sx={{ p: 2, pt: 0 }}>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                onClick={() => navigate('/course/list')}
-                                sx={{ textTransform: 'none', fontWeight: 500 }}
-                            >
-                                Get Started
-                            </Button>
-                        </Box>
-                    </Card>
-                </Grid>
-
-                {/* Community Card */}
-                <Grid item xs={12} sm={12} md={3.5}>
-                    <Card 
-                        sx={{ 
-                            height: 300, 
+                            width: '100%',
+                            height: 320, 
                             display: 'flex', 
                             flexDirection: 'column',
                             transition: 'all 0.3s ease',
@@ -136,7 +99,7 @@ function Home() {
                                 <PersonIcon sx={{ fontSize: 56, color: '#1976d2' }} />
                             </Box>
                             <Typography variant="h6" component="div" sx={{ fontWeight: 600, mb: 1 }}>
-                                Join Community
+                                Meet Users
                             </Typography>
                             <Typography variant="body2" color="textSecondary" sx={{ lineHeight: 1.6 }}>
                                 Connect with other learners and instructors in our community.
@@ -147,11 +110,51 @@ function Home() {
                                 fullWidth
                                 variant="contained"
                                 color="primary"
-                                disabled={!isAuth}
-                                onClick={() => navigate(isAuth ? '/course/list' : '/users/signin')}
+                                onClick={() => navigate('/users/list')}
                                 sx={{ textTransform: 'none', fontWeight: 500 }}
                             >
-                                {isAuth ? 'Join' : 'Sign In First'}
+                                View Users
+                            </Button>
+                        </Box>
+                    </Card>
+                </Grid>
+
+                {/* Projects Card */}
+                <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+                    <Card 
+                        sx={{ 
+                            width: '100%',
+                            height: 320, 
+                            display: 'flex', 
+                            flexDirection: 'column',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                transform: 'translateY(-8px)',
+                                boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
+                            },
+                            borderRadius: 2
+                        }}
+                    >
+                        <CardContent sx={{ flexGrow: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                                <FolderIcon sx={{ fontSize: 56, color: '#1976d2' }} />
+                            </Box>
+                            <Typography variant="h6" component="div" sx={{ fontWeight: 600, mb: 1 }}>
+                                Browse Projects
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary" sx={{ lineHeight: 1.6 }}>
+                                Explore student projects and showcase your own work.
+                            </Typography>
+                        </CardContent>
+                        <Box sx={{ p: 2, pt: 0 }}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                onClick={() => navigate('/project/list')}
+                                sx={{ textTransform: 'none', fontWeight: 500 }}
+                            >
+                                View Projects
                             </Button>
                         </Box>
                     </Card>

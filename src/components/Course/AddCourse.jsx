@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import CourseModel from "../../datasource/CourseModel";
 import { create } from "../../services/coursesService";
 import CourseForm from "./CourseForm";
-import { Container, Alert, Box } from '@mui/material';
+import { Container, Alert, Box, CircularProgress, Typography } from '@mui/material';
 
 const AddCourse = () => {
     const navigate = useNavigate();
+    const { isAuth, loading } = useAuth();
     const [course, setCourse] = useState(new CourseModel());
     const [errorMsg, setErrorMsg] = useState('');
+
+    // Redirect to signin if not authenticated
+    useEffect(() => {
+        if (!loading && !isAuth) {
+            navigate('/users/signin', { state: { from: { pathname: '/course/add' } } });
+        }
+    }, [isAuth, loading, navigate]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -44,6 +53,22 @@ const AddCourse = () => {
                 console.log(err);
             });
     };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!isAuth) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <Typography>Redirecting to sign in...</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ 

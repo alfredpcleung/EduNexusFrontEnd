@@ -3,10 +3,10 @@
  * Handles all course-related API calls (CRUD operations)
  */
 import { getApiUrl } from './api';
-import { getToken } from '../components/auth/auth-helper';
+import { authenticatedFetch } from '../components/auth/auth-helper';
 
 /**
- * List all courses
+ * List all courses (Public endpoint)
  * @returns {Promise<Array>} - Array of course objects
  */
 const list = async () => {
@@ -26,7 +26,7 @@ const list = async () => {
 };
 
 /**
- * Get a single course by ID
+ * Get a single course by ID (Public endpoint)
  * @param {string|number} id - Course ID
  * @returns {Promise<Object>} - Course object
  */
@@ -47,18 +47,17 @@ const read = async (id) => {
 };
 
 /**
- * Create a new course
+ * Create a new course (Auth required)
  * @param {Object} course - Course data
  * @returns {Promise<Object>} - Created course object
  */
 const create = async (course) => {
     try {
-        let response = await fetch(getApiUrl('/courses'), {
+        let response = await authenticatedFetch(getApiUrl('/courses'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getToken()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(course)
         });
@@ -70,19 +69,18 @@ const create = async (course) => {
 };
 
 /**
- * Update an existing course
+ * Update an existing course (Auth + Ownership required)
  * @param {string|number} id - Course ID
  * @param {Object} course - Updated course data
  * @returns {Promise<Object>} - Updated course object
  */
 const update = async (id, course) => {
     try {
-        let response = await fetch(getApiUrl(`/courses/${id}`), {
+        let response = await authenticatedFetch(getApiUrl(`/courses/${id}`), {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getToken()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(course)
         });
@@ -94,18 +92,17 @@ const update = async (id, course) => {
 };
 
 /**
- * Delete a course
+ * Delete a course (Auth + Ownership required)
  * @param {string|number} id - Course ID
  * @returns {Promise<Object>} - Server response
  */
 const remove = async (id) => {
     try {
-        let response = await fetch(getApiUrl(`/courses/${id}`), {
+        let response = await authenticatedFetch(getApiUrl(`/courses/${id}`), {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getToken()
+                'Content-Type': 'application/json'
             }
         });
         return await response.json();

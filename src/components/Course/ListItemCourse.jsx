@@ -1,10 +1,12 @@
 import { remove } from "../../services/coursesService";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { TableRow, TableCell, Box, Button, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const ListItemCourse = ({ course, onRemoved }) => {
+    const { isAuth } = useAuth();
 
     const handleRemove = (id) => {
         if (window.confirm('Are you sure you want to delete this course?')) {
@@ -12,10 +14,12 @@ const ListItemCourse = ({ course, onRemoved }) => {
                 .then(data => {
                     if (data && (data.success || data.deleted)) {
                         if (typeof onRemoved === 'function') onRemoved(id);
+                    } else if (data && data.success === false) {
+                        alert(data.message || 'Failed to delete course');
                     }
                 })
                 .catch(err => {
-                    alert(err.message);
+                    alert(err.message || 'Error deleting course');
                     console.log(err);
                 });
         }
@@ -44,23 +48,27 @@ const ListItemCourse = ({ course, onRemoved }) => {
             </TableCell>
             <TableCell align="center">
                 <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                    <IconButton
-                        component={Link}
-                        to={'/course/edit/' + courseId}
-                        size="small"
-                        color="primary"
-                        title="Edit course"
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleRemove(courseId)}
-                        title="Delete course"
-                    >
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    {isAuth && (
+                        <>
+                            <IconButton
+                                component={Link}
+                                to={'/course/edit/' + courseId}
+                                size="small"
+                                color="primary"
+                                title="Edit course"
+                            >
+                                <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleRemove(courseId)}
+                                title="Delete course"
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </>
+                    )}
                 </Box>
             </TableCell>
         </TableRow>

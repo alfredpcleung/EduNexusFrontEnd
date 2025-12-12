@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { isAuthenticated, getUsername, clearJWT } from './auth/auth-helper';
+import { useAuth } from './auth/AuthContext';
 import {
     AppBar,
     Toolbar,
@@ -18,13 +18,13 @@ import BookIcon from '@mui/icons-material/Book';
 import PeopleIcon from '@mui/icons-material/People';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
+import FolderIcon from '@mui/icons-material/Folder';
 import { useState } from 'react';
 
 function Layout() {
     const location = useLocation();
+    const { isAuth, user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
-    const isAuth = isAuthenticated();
-    const username = getUsername();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -35,7 +35,7 @@ function Layout() {
     };
 
     const handleSignout = () => {
-        clearJWT();
+        logout();
         handleMenuClose();
         window.location.href = '/';
     };
@@ -101,6 +101,37 @@ function Layout() {
                             Users
                         </Button>
 
+                        {/* Projects Link */}
+                        <Button
+                            component={Link}
+                            to="/project/list"
+                            color="inherit"
+                            startIcon={<FolderIcon />}
+                            sx={{
+                                textTransform: 'none',
+                                fontSize: '1rem',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                            }}
+                        >
+                            Projects
+                        </Button>
+
+                        {/* Dashboard Link - Only for authenticated users */}
+                        {isAuth && (
+                            <Button
+                                component={Link}
+                                to="/dashboard"
+                                color="inherit"
+                                sx={{
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                    '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                                }}
+                            >
+                                Dashboard
+                            </Button>
+                        )}
+
                         {/* Auth Buttons */}
                         {!isAuth ? (
                             <>
@@ -132,7 +163,7 @@ function Layout() {
                                     sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                                 >
                                     <AccountCircleIcon />
-                                    <Typography variant="body2">{username}</Typography>
+                                    <Typography variant="body2">{user?.displayName || 'User'}</Typography>
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
@@ -140,7 +171,10 @@ function Layout() {
                                     onClose={handleMenuClose}
                                 >
                                     <MenuItem disabled>
-                                        <Typography variant="body2">Welcome, {username}</Typography>
+                                        <Typography variant="body2">Welcome, {user?.displayName || 'User'}</Typography>
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <Typography variant="caption">Role: {user?.role || 'student'}</Typography>
                                     </MenuItem>
                                     <MenuItem onClick={handleSignout}>
                                         <LogoutIcon sx={{ mr: 1 }} />
@@ -173,6 +207,14 @@ function Layout() {
                             <MenuItem component={Link} to="/users/list" onClick={handleMenuClose}>
                                 <PeopleIcon sx={{ mr: 1 }} /> Users
                             </MenuItem>
+                            <MenuItem component={Link} to="/project/list" onClick={handleMenuClose}>
+                                <FolderIcon sx={{ mr: 1 }} /> Projects
+                            </MenuItem>
+                            {isAuth && (
+                                <MenuItem component={Link} to="/dashboard" onClick={handleMenuClose}>
+                                    Dashboard
+                                </MenuItem>
+                            )}
                             {!isAuth ? (
                                 <>
                                     <MenuItem component={Link} to="/users/signin" onClick={handleMenuClose}>
@@ -183,9 +225,17 @@ function Layout() {
                                     </MenuItem>
                                 </>
                             ) : (
-                                <MenuItem onClick={handleSignout}>
-                                    <LogoutIcon sx={{ mr: 1 }} /> Sign Out
-                                </MenuItem>
+                                <>
+                                    <MenuItem disabled>
+                                        <Typography variant="body2">Welcome, {user?.displayName || 'User'}</Typography>
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <Typography variant="caption">Role: {user?.role || 'student'}</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleSignout}>
+                                        <LogoutIcon sx={{ mr: 1 }} /> Sign Out
+                                    </MenuItem>
+                                </>
                             )}
                         </Menu>
                     </Box>

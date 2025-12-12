@@ -1,0 +1,253 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "./auth/AuthContext";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Alert,
+  Box,
+  Grid,
+  Button,
+  Chip,
+} from "@mui/material";
+import * as projectsService from "../services/projectsService";
+import * as feedbackService from "../services/feedbackService";
+import FeedbackForm from "./Feedback/FeedbackForm";
+
+function ProjectDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuth, user } = useAuth();
+
+  const [project, setProject] = useState(null);
+  const [feedbackList, setFeedbackList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [feedbackError, setFeedbackError] = useState("");
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState(null);
+
+  useEffect(() => {
+    fetchProject();
+  }, [id]);
+
+  const fetchProject = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const projectData = await projectsService.read(id);
+      setProject(projectData);
+      await fetchFeedback(id);
+    } catch (err) {
+      console.error("Error fetching project:", err);
+      setError(err.message || "Failed to load project");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFeedback = async (projectId) => {
+    try {
+      const feedback = await feedbackService.listByProject(projectId);
+      setFeedbackList(feedback);
+    } catch (err) {
+      console.error("Error fetching feedback:", err);
+      setFeedbackError(err.message || "Failed to load feedback");
+    }
+  };
+
+  const handleFeedbackCreated = (newFeedback) => {
+    setFeedbackList([...feedbackList, newFeedback]);
+  };
+
+  const handleDeleteFeedback = async (feedbackId) => {
+    if (!window.confirm("Delete this feedback?")) return;
+
+    try {
+      setDeletingFeedbackId(feedbackId);
+      await feedbackService.remove(feedbackId);
+      setFeedbackList(feedbackList.filter((fb) => fb.id !== feedbackId));
+    } catch (err) {
+      if (err.message && err.message.includes("403")) {
+        setFeedbackError(
+          "You are not authorized to perform this action."
+        );
+      } else {
+        setFeedbackError(err.message || "Failed to delete feedback");
+      }
+    } finally {
+      setDeletingFeedbackId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "500px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/project/list")}
+          sx={{ mt: 2 }}
+        >
+          Back to Projects
+        </Button>
+      </Box>
+    );
+  }
+
+  if (!project) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">Project not found</Alert>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/project/list")}
+          sx={{ mt: 2 }}
+        >
+          Back to Projects
+        </Button>
+      </Box>
+    );
+  }
+
+  const isOwner = isAuth && user?.uid === project.owner;
+
+  return (
+    <Box sx={{ p: 3, maxWidth: "100%", display: "flex", justifyContent: "center" }}>
+      <Box sx={{ width: "100%", maxWidth: 900 }}>
+      {/* Feedback Section */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column" }}>
+          <Card sx={{ boxShadow: 2, flex: 1 }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
+                💬 Feedback <Chip label={feedbackList.length} size="small" color="primary" />
+              </Typography>
+
+              {feedbackError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {feedbackError}
+                </Alert>
+              )}
+
+              {feedbackList.length === 0 ? (
+                <Box sx={{ py: 3, textAlign: "center" }}>
+                  <Typography variant="body2" color="textSecondary">
+                    No feedback yet. Be the first to share your thoughts!
+                  </Typography>
+                </Box>
+              ) : (
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {feedbackList.map((fb) => (
+                    <Card
+                      key={fb.id}
+                      sx={{
+                        backgroundColor: "#fafafa",
+                        borderLeft: "4px solid #1976d2",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          boxShadow: 1,
+                        }
+                      }}
+                      variant="outlined"
+                    >
+                      <CardContent sx={{ pb: 2, "&:last-child": { pb: 2 } }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            mb: 2,
+                            gap: 1,
+                          }}
+                        >
+                          <Box>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                                ⭐ {fb.rating}/5
+                              </Typography>
+                            </Box>
+                            <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 500 }}>
+                              {fb.authorName || "Anonymous"}
+                            </Typography>
+                          </Box>
+                          {isAuth && user?.uid === fb.authorId && (
+                            <Button
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteFeedback(fb.id)}
+                              disabled={deletingFeedbackId === fb.id}
+                              sx={{ minWidth: "auto" }}
+                            >
+                              {deletingFeedbackId === fb.id ? "⏳" : "🗑️"}
+                            </Button>
+                          )}
+                        </Box>
+                        <Typography variant="body2" sx={{ mt: 1, lineHeight: 1.6 }}>
+                          {fb.comment}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Feedback Form */}
+        {isAuth && (
+          <Grid item xs={12} md={6}>
+            <Card sx={{ boxShadow: 2, position: "sticky", top: 20 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+                  ✍️ Leave Feedback
+                </Typography>
+                <FeedbackForm projectId={id} onFeedbackCreated={handleFeedbackCreated} />
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+      </Grid>
+
+      {!isAuth && (
+        <Card sx={{ mt: 4, backgroundColor: "#f5f5f5", boxShadow: 2 }}>
+          <CardContent sx={{ py: 3, textAlign: "center" }}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              📝 Want to share your feedback?
+            </Typography>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+              Sign in to leave feedback and help others learn from this project.
+            </Typography>
+            <Button
+              variant="contained"
+              href="/users/signin"
+              size="medium"
+            >
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+      </Box>
+    </Box>
+  );
+}
+
+export default ProjectDetail;

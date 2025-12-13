@@ -66,15 +66,17 @@ const create = async (course) => {
         
         // Check for HTTP errors
         if (!response.ok) {
+            console.error('Course creation failed:', response.status, data);
             if (response.status === 403) {
                 data.message = data.message || 'You do not have permission to create courses.';
             }
             throw { status: response.status, ...data };
         }
         
+        console.log('Course created successfully:', data);
         return data;
     } catch (err) {
-        console.log('Create course error:', err);
+        console.error('Create course error:', err);
         throw err;
     }
 };

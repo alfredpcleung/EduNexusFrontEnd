@@ -44,9 +44,12 @@ const AddCourse = () => {
 
         create(submitCourse)
             .then(data => {
-                if (data && data.title) {
+                console.log('Course creation response:', data);
+                
+                if (data && (data.title || data.success === true || data._id || data.id)) {
                     // Backend returns the created course object directly
-                    setSuccessMsg(`Course "${data.title}" added successfully!`);
+                    const courseTitle = data.title || 'Course';
+                    setSuccessMsg(`${courseTitle} added successfully!`);
                     setOpenSnackbar(true);
                     // Redirect after snackbar auto-dismisses
                     setTimeout(() => navigate("/course/list"), 2000);
@@ -55,10 +58,13 @@ const AddCourse = () => {
                 } else if (data?.message?.includes("not authorized")) {
                     setErrorMsg(data.message || 'You do not have permission to create this course.');
                 } else {
-                    setErrorMsg('Unexpected response from server');
+                    // Log unexpected response for debugging
+                    console.error('Unexpected response format:', data);
+                    setErrorMsg('Unexpected response from server. Please try again or contact support.');
                 }
             })
             .catch(err => {
+                console.error('Course creation error:', err);
                 // Handle HTTP status codes
                 if (err.status === 403) {
                     setErrorMsg(err.message || 'You do not have permission to create this course.');
@@ -69,7 +75,6 @@ const AddCourse = () => {
                 } else {
                     setErrorMsg(err.message || 'Error creating course');
                 }
-                console.log(err);
             });
     };
 

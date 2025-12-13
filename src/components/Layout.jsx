@@ -238,6 +238,32 @@ function Layout() {
                                         Hi, {user?.firstName || 'User'}
                                     </Typography>
                                 </IconButton>
+
+                                {/* Add a new dropdown menu for the "Hi, [firstname]" button */}
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                >
+                                    <MenuItem onClick={() => navigate('/profile')}>
+                                        <PersonIcon sx={{ mr: 1 }} /> Profile
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/settings')}>
+                                        <SettingsIcon sx={{ mr: 1 }} /> Settings
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/academic-record')}>
+                                        <SchoolIcon sx={{ mr: 1 }} /> Your Academic Record
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/course-reviews')}>
+                                        <RateReviewIcon sx={{ mr: 1 }} /> Your Course Reviews
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/group-projects')}>
+                                        <GroupWorkIcon sx={{ mr: 1 }} /> Your Group Projects
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/teammate-reviews')}>
+                                        <StarIcon sx={{ mr: 1 }} /> Your Teammate Reviews
+                                    </MenuItem>
+                                </Menu>
                             </Box>
                         )}
                     </Box>
@@ -255,28 +281,7 @@ function Layout() {
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}
                         >
-                            {!isAuth ? (
-                                <>
-                                    <MenuItem component={Link} to="/users/signin" onClick={handleMenuClose}>
-                                        <LoginIcon sx={{ mr: 1 }} /> Sign In
-                                    </MenuItem>
-                                    <MenuItem component={Link} to="/users/signup" onClick={handleMenuClose}>
-                                        <BookIcon sx={{ mr: 1 }} /> Sign Up
-                                    </MenuItem>
-                                </>
-                            ) : (
-                                <>
-                                    <MenuItem disabled>
-                                        <Typography variant="body2">Welcome, {user?.firstName || 'User'}</Typography>
-                                    </MenuItem>
-                                    <MenuItem disabled>
-                                        <Typography variant="caption">Role: {user?.role || 'student'}</Typography>
-                                    </MenuItem>
-                                    <MenuItem onClick={handleSignout}>
-                                        <LogoutIcon sx={{ mr: 1 }} /> Sign Out
-                                    </MenuItem>
-                                </>
-                            )}
+                            {/* Removed all menu items */}
                         </Menu>
                     </Box>
                 </Toolbar>

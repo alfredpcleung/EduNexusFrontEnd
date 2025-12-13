@@ -108,11 +108,16 @@ describe('ListUser Component', () => {
     renderWithAuth(<ListUser />);
 
     await waitFor(() => {
-      expect(screen.getByText('Display Name')).toBeInTheDocument();
-      expect(screen.getByText('Email')).toBeInTheDocument();
-      expect(screen.getByText('Role')).toBeInTheDocument();
-      expect(screen.getByText('Bio')).toBeInTheDocument();
-      expect(screen.getByText('Actions')).toBeInTheDocument();
+      const table = screen.getByRole('table');
+      expect(table).toBeInTheDocument();
+      
+      // Check for header cells using getByRole with scope="col"
+      const headers = screen.getAllByRole('columnheader');
+      expect(headers.some(h => h.textContent === 'Display Name')).toBe(true);
+      expect(headers.some(h => h.textContent === 'Email')).toBe(true);
+      expect(headers.some(h => h.textContent === 'Role')).toBe(true);
+      expect(headers.some(h => h.textContent === 'Bio')).toBe(true);
+      expect(headers.some(h => h.textContent === 'Actions')).toBe(true);
     });
   });
 

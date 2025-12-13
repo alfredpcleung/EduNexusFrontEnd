@@ -14,6 +14,7 @@ import ListProject from "./components/Project/ListProject";
 import AddProject from "./components/Project/AddProject";
 import EditProject from "./components/Project/EditProject";
 import ProjectDetail from "./components/ProjectDetail";
+import Profile from "./components/Profile";
 
 function MainRouter() {
     return (
@@ -33,6 +34,7 @@ function MainRouter() {
                 <Route path="/project/add" element={<AddProject />} />
                 <Route path="/project/edit/:id" element={<EditProject />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </div>

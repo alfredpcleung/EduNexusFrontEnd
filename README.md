@@ -13,7 +13,7 @@ A modern, responsive React application for course and project management with JW
 - **Commands** - Build, test, and deployment scripts
 - **Deployment** - Cloud deployment instructions
 - **Troubleshooting** - Common issues and solutions
-- **See Also** - [CONTRIBUTING.md](./CONTRIBUTING.md) for development guide, [CHANGELOG.md](./CHANGELOG.md) for version history
+- **See Also** - [CONTRIBUTING.md](./CONTRIBUTING.md) for development and API guide
 
 ---
 
@@ -331,7 +331,7 @@ npm run cypress:open  # Interactive
 npm run cypress:run   # Headless
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for comprehensive testing guide.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for comprehensive testing and development guide.
 
 ---
 
@@ -420,8 +420,8 @@ See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed deployment instruc
 
 ### Public Routes
 - `/` - Home page with feature overview
-- `/users/signin` - Sign in form
-- `/users/signup` - Sign up form
+- `/users/signin` - Sign in page
+- `/users/signup` - Registration page (students only)
 - `/users/list` - Browse all users
 - `/course/list` - Browse all courses
 - `/project/list` - Browse all projects

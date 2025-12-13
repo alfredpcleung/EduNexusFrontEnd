@@ -1,3 +1,56 @@
+---
+
+## User Model & Authentication Fields
+
+### User Fields (as of Dec 2025)
+
+| Field         | Type   | Required | Notes                                                      |
+|-------------- |--------|----------|------------------------------------------------------------|
+| uid           | string | Yes      | Unique user ID, generated from email on frontend           |
+| firstName     | string | Yes      | User's first name (sent to backend)                        |
+| lastName      | string | Yes      | User's last name (sent to backend)                         |
+| email         | string | Yes      | User's email address                                       |
+| password      | string | Yes      | User's password (never stored in frontend after signup)    |
+| role          | string | No       | Always 'student' for frontend signups                      |
+| school        | string | No       | Optional, user's school                                    |
+| fieldOfStudy  | string | No       | Optional, user's field of study                            |
+| displayName   | string | No       | Deprecated: for legacy UI only, not sent to backend        |
+
+**Note:**
+- The backend API expects and returns `firstName` and `lastName` separately. There is no `displayName` field in the backend schema or API.
+- `displayName` may be used in the frontend for legacy UI compatibility, but is not required or sent to the backend.
+- For signup and user updates, always send `firstName` and `lastName` as separate fields.
+- UID generation remains unchanged (from email on the frontend).
+
+#### Example Signup Payload (to backend)
+
+```json
+{
+  "uid": "jdoe_1702473600000",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "jdoe@example.com",
+  "password": "********",
+  "role": "student",
+  "school": "Example University",
+  "fieldOfStudy": "Computer Science"
+}
+```
+
+#### Example User Object (frontend, with deprecated displayName)
+
+```json
+{
+  "uid": "jdoe_1702473600000",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "jdoe@example.com",
+  "role": "student",
+  "school": "Example University",
+  "fieldOfStudy": "Computer Science",
+  "displayName": "John Doe" // Deprecated, for UI only
+}
+```
 # EduNexus Frontend Design Documentation
 
 > UI/UX design decisions, component architecture, and styling conventions.

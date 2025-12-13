@@ -21,11 +21,14 @@ const Signup = () => {
 
     const [errorMsg, setErrorMsg] = useState('');
     const [formData, setFormData] = useState({
-        displayName: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'student'
+        school: '',
+        fieldOfStudy: '',
+        role: 'student' // still fixed to student, but not shown in UI
     });
 
     const handleChange = (event) => {
@@ -37,8 +40,13 @@ const Signup = () => {
         event.preventDefault();
 
         // Validation
-        if (!formData.displayName.trim()) {
-            setErrorMsg("ERROR: Full name is required.");
+
+        if (!formData.firstName.trim()) {
+            setErrorMsg("ERROR: First name is required.");
+            return;
+        }
+        if (!formData.lastName.trim()) {
+            setErrorMsg("ERROR: Last name is required.");
             return;
         }
 
@@ -61,12 +69,16 @@ const Signup = () => {
         const uid = formData.email.split('@')[0] + '_' + Date.now();
 
         // Call signup from AuthContext
+
         const result = await signup(
             uid,
-            formData.displayName,
+            formData.firstName,
+            formData.lastName,
             formData.email,
             formData.password,
-            formData.role
+            formData.role,
+            formData.school,
+            formData.fieldOfStudy
         );
 
         if (result.success) {
@@ -98,18 +110,64 @@ const Signup = () => {
 
                     <form onSubmit={handleSubmit}>
                         <Stack spacing={3}>
-                            {/* Display Name */}
+                            {/* First Name */}
                             <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    Full Name <span style={{ color: 'red' }}>*</span>
+                                    First Name <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
-                                    name="displayName"
-                                    placeholder="Enter your full name"
-                                    value={formData.displayName || ''}
+                                    name="firstName"
+                                    placeholder="Enter your first name"
+                                    value={formData.firstName || ''}
                                     onChange={handleChange}
                                     required
+                                    variant="outlined"
+                                    size="small"
+                                />
+                            </Box>
+                            {/* Last Name */}
+                            <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                    Last Name <span style={{ color: 'red' }}>*</span>
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    name="lastName"
+                                    placeholder="Enter your last name"
+                                    value={formData.lastName || ''}
+                                    onChange={handleChange}
+                                    required
+                                    variant="outlined"
+                                    size="small"
+                                />
+                            </Box>
+                            {/* School (optional) */}
+                            <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                    School (optional)
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    name="school"
+                                    placeholder="Enter your school (optional)"
+                                    value={formData.school || ''}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    size="small"
+                                />
+                            </Box>
+                            {/* Field of Study (optional) */}
+                            <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                    Field of Study (optional)
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    name="fieldOfStudy"
+                                    placeholder="Enter your field of study (optional)"
+                                    value={formData.fieldOfStudy || ''}
+                                    onChange={handleChange}
                                     variant="outlined"
                                     size="small"
                                 />

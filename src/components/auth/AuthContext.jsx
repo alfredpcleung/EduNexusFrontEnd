@@ -32,12 +32,13 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const handleSignup = async (uid, displayName, email, password, role = "student") => {
+  // Updated: displayName is deprecated and not sent to backend. Use firstName, lastName, school, fieldOfStudy.
+  const handleSignup = async (uid, firstName, lastName, email, password, role = "student", school = '', fieldOfStudy = '') => {
     setLoading(true);
     setError(null);
 
     try {
-      const result = await signup(uid, displayName, email, password, role);
+      const result = await signup(uid, firstName, lastName, email, password, role, school, fieldOfStudy);
 
       if (result.success) {
         setUser(result.user);

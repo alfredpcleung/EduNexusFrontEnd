@@ -25,6 +25,7 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [isDuplicate, setIsDuplicate] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +43,7 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
     try {
       setLoading(true);
       setError("");
+      setIsDuplicate(false);
 
       const newFeedback = await feedbackService.create({
         projectId,
@@ -58,7 +60,14 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
       onFeedbackCreated(newFeedback);
     } catch (err) {
       console.error("Error submitting feedback:", err);
-      setError(err.message || "Failed to submit feedback");
+      
+      // Handle 409 Conflict - user already gave feedback
+      if (err.status === 409 || err.message?.includes("409")) {
+        setIsDuplicate(true);
+        setError("You have already provided feedback for this project. You can edit your existing feedback or delete it to submit new feedback.");
+      } else {
+        setError(err.message || "Failed to submit feedback");
+      }
     } finally {
       setLoading(false);
     }
@@ -73,7 +82,7 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          <Alert severity={isDuplicate ? "warning" : "error"} sx={{ mb: 2 }} onClose={() => setError('')}>
             {error}
           </Alert>
         )}

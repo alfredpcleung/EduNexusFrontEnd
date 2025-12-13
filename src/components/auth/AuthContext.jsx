@@ -12,18 +12,24 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already authenticated on component mount
   useEffect(() => {
-    const token = getToken();
-    const storedUser = getUser();
+    try {
+      const token = getToken();
+      const storedUser = getUser();
 
-    if (token && isAuthenticated()) {
-      setUser(storedUser);
-      setIsAuth(true);
-    } else {
+      if (token && isAuthenticated()) {
+        setUser(storedUser);
+        setIsAuth(true);
+      } else {
+        setIsAuth(false);
+        setUser(null);
+      }
+    } catch (err) {
+      console.error('Error during auth initialization:', err);
       setIsAuth(false);
       setUser(null);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }, []);
 
   const handleSignup = async (uid, displayName, email, password, role = "student") => {
@@ -97,8 +103,7 @@ export const AuthProvider = ({ children }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) {    console.error("useAuth must be used within an AuthProvider");    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

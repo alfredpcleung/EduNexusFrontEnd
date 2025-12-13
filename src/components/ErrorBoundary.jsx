@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component {
             <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
               We encountered an unexpected error. Please try refreshing the page.
             </Typography>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {this.state.error && (
               <Box sx={{ 
                 mt: 3, 
                 p: 2, 
@@ -43,7 +43,7 @@ class ErrorBoundary extends React.Component {
                 mb: 4
               }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  Error Details (Development Only):
+                  Error Details:
                 </Typography>
                 <Typography 
                   variant="body2" 
@@ -52,7 +52,8 @@ class ErrorBoundary extends React.Component {
                     whiteSpace: 'pre-wrap', 
                     wordBreak: 'break-word',
                     fontSize: '0.75rem',
-                    color: '#d32f2f'
+                    color: '#d32f2f',
+                    fontFamily: 'monospace'
                   }}
                 >
                   {this.state.error.toString()}

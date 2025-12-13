@@ -108,7 +108,7 @@ function Layout() {
                                 backgroundColor: 'transparent',
                                 color: '#5f6368',
                                 fontSize: '0.875rem',
-                                minWidth: '130px',
+                                minWidth: '150px',
                                 height: '44px',
                                 '& .MuiOutlinedInput-notchedOutline': {
                                     border: 'none'

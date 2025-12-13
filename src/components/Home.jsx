@@ -28,17 +28,18 @@ import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import * as coursesService from '../services/coursesService';
-import * as usersService from '../services/usersService';
-import * as projectsService from '../services/projectsService';
+import SchoolIcon from '@mui/icons-material/School';
+import WorkIcon from '@mui/icons-material/Work';
+import { getApiUrl } from '../services/api';
 
 function Home() {
     const navigate = useNavigate();
     const isAuth = isAuthenticated();
     const [stats, setStats] = useState({
-        students: 0,
-        courses: 0,
-        projects: 0,
+        registeredStudents: null,
+        coursesWithReviews: null,
+        activeStudents: null,
+        projectsRecruiting: null,
     });
     const [loading, setLoading] = useState(true);
     const [searchType, setSearchType] = useState('course');
@@ -47,20 +48,20 @@ function Home() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const [coursesData, usersData, projectsData] = await Promise.all([
-                    coursesService.list(),
-                    usersService.list(),
-                    projectsService.list(),
-                ]);
-
-                setStats({
-                    students: Array.isArray(usersData) ? usersData.length : (usersData?.data?.length || 0),
-                    courses: Array.isArray(coursesData) ? coursesData.length : (coursesData?.data?.length || 0),
-                    projects: Array.isArray(projectsData) ? projectsData.length : (projectsData?.data?.length || 0),
-                });
+                const response = await fetch(getApiUrl('/stats/homepage'));
+                if (response.ok) {
+                    const data = await response.json();
+                    setStats({
+                        registeredStudents: data.registeredStudents ?? null,
+                        coursesWithReviews: data.coursesWithReviews ?? null,
+                        activeStudents: data.activeStudents ?? null,
+                        projectsRecruiting: data.projectsRecruiting ?? null,
+                    });
+                } else {
+                    console.error('Failed to fetch homepage stats');
+                }
             } catch (err) {
                 console.error('Error fetching stats:', err);
-                setStats({ students: 0, courses: 0, projects: 0 });
             } finally {
                 setLoading(false);
             }
@@ -101,7 +102,7 @@ function Home() {
         },
         {
             icon: <RateReviewIcon sx={{ fontSize: 48 }} />,
-            title: 'Share and Benefit from Peer Feedback',
+            title: 'Benefit from Peer Feedback',
             description: 'Make smarter academic choices with community reviews.',
             color: '#10b981',
         },
@@ -164,22 +165,22 @@ function Home() {
             >
                 <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
                     <Typography
-                        variant="h2"
+                        variant="h4"
                         component="h1"
                         sx={{
-                            fontWeight: 800,
+                            fontWeight: 700,
                             mb: 2,
-                            fontSize: { xs: '2rem', md: '3rem' },
-                            letterSpacing: '-1px'
+                            fontSize: { xs: '1.75rem', md: '2.25rem' },
+                            letterSpacing: '-0.5px'
                         }}
                     >
                         Welcome to EduNexus
                     </Typography>
                     <Typography
-                        variant="subtitle1"
+                        variant="body1"
                         sx={{
                             mb: 5,
-                            fontSize: { xs: '1rem', md: '1.15rem' },
+                            fontSize: { xs: '0.95rem', md: '1.05rem' },
                             fontWeight: 400,
                             opacity: 0.95,
                             maxWidth: '700px',
@@ -204,26 +205,29 @@ function Home() {
                                         p: 3,
                                         textAlign: 'center',
                                         borderRadius: 3,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                         backdropFilter: 'blur(10px)',
                                         transition: 'all 0.3s ease',
                                         height: '100%',
+                                        minHeight: '200px',
                                         display: 'flex',
                                         flexDirection: 'column',
+                                        justifyContent: 'center',
                                         '&:hover': {
                                             transform: 'translateY(-4px)',
                                             boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
                                         }
                                     }}
                                 >
-                                    <Box sx={{ mb: 1.5, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
-                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 36 } })}
+                                    <Box sx={{ mb: 2, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
+                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 44 } })}
                                     </Box>
                                     <Typography 
-                                        variant="subtitle1" 
+                                        variant="body1" 
                                         sx={{ 
                                             fontWeight: 700, 
-                                            mb: 1,
+                                            mb: 1.5,
                                             color: '#1a202c',
                                             fontSize: '0.95rem',
                                             lineHeight: 1.3
@@ -259,19 +263,20 @@ function Home() {
                             sx={{
                                 fontWeight: 700,
                                 mb: 2,
+                                fontSize: { xs: '1.75rem', md: '2.25rem' },
                                 color: '#1a202c'
                             }}
                         >
                             Join Our Community
                         </Typography>
                         <Typography
-                            variant="subtitle1"
+                            variant="body1"
                             color="textSecondary"
                             sx={{ 
-                                maxWidth: '500px', 
+                                maxWidth: '600px', 
                                 mx: 'auto', 
                                 lineHeight: 1.6,
-                                fontSize: '1rem',
+                                fontSize: { xs: '0.95rem', md: '1.05rem' },
                                 fontWeight: 400
                             }}
                         >
@@ -279,9 +284,9 @@ function Home() {
                         </Typography>
                     </Box>
 
-                    <Grid container spacing={4} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' }, maxWidth: '900px', mx: 'auto' }}>
-                        {/* Students Card */}
-                        <Grid item xs={12} sm={12} md={4}>
+                    <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, maxWidth: '1100px', mx: 'auto' }}>
+                        {/* Registered Students Card */}
+                        <Grid item xs={12} sm={6} md={3}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -294,6 +299,7 @@ function Home() {
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    alignItems: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(102, 126, 234, 0.3)',
@@ -301,29 +307,30 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <PersonIcon sx={{ fontSize: 40 }} />
+                                    <PersonIcon sx={{ fontSize: 48 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
                                     sx={{
                                         fontWeight: 800,
                                         mb: 0.5,
-                                        color: 'white'
+                                        color: 'white',
+                                        fontSize: '2rem'
                                     }}
                                 >
-                                    {loading ? '...' : stats.students}
+                                    {loading ? '...' : (stats.registeredStudents !== null ? stats.registeredStudents : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
                                     sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
-                                    Active Students
+                                    Registered Students
                                 </Typography>
                             </Paper>
                         </Grid>
 
-                        {/* Courses Card */}
-                        <Grid item xs={12} sm={12} md={4}>
+                        {/* Courses with Reviews Card */}
+                        <Grid item xs={12} sm={6} md={3}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -336,6 +343,7 @@ function Home() {
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    alignItems: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(236, 72, 153, 0.3)',
@@ -343,29 +351,74 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <BookIcon sx={{ fontSize: 40 }} />
+                                    <StarIcon sx={{ fontSize: 48 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
                                     sx={{
                                         fontWeight: 800,
                                         mb: 0.5,
-                                        color: 'white'
+                                        color: 'white',
+                                        fontSize: '2rem'
                                     }}
                                 >
-                                    {loading ? '...' : stats.courses}
+                                    {loading ? '...' : (stats.coursesWithReviews !== null ? stats.coursesWithReviews : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
                                     sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
-                                    Available Courses
+                                    Courses with Reviews
                                 </Typography>
                             </Paper>
                         </Grid>
 
-                        {/* Projects Card */}
-                        <Grid item xs={12} sm={12} md={4}>
+                        {/* Active Students Card */}
+                        <Grid item xs={12} sm={6} md={3}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 4,
+                                    textAlign: 'center',
+                                    borderRadius: 3,
+                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                    color: 'white',
+                                    transition: 'all 0.3s ease',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    '&:hover': {
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 12px 24px rgba(16, 185, 129, 0.3)',
+                                    }
+                                }}
+                            >
+                                <Box sx={{ mb: 2, color: 'white' }}>
+                                    <SchoolIcon sx={{ fontSize: 48 }} />
+                                </Box>
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontWeight: 800,
+                                        mb: 0.5,
+                                        color: 'white',
+                                        fontSize: '2rem'
+                                    }}
+                                >
+                                    {loading ? '...' : (stats.activeStudents !== null ? stats.activeStudents : '—')}
+                                </Typography>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
+                                >
+                                    Active Students
+                                </Typography>
+                            </Paper>
+                        </Grid>
+
+                        {/* Projects Recruiting Card */}
+                        <Grid item xs={12} sm={6} md={3}>
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -378,6 +431,7 @@ function Home() {
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    alignItems: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(245, 158, 11, 0.3)',
@@ -385,23 +439,24 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <FolderIcon sx={{ fontSize: 40 }} />
+                                    <WorkIcon sx={{ fontSize: 48 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
                                     sx={{
                                         fontWeight: 800,
                                         mb: 0.5,
-                                        color: 'white'
+                                        color: 'white',
+                                        fontSize: '2rem'
                                     }}
                                 >
-                                    {loading ? '...' : stats.projects}
+                                    {loading ? '...' : (stats.projectsRecruiting !== null ? stats.projectsRecruiting : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
                                     sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
-                                    Shared Projects
+                                    Projects Recruiting
                                 </Typography>
                             </Paper>
                         </Grid>

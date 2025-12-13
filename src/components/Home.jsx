@@ -131,6 +131,23 @@ function Home() {
         },
     ];
 
+    // Ensure consistent card sizes
+    const cardStyle = {
+        height: '100%',
+        minHeight: '280px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+
+    // Ensure consistent typography
+    const typographyStyle = {
+        fontFamily: 'Roboto, Arial, sans-serif',
+        fontSize: '1rem',
+        fontWeight: 400,
+    };
+
     return (
         <Box sx={{ width: '100%' }}>
             {/* Hero Section with Background Image and Key Benefits */}
@@ -523,6 +540,7 @@ function Home() {
                                     <Typography 
                                         variant="h6" 
                                         sx={{ 
+                                            ...typographyStyle, 
                                             fontWeight: 700, 
                                             mb: 1,
                                             color: '#1a202c'
@@ -534,6 +552,7 @@ function Home() {
                                         variant="body2" 
                                         color="textSecondary" 
                                         sx={{ 
+                                            ...typographyStyle, 
                                             mb: 3, 
                                             flexGrow: 1,
                                             fontSize: '0.95rem'

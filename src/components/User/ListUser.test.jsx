@@ -7,7 +7,7 @@ import * as usersService from '../../services/usersService';
 // Mock the usersService
 vi.mock('../../services/usersService');
 
-// Mock user data
+// Mock user data - Note: Admin users are filtered out by ListUser component
 const mockUsers = [
   {
     uid: '1',
@@ -27,8 +27,8 @@ const mockUsers = [
     uid: '3',
     displayName: 'Bob Johnson',
     email: 'bob@example.com',
-    role: 'admin',
-    bio: 'System administrator',
+    role: 'student',
+    bio: 'I enjoy group projects',
   },
 ];
 
@@ -69,6 +69,7 @@ describe('ListUser Component', () => {
     // Check bios
     expect(screen.getByText('I love learning')).toBeInTheDocument();
     expect(screen.getByText('Teaching is my passion')).toBeInTheDocument();
+    expect(screen.getByText('I enjoy group projects')).toBeInTheDocument();
   });
 
   it('should display error message when list fails to load', async () => {

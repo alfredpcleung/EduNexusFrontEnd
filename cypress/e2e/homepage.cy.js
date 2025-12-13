@@ -7,21 +7,20 @@ describe('Homepage', () => {
   describe('Unauthenticated User', () => {
     it('should display hero section with welcome message', () => {
       cy.contains('h1', 'Welcome to EduNexus').should('be.visible');
-      cy.contains('Your LinkedIn for teamwork').should('be.visible');
-      cy.contains('Find reliable teammates, discover great courses, and share peer feedback').should('be.visible');
+      cy.contains('Make informed decisions about your education').should('be.visible');
     });
 
-    it('should display signup and signin buttons in hero', () => {
-      cy.get('button').contains('Create Account').should('be.visible');
+    it('should display signup and signin buttons', () => {
+      cy.get('button').contains('Create Free Account').should('be.visible');
       cy.get('button').contains('Sign In').should('be.visible');
     });
 
-    it('should navigate to signup page from hero button', () => {
-      cy.get('button').contains('Create Account').click();
+    it('should navigate to signup page from CTA button', () => {
+      cy.get('button').contains('Create Free Account').click();
       cy.url().should('include', '/users/signup');
     });
 
-    it('should navigate to signin page from hero button', () => {
+    it('should navigate to signin page from CTA button', () => {
       cy.get('button').contains('Sign In').click();
       cy.url().should('include', '/users/signin');
     });
@@ -40,9 +39,10 @@ describe('Homepage', () => {
     });
 
     it('should display statistics labels', () => {
-      cy.contains('Students').should('be.visible');
-      cy.contains('Courses').should('be.visible');
-      cy.contains('Projects').should('be.visible');
+      cy.contains('Registered Students').should('be.visible');
+      cy.contains('Courses with Reviews').should('be.visible');
+      cy.contains('Active Students').should('be.visible');
+      cy.contains('Projects Recruiting').should('be.visible');
     });
 
     it('should display explore platform section with 3 cards', () => {
@@ -99,10 +99,9 @@ describe('Homepage', () => {
       cy.visit('/');
     });
 
-    it('should not display signup/signin buttons in hero for authenticated user', () => {
+    it('should not display signup/signin buttons for authenticated user', () => {
       cy.contains('h1', 'Welcome to EduNexus').should('be.visible');
-      cy.get('button').contains('Create Account').should('not.exist');
-      cy.get('button').contains('Sign In').should('not.exist');
+      cy.get('button').contains('Create Free Account').should('not.exist');
     });
 
     it('should display explore platform buttons for authenticated user', () => {
@@ -111,14 +110,14 @@ describe('Homepage', () => {
       cy.get('button').contains('View Projects').should('be.visible');
     });
 
-    it('should display personalized CTA message in final section', () => {
-      cy.contains('Start exploring courses, find teammates, and share your feedback today!').should('be.visible');
+    it('should display Start Exploring Now button in final section', () => {
+      cy.get('button').contains('Start Exploring Now').should('be.visible');
     });
 
-    it('should not display CTA buttons in final section for authenticated user', () => {
+    it('should show Start Exploring button in final section for authenticated user', () => {
       cy.contains('h2', 'Ready to Explore?').should('be.visible');
+      cy.get('button').contains('Start Exploring Now').should('be.visible');
       cy.get('button').contains('Create Free Account').should('not.exist');
-      cy.get('button').contains('Sign In').should('not.exist');
     });
   });
 

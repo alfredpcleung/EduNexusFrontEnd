@@ -22,8 +22,6 @@ import BookIcon from '@mui/icons-material/Book';
 import PersonIcon from '@mui/icons-material/Person';
 import FolderIcon from '@mui/icons-material/Folder';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import GroupsIcon from '@mui/icons-material/Groups';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';

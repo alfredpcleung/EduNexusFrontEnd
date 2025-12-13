@@ -2,16 +2,20 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Home from './Home';
-import * as coursesService from '../services/coursesService';
-import * as usersService from '../services/usersService';
-import * as projectsService from '../services/projectsService';
 import * as authHelper from './auth/auth-helper';
 
-// Mock the services
-vi.mock('../services/coursesService');
-vi.mock('../services/usersService');
-vi.mock('../services/projectsService');
+// Mock auth-helper
 vi.mock('./auth/auth-helper');
+
+// Mock fetch globally
+const mockStatsResponse = {
+  registeredStudents: 150,
+  coursesWithReviews: 45,
+  activeStudents: 89,
+  projectsRecruiting: 23,
+};
+
+global.fetch = vi.fn();
 
 const renderWithRouter = (component) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -21,22 +25,11 @@ describe('Home Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Default mock implementations
-    vi.mocked(coursesService.list).mockResolvedValue([
-      { id: '1', title: 'Course 1' },
-      { id: '2', title: 'Course 2' },
-    ]);
-    vi.mocked(usersService.list).mockResolvedValue([
-      { uid: '1', displayName: 'User 1' },
-      { uid: '2', displayName: 'User 2' },
-      { uid: '3', displayName: 'User 3' },
-    ]);
-    vi.mocked(projectsService.list).mockResolvedValue([
-      { id: '1', title: 'Project 1' },
-      { id: '2', title: 'Project 2' },
-      { id: '3', title: 'Project 3' },
-      { id: '4', title: 'Project 4' },
-    ]);
+    // Mock fetch for /stats/homepage endpoint
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockStatsResponse),
+    });
     vi.mocked(authHelper.isAuthenticated).mockReturnValue(false);
   });
 
@@ -45,13 +38,13 @@ describe('Home Component', () => {
       renderWithRouter(<Home />);
       
       expect(screen.getByText('Welcome to EduNexus')).toBeInTheDocument();
-      expect(screen.getByText(/Your LinkedIn for teamwork/)).toBeInTheDocument();
+      expect(screen.getByText(/Make informed decisions about your education/)).toBeInTheDocument();
     });
 
-    it('should display signup and signin buttons in hero for unauthenticated user', async () => {
+    it('should display signup and signin buttons for unauthenticated user', async () => {
       renderWithRouter(<Home />);
       
-      const createButtons = screen.getAllByText('Create Account');
+      const createButtons = screen.getAllByText('Create Free Account');
       expect(createButtons.length).toBeGreaterThan(0);
       
       const signInButtons = screen.getAllByText('Sign In');
@@ -68,9 +61,7 @@ describe('Home Component', () => {
       renderWithRouter(<Home />);
       
       await waitFor(() => {
-        expect(vi.mocked(coursesService.list)).toHaveBeenCalled();
-        expect(vi.mocked(usersService.list)).toHaveBeenCalled();
-        expect(vi.mocked(projectsService.list)).toHaveBeenCalled();
+        expect(global.fetch).toHaveBeenCalled();
       });
     });
 
@@ -112,8 +103,8 @@ describe('Home Component', () => {
     it('should not display signup button for authenticated user', async () => {
       renderWithRouter(<Home />);
       
-      // There should be no "Create Account" button in the hero section
-      const createButtons = screen.queryAllByText('Create Account');
+      // There should be no "Create Free Account" button for authenticated user
+      const createButtons = screen.queryAllByText('Create Free Account');
       expect(createButtons.length).toBe(0);
     });
 
@@ -126,11 +117,11 @@ describe('Home Component', () => {
       });
     });
 
-    it('should display personalized message in CTA for authenticated user', async () => {
+    it('should display Start Exploring button for authenticated user', async () => {
       renderWithRouter(<Home />);
       
       await waitFor(() => {
-        expect(screen.getByText('Start exploring courses, find teammates, and share your feedback today!')).toBeInTheDocument();
+        expect(screen.getByText('Start Exploring Now')).toBeInTheDocument();
       });
     });
   });

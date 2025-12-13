@@ -42,7 +42,10 @@ body {
 .mb-4 {
   margin-bottom: 2rem;
 }
-  align-items: flex-start; /* Align top since h3 is taller */
+
+.row {
+  display: flex;
+  align-items: flex-start;
   margin-bottom: 20px;
 }
 

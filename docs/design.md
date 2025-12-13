@@ -95,6 +95,8 @@ EduNexus uses Material-UI's default theme with custom accents:
 | Body | Roboto | 1rem | 400 |
 | Caption | Roboto | 0.875rem | 400 |
 
+Updated to reflect consistent typography styles applied across the homepage.
+
 ### Spacing Scale
 
 Based on 8px grid system:

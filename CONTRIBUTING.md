@@ -103,7 +103,7 @@ import NewFeature from './components/NewFeature/NewFeature';
 | Layout | `src/components/` | App structure (Layout, Home, NotFound) |
 | Auth | `src/components/auth/` | Authentication (Signin, Signup, AuthContext) |
 | CRUD | `src/components/[Entity]/` | Entity management (List, Add, Edit) |
-| Shared | MUI components | Buttons, Cards, Forms |
+| Shared | MUI components | Buttons, Cards (standardized sizes), Forms |
 
 ### CRUD Component Pattern
 
@@ -112,7 +112,7 @@ Each entity follows this structure:
 ```
 Entity/
 ├── ListEntity.jsx      # Grid view of all items
-├── ListItemEntity.jsx  # Individual item card
+├── ListItemEntity.jsx  # Individual item card (standardized styles)
 ├── AddEntity.jsx       # Create form
 └── EditEntity.jsx      # Update form
 ```

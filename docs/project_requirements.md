@@ -64,3 +64,4 @@ These are valuable for a real platform but not required for course grading:
 - **UI Enhancements**
   - Visual polish beyond “functional and responsive”
   - Dynamic charts/analytics dashboards
+  - Standardized card sizes and typography for consistent appearance across the homepage.

@@ -23,6 +23,12 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FolderIcon from '@mui/icons-material/Folder';
 import SearchIcon from '@mui/icons-material/Search';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SchoolIcon from '@mui/icons-material/School';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import StarIcon from '@mui/icons-material/Star';
 import { useState } from 'react';
 
 function Layout() {
@@ -229,7 +235,7 @@ function Layout() {
                                 >
                                     <AccountCircleIcon />
                                     <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                                        {user?.displayName || 'User'}
+                                        Hi, {user?.displayName || 'User'}
                                     </Typography>
                                 </IconButton>
                                 <Menu
@@ -237,15 +243,26 @@ function Layout() {
                                     open={Boolean(anchorEl)}
                                     onClose={handleMenuClose}
                                 >
-                                    <MenuItem disabled>
-                                        <Typography variant="body2">Welcome, {user?.displayName || 'User'}</Typography>
+                                    <MenuItem onClick={() => navigate('/profile')}>
+                                        <PersonIcon sx={{ mr: 1 }} /> Profile
                                     </MenuItem>
-                                    <MenuItem disabled>
-                                        <Typography variant="caption">Role: {user?.role || 'student'}</Typography>
+                                    <MenuItem onClick={() => navigate('/settings')}>
+                                        <SettingsIcon sx={{ mr: 1 }} /> Settings
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/academic-record')}>
+                                        <SchoolIcon sx={{ mr: 1 }} /> Your Academic Record
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/course-reviews')}>
+                                        <RateReviewIcon sx={{ mr: 1 }} /> Your Course Reviews
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/group-projects')}>
+                                        <GroupWorkIcon sx={{ mr: 1 }} /> Your Group Projects
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate('/teammate-reviews')}>
+                                        <StarIcon sx={{ mr: 1 }} /> Your Teammate Reviews
                                     </MenuItem>
                                     <MenuItem onClick={handleSignout}>
-                                        <LogoutIcon sx={{ mr: 1 }} />
-                                        Sign Out
+                                        <LogoutIcon sx={{ mr: 1 }} /> Sign Out
                                     </MenuItem>
                                 </Menu>
                             </Box>

@@ -12,5 +12,15 @@ export default defineConfig({
         secure: false
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Ensures SPA routing works on Render
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   }
 })

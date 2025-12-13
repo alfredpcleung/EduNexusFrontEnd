@@ -15,6 +15,9 @@ const ListItemUser = ({ user, onRemoved }) => {
     const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
     const [deleting, setDeleting] = useState(false);
 
+    // Admin can delete any user, owner can delete own profile
+    const canDeleteUser = canDelete || currentUser?.role === 'admin';
+
     const handleRemove = (uid) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             setDeleting(true);
@@ -63,7 +66,7 @@ const ListItemUser = ({ user, onRemoved }) => {
                 <TableCell>{user.bio || 'N/A'}</TableCell>
                 <TableCell align="center">
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        {(canEdit || canDelete) && (
+                        {(canEdit || canDeleteUser) && (
                             <>
                                 <IconButton
                                     component={Link}
@@ -80,7 +83,7 @@ const ListItemUser = ({ user, onRemoved }) => {
                                     color="error"
                                     onClick={() => handleRemove(userId)}
                                     title="Delete user"
-                                    disabled={!canDelete || deleting}
+                                    disabled={!canDeleteUser || deleting}
                                 >
                                     <DeleteIcon fontSize="small" />
                                 </IconButton>

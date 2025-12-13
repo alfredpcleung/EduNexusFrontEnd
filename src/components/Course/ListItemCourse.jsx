@@ -32,6 +32,9 @@ const ListItemCourse = ({ course, onRemoved }) => {
     const { canEdit, canDelete } = useAuthorizationCheck(courseOwner);
     const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
     
+    // Admin can delete any course, owner can delete own course
+    const canDeleteCourse = canDelete || user?.role === 'admin';
+    
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
@@ -143,7 +146,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
                 </TableCell>
                 <TableCell align="center">
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        {canEdit && (
+                        {(canEdit || canDeleteCourse) && (
                             <>
                                 <IconButton
                                     component={Link}
@@ -151,6 +154,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
                                     size="small"
                                     color="primary"
                                     title="Edit course"
+                                    disabled={!canEdit}
                                 >
                                     <EditIcon fontSize="small" />
                                 </IconButton>
@@ -159,15 +163,17 @@ const ListItemCourse = ({ course, onRemoved }) => {
                                     color="error"
                                     onClick={handleDeleteClick}
                                     title="Delete course"
+                                    disabled={!canDeleteCourse}
                                 >
                                     <DeleteIcon fontSize="small" />
                                 </IconButton>
                             </>
                         )}
+                        {!canEdit && !canDeleteCourse && (
                             <Box sx={{ fontSize: '0.75rem', color: 'textSecondary', p: 1 }}>
                                 Not owner
                             </Box>
-                        ) : null}
+                        )}
                     </Box>
                 </TableCell>
             </TableRow>

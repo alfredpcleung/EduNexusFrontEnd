@@ -76,9 +76,9 @@ const signup = async (uid, displayName, email, password, role = "student") => {
     const data = await response.json();
 
     if (data.success) {
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
+      setToken(data.data.token);
+      setUser(data.data.user);
+      return { success: true, user: data.data.user };
     } else {
       return { success: false, message: data.message };
     }
@@ -104,9 +104,10 @@ const signin = async (email, password) => {
     const data = await response.json();
 
     if (data.success) {
-      setToken(data.token);
-      setUser(data.user);
-      return { success: true, user: data.user };
+      setToken(data.data.token);
+      setUser(data.data.user);
+      console.log('User signed in:', data.data.user); // Debug logging
+      return { success: true, user: data.data.user };
     } else {
       return { success: false, message: data.message };
     }

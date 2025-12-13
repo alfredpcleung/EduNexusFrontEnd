@@ -28,16 +28,13 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 const ListCourse = () => {
-    const { user } = useAuth();
+    const { isAuth, user } = useAuth();
     const [courseList, setCourseList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const searchTimeoutRef = useRef(null);
-
-    // Check if user is instructor
-    const isInstructor = user?.role === 'instructor';
 
     const loadCourses = (search = '', status = '') => {
         // Build query parameters
@@ -108,7 +105,7 @@ const ListCourse = () => {
                 <Typography variant="h4" component="h1">
                     Courses
                 </Typography>
-                {isInstructor ? (
+                {isAuth ? (
                     <Button
                         component={Link}
                         to="/course/add"
@@ -119,7 +116,7 @@ const ListCourse = () => {
                         Add Course
                     </Button>
                 ) : (
-                    <Tooltip title="Only instructors can create courses">
+                    <Tooltip title="Sign in to create a course">
                         <span>
                             <Button
                                 variant="contained"

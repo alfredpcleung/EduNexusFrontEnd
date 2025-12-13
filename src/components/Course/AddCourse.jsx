@@ -17,22 +17,12 @@ const AddCourse = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [selectedLabels, setSelectedLabels] = useState([]);
 
-    // Check if user is instructor
-    const isInstructor = user?.role === 'instructor';
-
     // Redirect to signin if not authenticated
     useEffect(() => {
         if (!loading && !isAuth) {
             navigate('/users/signin', { state: { from: { pathname: '/course/add' } } });
         }
     }, [isAuth, loading, navigate]);
-
-    // Redirect if user is not an instructor
-    useEffect(() => {
-        if (!loading && isAuth && !isInstructor) {
-            setErrorMsg('Only instructors can create courses. Your current role is: ' + (user?.role || 'unknown'));
-        }
-    }, [isAuth, loading, isInstructor, user?.role]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -93,37 +83,6 @@ const AddCourse = () => {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                 <Typography>Redirecting to sign in...</Typography>
-            </Box>
-        );
-    }
-
-    // Show message if user is not an instructor
-    if (!isInstructor) {
-        return (
-            <Box sx={{ 
-                minHeight: '100vh', 
-                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-                py: 4
-            }}>
-                <Container maxWidth="sm">
-                    <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Button 
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => navigate('/course/list')}
-                        >
-                            Back to Courses
-                        </Button>
-                    </Box>
-                    <Alert severity="warning" sx={{ borderRadius: 2 }}>
-                        <Typography variant="h6" sx={{ mb: 1 }}>Access Restricted</Typography>
-                        <Typography>
-                            Only instructors can create courses. Your current role is: <strong>{user?.role || 'unknown'}</strong>
-                        </Typography>
-                        <Typography sx={{ mt: 2 }}>
-                            If you need instructor access, please contact an administrator.
-                        </Typography>
-                    </Alert>
-                </Container>
             </Box>
         );
     }

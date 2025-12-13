@@ -115,10 +115,11 @@ const ListUser = () => {
         loadUsersWithFilters(searchTerm, value);
     };
 
-    // When a User is removed.
-    const handleRemove = () => {
+    // When a User is removed - callback passed to ListItemUser
+    const _handleRemove = () => {
         loadUsersWithFilters(searchTerm, roleFilter);
     };
+    void _handleRemove; // Reserved for future use
 
     if (isLoading) {
         return (

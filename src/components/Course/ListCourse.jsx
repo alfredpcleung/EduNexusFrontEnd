@@ -28,7 +28,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 const ListCourse = () => {
-    const { isAuth, user } = useAuth();
+    const { isAuth } = useAuth();
     const location = useLocation();
     const [courseList, setCourseList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

@@ -10,7 +10,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const AddCourse = () => {
     const navigate = useNavigate();
-    const { isAuth, user, loading } = useAuth();
+    const { isAuth, loading } = useAuth();
     const [course, setCourse] = useState(new CourseModel());
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');

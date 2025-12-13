@@ -19,7 +19,7 @@ import FeedbackList from "./Feedback/FeedbackList";
 function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuth, user } = useAuth();
+  const { isAuth } = useAuth();
 
   const [project, setProject] = useState(null);
   const [feedbackList, setFeedbackList] = useState([]);

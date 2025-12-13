@@ -9,7 +9,7 @@ import { remove } from '../../services/usersService';
 import { useState } from 'react';
 
 const ListItemUser = ({ user, onRemoved }) => {
-    const { isAuth, user: currentUser } = useAuth();
+    const { user: currentUser } = useAuth();
     const userId = user.uid || user._id;
     const { canEdit, canDelete } = useAuthorizationCheck(userId);
     const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();

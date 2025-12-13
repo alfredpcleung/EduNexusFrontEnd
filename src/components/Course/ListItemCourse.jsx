@@ -26,7 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const ListItemCourse = ({ course, onRemoved }) => {
-    const { isAuth, user } = useAuth();
+    const { user } = useAuth();
     const courseId = course.id || course._id;
     const courseOwner = course.owner || course.uid;
     const { canEdit, canDelete } = useAuthorizationCheck(courseOwner);

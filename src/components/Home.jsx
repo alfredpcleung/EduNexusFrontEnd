@@ -40,8 +40,9 @@ function Home() {
         projectsRecruiting: null,
     });
     const [loading, setLoading] = useState(true);
-    const [searchType, setSearchType] = useState('course');
-    const [searchQuery, setSearchQuery] = useState('');
+    // Search state - reserved for future navbar search integration
+    const [searchType] = useState('course');
+    const [searchQuery] = useState('');
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -68,16 +69,10 @@ function Home() {
         fetchStats();
     }, []);
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        if (!searchQuery.trim()) return;
-
-        if (searchType === 'course') {
-            navigate(`/course/list?search=${encodeURIComponent(searchQuery)}`);
-        } else if (searchType === 'student') {
-            navigate(`/users/list?search=${encodeURIComponent(searchQuery)}`);
-        }
-    };
+    // Search handler - reserved for future navbar search integration
+    // Uses searchType and searchQuery state when implemented
+    void searchType;
+    void searchQuery;
 
     const keyBenefits = [
         {

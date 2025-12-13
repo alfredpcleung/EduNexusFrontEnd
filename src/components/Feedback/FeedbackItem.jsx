@@ -13,7 +13,7 @@ import { useAuthorizationCheck } from "../../hooks/useAuthorizationCheck";
 import { use403Handler } from "../../hooks/use403Handler";
 import * as feedbackService from "../../services/feedbackService";
 
-function FeedbackItem({ feedback, onFeedbackDeleted, onFeedbackEdit }) {
+function FeedbackItem({ feedback, onFeedbackDeleted }) {
   const { user } = useAuth();
   const { canDelete } = useAuthorizationCheck(feedback.authorId);
   const { error, open, handleError, clearError } = use403Handler();

@@ -74,7 +74,8 @@ describe('FeedbackForm Component', () => {
     // Try to submit with empty comment - form HTML5 validation prevents submission
     const ratingInput = screen.getByLabelText(/Rating/i);
     const commentInput = screen.getByLabelText(/Comment/i);
-    const submitButton = screen.getByRole('button', { name: /Submit Feedback/i });
+    // Submit button exists but not clicked - HTML5 validation prevents submission
+    screen.getByRole('button', { name: /Submit Feedback/i });
 
     await user.clear(ratingInput);
     await user.type(ratingInput, '5');

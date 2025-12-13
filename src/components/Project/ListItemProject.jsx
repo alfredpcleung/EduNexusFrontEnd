@@ -29,7 +29,7 @@ const ListItemProject = ({ project, onRemoved }) => {
     const navigate = useNavigate();
     const projectId = project.id || project._id;
     const projectOwner = project.owner || project.uid;
-    const { canEdit, canDelete } = useAuthorizationCheck(projectOwner);
+    const { canEdit } = useAuthorizationCheck(projectOwner);
     const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteError, setDeleteError] = useState("");

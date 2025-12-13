@@ -34,9 +34,13 @@ const ListUser = () => {
     const loadUsers = () => {
         list().then((data) => {
             if (data && Array.isArray(data)) {
-                setUserList(data || []);
+                // Filter out admin users
+                const filteredUsers = (data || []).filter(user => user.role !== 'admin');
+                setUserList(filteredUsers);
             } else if (data && data.data) {
-                setUserList(data.data || []);
+                // Filter out admin users
+                const filteredUsers = (data.data || []).filter(user => user.role !== 'admin');
+                setUserList(filteredUsers);
             }
             setIsLoading(false);
         }).catch(err => {
@@ -59,9 +63,13 @@ const ListUser = () => {
             // Call backend with query params
             const data = await list(params.toString() || undefined);
             if (data && Array.isArray(data)) {
-                setUserList(data || []);
+                // Filter out admin users
+                const filteredUsers = (data || []).filter(user => user.role !== 'admin');
+                setUserList(filteredUsers);
             } else if (data && data.data) {
-                setUserList(data.data || []);
+                // Filter out admin users
+                const filteredUsers = (data.data || []).filter(user => user.role !== 'admin');
+                setUserList(filteredUsers);
             }
         } catch (err) {
             setErrorMsg(err.message || 'Error loading users');
@@ -147,8 +155,6 @@ const ListUser = () => {
                         >
                             <MenuItem value="">All</MenuItem>
                             <MenuItem value="student">Student</MenuItem>
-                            <MenuItem value="instructor">Instructor</MenuItem>
-                            <MenuItem value="admin">Admin</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>

@@ -212,7 +212,6 @@ function EditUser() {
                                     }}
                                 >
                                     <option value="student">Student</option>
-                                    <option value="instructor">Instructor</option>
                                     <option value="admin">Admin</option>
                                 </TextField>
                             </Box>

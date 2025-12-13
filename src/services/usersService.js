@@ -7,16 +7,22 @@ import { authenticatedFetch } from '../components/auth/auth-helper';
 
 /**
  * List all users (Public endpoint)
+ * @param {string} queryString - Query string for filtering/searching
  * @returns {Promise<Array>} - Array of user objects
  */
-const list = async () => {
+const list = async (queryString = "") => {
     try {
-        let response = await fetch(getApiUrl('/users'), {
+        const url = queryString 
+            ? `${getApiUrl('/users')}?${queryString}`
+            : getApiUrl('/users');
+        
+        let response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            cache: 'no-store'
         });
         return await response.json();
     } catch (err) {

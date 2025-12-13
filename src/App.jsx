@@ -14,5 +14,7 @@ function App() {
         </AuthProvider>
       </Router>
     </ErrorBoundary>
+  )
+}
 
 export default App

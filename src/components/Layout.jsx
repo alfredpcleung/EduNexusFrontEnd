@@ -41,7 +41,7 @@ function Layout() {
 
     return (
         <>
-            <AppBar position="static" sx={{ mb: 3 }}>
+            <AppBar position="static" sx={{ mb: 0 }}>
                 <Toolbar>
                     {/* Logo/Title */}
                     <Typography

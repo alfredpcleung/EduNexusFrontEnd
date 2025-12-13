@@ -95,6 +95,8 @@ function Home() {
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     color: 'white',
                     py: { xs: 6, md: 10 },
+                    pt: 0,
+                    pb: { xs: 6, md: 10 },
                     textAlign: 'center',
                     position: 'relative',
                     overflow: 'hidden',

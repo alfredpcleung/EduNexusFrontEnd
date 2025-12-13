@@ -5,11 +5,17 @@ const API_BASE_URL =
 
 /**
  * Get all projects (public endpoint)
+ * @param {string} queryString - Optional query parameters (e.g., "search=test&status=active")
  * @returns {Promise<Array>} Array of projects
  */
-export const list = async () => {
+export const list = async (queryString = "") => {
   try {
-    const response = await fetch(`${API_BASE_URL}/projects`);
+    const url = queryString 
+      ? `${API_BASE_URL}/projects?${queryString}`
+      : `${API_BASE_URL}/projects`;
+    const response = await fetch(url, {
+      cache: 'no-store' // Prevent browser caching
+    });
     const data = await response.json();
     if (data.success) {
       return data.projects || [];

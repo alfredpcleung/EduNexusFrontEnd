@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../auth/AuthContext";
+import { useLocation } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -28,6 +29,7 @@ import ListItemProject from "./ListItemProject";
 function ListProject() {
   const { isAuth } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,9 +38,10 @@ function ListProject() {
   const [statusFilter, setStatusFilter] = useState("");
   const searchTimeoutRef = useRef(null);
 
+  // Refetch whenever location changes (including navigating back to this page)
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [location.pathname]);
 
   const fetchProjects = async (search = "", status = "") => {
     try {

@@ -11,10 +11,6 @@ import {
     Container,
     Alert,
     Stack,
-    FormControl,
-    FormHelperText,
-    Select,
-    MenuItem,
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoginIcon from '@mui/icons-material/Login';
@@ -135,25 +131,6 @@ const Signup = () => {
                                     variant="outlined"
                                     size="small"
                                 />
-                            </Box>
-
-                            {/* Role */}
-                            <Box>
-                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    Role <span style={{ color: 'red' }}>*</span>
-                                </Typography>
-                                <FormControl fullWidth size="small">
-                                    <Select
-                                        name="role"
-                                        value={formData.role || 'student'}
-                                        onChange={handleChange}
-                                        variant="outlined"
-                                    >
-                                        <MenuItem value="student">Student</MenuItem>
-                                        <MenuItem value="instructor">Instructor</MenuItem>
-                                        <MenuItem value="admin">Admin</MenuItem>
-                                    </Select>
-                                </FormControl>
                             </Box>
 
                             {/* Password */}

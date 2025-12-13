@@ -89,7 +89,7 @@ function Home() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            {/* Hero Section with Gradient Background - No bottom padding to remove gap */}
+            {/* Hero Section with Gradient Background - No gap from navbar */}
             <Box
                 sx={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -98,6 +98,7 @@ function Home() {
                     textAlign: 'center',
                     position: 'relative',
                     overflow: 'hidden',
+                    mt: 0,
                     '&::before': {
                         content: '""',
                         position: 'absolute',
@@ -117,18 +118,18 @@ function Home() {
                         sx={{
                             fontWeight: 800,
                             mb: 2,
-                            fontSize: { xs: '2rem', md: '3.5rem' },
+                            fontSize: { xs: '2.5rem', md: '3.5rem' },
                             letterSpacing: '-1px'
                         }}
                     >
                         Welcome to EduNexus
                     </Typography>
                     <Typography
-                        variant="h6"
+                        variant="subtitle1"
                         sx={{
                             mb: 4,
                             fontSize: { xs: '1rem', md: '1.25rem' },
-                            fontWeight: 300,
+                            fontWeight: 500,
                             opacity: 0.95,
                             maxWidth: '600px',
                             mx: 'auto'
@@ -143,7 +144,8 @@ function Home() {
                             opacity: 0.9,
                             maxWidth: '700px',
                             mx: 'auto',
-                            lineHeight: 1.8
+                            lineHeight: 1.8,
+                            fontSize: '1rem'
                         }}
                     >
                         Find reliable teammates, discover great courses, and share peer feedback. 
@@ -201,143 +203,171 @@ function Home() {
                 </Container>
             </Box>
 
-            {/* Live Statistics Section */}
-            <Box sx={{ py: 8 }}>
-                <Container maxWidth="sm">
+            {/* Join Our Community Section - Full Width like Explore Platform */}
+            <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
+                <Container maxWidth="lg">
                     <Box sx={{ textAlign: 'center', mb: 6 }}>
                         <Typography
-                            variant="h5"
+                            variant="h4"
                             component="h2"
                             sx={{
                                 fontWeight: 700,
-                                mb: 4,
+                                mb: 2,
                                 color: '#1a202c'
                             }}
                         >
                             Join Our Community
                         </Typography>
+                        <Typography
+                            variant="subtitle1"
+                            color="textSecondary"
+                            sx={{ 
+                                maxWidth: '500px', 
+                                mx: 'auto', 
+                                lineHeight: 1.8,
+                                fontSize: '1rem',
+                                fontWeight: 500
+                            }}
+                        >
+                            Connect with students, instructors, and peers from around the world
+                        </Typography>
                     </Box>
 
-                    <Grid container spacing={3} sx={{ maxWidth: '600px', mx: 'auto' }}>
+                    <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' } }}>
                         {/* Students Card */}
-                        <Grid item xs={12} sm={6}>
-                            <Card
+                        <Grid item xs={12} sm={12} md={4}>
+                            <Paper
+                                elevation={0}
                                 sx={{
+                                    p: 4,
                                     textAlign: 'center',
                                     borderRadius: 2,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                    backgroundColor: 'white',
                                     border: '1px solid #e5e7eb',
-                                    height: '100%',
                                     transition: 'all 0.3s ease',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
                                     '&:hover': {
                                         boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        transform: 'translateY(-4px)',
-                                        borderColor: '#667eea'
+                                        borderColor: '#667eea',
                                     }
                                 }}
                             >
-                                <CardContent sx={{ py: 4 }}>
-                                    <Box sx={{ mb: 2, color: '#667eea' }}>
-                                        <PersonIcon sx={{ fontSize: 40 }} />
-                                    </Box>
-                                    <Typography
-                                        variant="h4"
-                                        sx={{
-                                            fontWeight: 700,
-                                            color: '#667eea',
-                                            mb: 1
-                                        }}
-                                    >
-                                        {loading ? '...' : stats.students}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
-                                        Students
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                                <Box sx={{ mb: 2, color: '#667eea' }}>
+                                    <PersonIcon sx={{ fontSize: 48 }} />
+                                </Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 1,
+                                        color: '#1a202c'
+                                    }}
+                                >
+                                    {loading ? '...' : stats.students}
+                                </Typography>
+                                <Typography 
+                                    variant="body2" 
+                                    color="textSecondary" 
+                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                >
+                                    Active Students
+                                </Typography>
+                            </Paper>
                         </Grid>
 
                         {/* Courses Card */}
-                        <Grid item xs={12} sm={6}>
-                            <Card
+                        <Grid item xs={12} sm={12} md={4}>
+                            <Paper
+                                elevation={0}
                                 sx={{
+                                    p: 4,
                                     textAlign: 'center',
                                     borderRadius: 2,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                    backgroundColor: 'white',
                                     border: '1px solid #e5e7eb',
-                                    height: '100%',
                                     transition: 'all 0.3s ease',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
                                     '&:hover': {
                                         boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        transform: 'translateY(-4px)',
-                                        borderColor: '#667eea'
+                                        borderColor: '#667eea',
                                     }
                                 }}
                             >
-                                <CardContent sx={{ py: 4 }}>
-                                    <Box sx={{ mb: 2, color: '#667eea' }}>
-                                        <BookIcon sx={{ fontSize: 40 }} />
-                                    </Box>
-                                    <Typography
-                                        variant="h4"
-                                        sx={{
-                                            fontWeight: 700,
-                                            color: '#667eea',
-                                            mb: 1
-                                        }}
-                                    >
-                                        {loading ? '...' : stats.courses}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
-                                        Courses
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                                <Box sx={{ mb: 2, color: '#667eea' }}>
+                                    <BookIcon sx={{ fontSize: 48 }} />
+                                </Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 1,
+                                        color: '#1a202c'
+                                    }}
+                                >
+                                    {loading ? '...' : stats.courses}
+                                </Typography>
+                                <Typography 
+                                    variant="body2" 
+                                    color="textSecondary" 
+                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                >
+                                    Available Courses
+                                </Typography>
+                            </Paper>
                         </Grid>
 
                         {/* Projects Card */}
-                        <Grid item xs={12} sm={6}>
-                            <Card
+                        <Grid item xs={12} sm={12} md={4}>
+                            <Paper
+                                elevation={0}
                                 sx={{
+                                    p: 4,
                                     textAlign: 'center',
                                     borderRadius: 2,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                    backgroundColor: 'white',
                                     border: '1px solid #e5e7eb',
-                                    height: '100%',
                                     transition: 'all 0.3s ease',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
                                     '&:hover': {
                                         boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        transform: 'translateY(-4px)',
-                                        borderColor: '#667eea'
+                                        borderColor: '#667eea',
                                     }
                                 }}
                             >
-                                <CardContent sx={{ py: 4 }}>
-                                    <Box sx={{ mb: 2, color: '#667eea' }}>
-                                        <FolderIcon sx={{ fontSize: 40 }} />
-                                    </Box>
-                                    <Typography
-                                        variant="h4"
-                                        sx={{
-                                            fontWeight: 700,
-                                            color: '#667eea',
-                                            mb: 1
-                                        }}
-                                    >
-                                        {loading ? '...' : stats.projects}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
-                                        Projects
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                                <Box sx={{ mb: 2, color: '#667eea' }}>
+                                    <FolderIcon sx={{ fontSize: 48 }} />
+                                </Box>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 1,
+                                        color: '#1a202c'
+                                    }}
+                                >
+                                    {loading ? '...' : stats.projects}
+                                </Typography>
+                                <Typography 
+                                    variant="body2" 
+                                    color="textSecondary" 
+                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                >
+                                    Shared Projects
+                                </Typography>
+                            </Paper>
                         </Grid>
                     </Grid>
                 </Container>
             </Box>
 
             {/* Explore Platform Section - 3 columns in a row */}
-            <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
+            <Box sx={{ py: 8, backgroundColor: 'white' }}>
                 <Container maxWidth="lg">
                     <Box sx={{ textAlign: 'center', mb: 6 }}>
                         <Typography
@@ -352,9 +382,15 @@ function Home() {
                             Explore Our Platform
                         </Typography>
                         <Typography
-                            variant="body1"
+                            variant="subtitle1"
                             color="textSecondary"
-                            sx={{ maxWidth: '500px', mx: 'auto', lineHeight: 1.8 }}
+                            sx={{ 
+                                maxWidth: '500px', 
+                                mx: 'auto', 
+                                lineHeight: 1.8,
+                                fontSize: '1rem',
+                                fontWeight: 500
+                            }}
                         >
                             Everything you need to make better decisions about courses and collaboration
                         </Typography>
@@ -384,10 +420,25 @@ function Home() {
                                     <Box sx={{ mb: 2, color: card.color }}>
                                         {card.icon}
                                     </Box>
-                                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                                    <Typography 
+                                        variant="h6" 
+                                        sx={{ 
+                                            fontWeight: 700, 
+                                            mb: 1,
+                                            color: '#1a202c'
+                                        }}
+                                    >
                                         {card.title}
                                     </Typography>
-                                    <Typography variant="body2" color="textSecondary" sx={{ mb: 3, flexGrow: 1 }}>
+                                    <Typography 
+                                        variant="body2" 
+                                        color="textSecondary" 
+                                        sx={{ 
+                                            mb: 3, 
+                                            flexGrow: 1,
+                                            fontSize: '0.95rem'
+                                        }}
+                                    >
                                         {card.description}
                                     </Typography>
                                     <Button
@@ -430,11 +481,12 @@ function Home() {
                         Ready to Explore?
                     </Typography>
                     <Typography
-                        variant="h6"
+                        variant="subtitle1"
                         sx={{
                             mb: 4,
                             opacity: 0.95,
-                            fontWeight: 300
+                            fontWeight: 500,
+                            fontSize: '1rem'
                         }}
                     >
                         Join thousands of students making smarter choices about learning and collaboration

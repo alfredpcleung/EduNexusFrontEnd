@@ -188,7 +188,32 @@ function LayoutMain() {
 
                     {/* Auth Buttons - Right (Desktop) */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center', flexShrink: 0 }}>
-                        {/* Account/profile menu removed for clean rebuild */}
+                        {!isAuth && (
+                            <>
+                                <Button
+                                    component={Link}
+                                    to="/users/signin"
+                                    variant="outlined"
+                                    color="inherit"
+                                    startIcon={<LoginIcon />}
+                                    size="small"
+                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
+                                >
+                                    Sign In
+                                </Button>
+                                <Button
+                                    component={Link}
+                                    to="/users/signup"
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<BookIcon />}
+                                    size="small"
+                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
+                                >
+                                    Sign Up
+                                </Button>
+                            </>
+                        )}
                     </Box>
 
                     {/* Mobile Menu removed for clean rebuild */}

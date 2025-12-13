@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
-import Layout from "./components/Layout";
+import LayoutMain from "./components/LayoutMain";
 import ListCourse from "./components/Course/ListCourse";
 import AddCourse from "./components/Course/AddCourse";
 import EditICourse from "./components/Course/EditICourse";
@@ -19,7 +19,7 @@ import Profile from "./components/Profile";
 function MainRouter() {
     return (
         <div>
-            <Layout />
+            <LayoutMain />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/dashboard" element={<Dashboard />} />

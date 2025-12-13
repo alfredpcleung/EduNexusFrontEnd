@@ -31,7 +31,7 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import StarIcon from '@mui/icons-material/Star';
 import { useState } from 'react';
 
-function Layout() {
+function LayoutMain() {
     const { isAuth } = useAuth();
     const navigate = useNavigate();
     const [searchType, setSearchType] = useState('course');
@@ -198,4 +198,4 @@ function Layout() {
     );
 }
 
-export default Layout;
+export default LayoutMain;

@@ -45,8 +45,8 @@ const EditICourse = () => {
                 const ownerUid = data.owner || data.uid;
                 setCourseOwner(ownerUid);
 
-                // Check ownership
-                if (user?.uid !== ownerUid) {
+                // Check ownership or admin role
+                if (user?.uid !== ownerUid && user?.role !== 'admin') {
                     setErrorMsg("You don't have permission to perform this action.");
                     setIsForbidden(true);
                     setCourse(new CourseModel(
@@ -86,8 +86,8 @@ const EditICourse = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        // Verify ownership before submission
-        if (user?.uid !== courseOwner) {
+        // Verify ownership or admin role before submission
+        if (user?.uid !== courseOwner && user?.role !== 'admin') {
             setErrorMsg("You don't have permission to perform this action.");
             return;
         }

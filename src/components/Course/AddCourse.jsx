@@ -53,7 +53,7 @@ const AddCourse = () => {
                 } else if (data && (data.success === false || data.error)) {
                     setErrorMsg(data.message || 'Failed to create course');
                 } else if (data?.message?.includes("not authorized") || data?.message?.includes("instructor")) {
-                    setErrorMsg('Only instructors can create courses. Please contact an administrator if you need instructor access.');
+                    setErrorMsg('You do not have permission to create courses. Contact your administrator for access.');
                 } else {
                     setErrorMsg('Unexpected response from server');
                 }
@@ -61,7 +61,7 @@ const AddCourse = () => {
             .catch(err => {
                 // Handle 403 Forbidden or authorization errors
                 if (err.message?.includes("403") || err.message?.includes("not authorized")) {
-                    setErrorMsg('Only instructors can create courses. Please contact an administrator if you need instructor access.');
+                    setErrorMsg('You do not have permission to create courses. Contact your administrator for access.');
                 } else if (err.message?.includes("404")) {
                     setErrorMsg('Course creation endpoint not found. Please check your account permissions.');
                 } else {

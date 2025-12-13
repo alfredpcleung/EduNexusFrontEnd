@@ -63,8 +63,8 @@ function EditProject() {
         status: project.status || "draft",
       });
 
-      // Check ownership
-      if (user?.uid !== ownerUid) {
+      // Check ownership or admin role
+      if (user?.uid !== ownerUid && user?.role !== 'admin') {
         setError("You don't have permission to perform this action.");
         setIsForbidden(true);
       }
@@ -92,8 +92,8 @@ function EditProject() {
       return;
     }
 
-    // Verify ownership before submission
-    if (user?.uid !== projectOwner) {
+    // Verify ownership or admin role before submission
+    if (user?.uid !== projectOwner && user?.role !== 'admin') {
       setSubmitError("You don't have permission to perform this action.");
       return;
     }

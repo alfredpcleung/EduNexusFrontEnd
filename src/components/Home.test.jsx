@@ -151,4 +151,91 @@ describe('Home Component', () => {
       expect(screen.queryByText('Built With Modern Technologies')).not.toBeInTheDocument();
     });
   });
+
+  describe('Key Benefits Section', () => {
+    it('should display 4 key benefit cards in hero section', async () => {
+      renderWithRouter(<Home />);
+      
+      expect(screen.getByText('Choose the Right Teammates')).toBeInTheDocument();
+      expect(screen.getByText('Discover the Best Electives')).toBeInTheDocument();
+      expect(screen.getByText('Get Insights on Core Courses')).toBeInTheDocument();
+      expect(screen.getByText('Benefit from Peer Feedback')).toBeInTheDocument();
+    });
+
+    it('should display benefit descriptions', async () => {
+      renderWithRouter(<Home />);
+      
+      expect(screen.getByText('See peer ratings and pick reliable collaborators.')).toBeInTheDocument();
+      expect(screen.getByText('Learn from feedback and maximize your GPA.')).toBeInTheDocument();
+      expect(screen.getByText('Know what to expect and how to succeed.')).toBeInTheDocument();
+      expect(screen.getByText('Make smarter academic choices with community reviews.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Statistics Section', () => {
+    it('should display 4 statistics cards', async () => {
+      renderWithRouter(<Home />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Registered Students')).toBeInTheDocument();
+        expect(screen.getByText('Courses with Reviews')).toBeInTheDocument();
+        expect(screen.getByText('Active Students')).toBeInTheDocument();
+        expect(screen.getByText('Projects Recruiting')).toBeInTheDocument();
+      });
+    });
+
+    it('should display statistics values after loading', async () => {
+      renderWithRouter(<Home />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('150')).toBeInTheDocument(); // registeredStudents
+        expect(screen.getByText('45')).toBeInTheDocument();  // coursesWithReviews
+        expect(screen.getByText('89')).toBeInTheDocument();  // activeStudents
+        expect(screen.getByText('23')).toBeInTheDocument();  // projectsRecruiting
+      });
+    });
+
+    it('should call the correct API endpoint', async () => {
+      renderWithRouter(<Home />);
+      
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/stats/homepage')
+        );
+      });
+    });
+
+    it('should display dash when stats are null', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          registeredStudents: null,
+          coursesWithReviews: null,
+          activeStudents: null,
+          projectsRecruiting: null,
+        }),
+      });
+      
+      renderWithRouter(<Home />);
+      
+      await waitFor(() => {
+        const dashes = screen.getAllByText('—');
+        expect(dashes.length).toBe(4);
+      });
+    });
+
+    it('should handle API error gracefully', async () => {
+      global.fetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+      });
+      
+      renderWithRouter(<Home />);
+      
+      // Component should still render without crashing
+      await waitFor(() => {
+        expect(screen.getByText('Welcome to EduNexus')).toBeInTheDocument();
+      });
+    });
+  });
 });

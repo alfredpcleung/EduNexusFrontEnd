@@ -32,25 +32,12 @@ import StarIcon from '@mui/icons-material/Star';
 import { useState } from 'react';
 
 function Layout() {
-    const { isAuth, user, logout } = useAuth();
+    const { isAuth } = useAuth();
     const navigate = useNavigate();
-    const [anchorEl, setAnchorEl] = useState(null);
     const [searchType, setSearchType] = useState('course');
     const [searchQuery, setSearchQuery] = useState('');
 
-    const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSignout = () => {
-        logout();
-        handleMenuClose();
-        navigate('/');
-    };
+    // Removed account/profile menu logic for clean rebuild
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -201,92 +188,7 @@ function Layout() {
 
                     {/* Auth Buttons - Right (Desktop) */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center', flexShrink: 0 }}>
-                        {!isAuth ? (
-                            <>
-                                <Button
-                                    component={Link}
-                                    to="/users/signin"
-                                    variant="outlined"
-                                    color="inherit"
-                                    startIcon={<LoginIcon />}
-                                    size="small"
-                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
-                                >
-                                    Sign In
-                                </Button>
-                                <Button
-                                    component={Link}
-                                    to="/users/signup"
-                                    variant="contained"
-                                    color="secondary"
-                                    startIcon={<BookIcon />}
-                                    size="small"
-                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
-                                >
-                                    Sign Up
-                                </Button>
-                            </>
-                        ) : (
-                            <Box>
-                                <IconButton
-                                    onClick={handleMenuOpen}
-                                    color="inherit"
-                                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                                >
-                                    <AccountCircleIcon />
-                                    <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                                        Hi, {user?.firstName || 'User'}
-                                    </Typography>
-                                </IconButton>
-
-                                {/* Add a new dropdown menu for the "Hi, [firstname]" button */}
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleMenuClose}
-                                    MenuListProps={{ autoFocusItem: false, disablePadding: true }}
-                                    PaperProps={{
-                                        elevation: 0,
-                                        sx: {
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            minWidth: 220,
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                                            m: 0,
-                                            p: 0,
-                                            backgroundClip: 'padding-box',
-                                            borderRadius: 2,
-                                        }
-                                    }}
-                                >
-                                    <MenuItem onClick={() => { handleMenuClose(); setTimeout(() => navigate('/profile'), 0); }}>
-                                        <PersonIcon sx={{ mr: 1 }} /> Profile
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/settings'); }}>
-                                        <SettingsIcon sx={{ mr: 1 }} /> Account Settings
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/academic-record'); }}>
-                                        <SchoolIcon sx={{ mr: 1 }} /> Your Academic Record
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/course-reviews'); }}>
-                                        <RateReviewIcon sx={{ mr: 1 }} /> Your Course Reviews
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/group-projects'); }}>
-                                        <GroupWorkIcon sx={{ mr: 1 }} /> Your Group Projects
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/teammate-reviews'); }}>
-                                        <StarIcon sx={{ mr: 1 }} /> Your Teammate Reviews
-                                    </MenuItem>
-                                    <Box sx={{ flexGrow: 1 }} />
-                                    <MenuItem
-                                        onClick={handleSignout}
-                                        sx={{ mt: 1, borderTop: '1px solid #eee', color: 'error.main' }}
-                                    >
-                                        <LogoutIcon sx={{ mr: 1 }} /> Log Out
-                                    </MenuItem>
-                                </Menu>
-                            </Box>
-                        )}
+                        {/* Account/profile menu removed for clean rebuild */}
                     </Box>
 
                     {/* Mobile Menu */}

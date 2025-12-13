@@ -11,6 +11,11 @@ import {
     Typography,
     Stack,
     Paper,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputAdornment,
 } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import PersonIcon from '@mui/icons-material/Person';
@@ -18,6 +23,10 @@ import FolderIcon from '@mui/icons-material/Folder';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import SearchIcon from '@mui/icons-material/Search';
+import StarIcon from '@mui/icons-material/Star';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import * as coursesService from '../services/coursesService';
 import * as usersService from '../services/usersService';
 import * as projectsService from '../services/projectsService';
@@ -31,6 +40,8 @@ function Home() {
         projects: 0,
     });
     const [loading, setLoading] = useState(true);
+    const [searchType, setSearchType] = useState('course');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -56,6 +67,44 @@ function Home() {
 
         fetchStats();
     }, []);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        if (searchType === 'course') {
+            navigate(`/course/list?search=${encodeURIComponent(searchQuery)}`);
+        } else if (searchType === 'student') {
+            navigate(`/users/list?search=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
+    const keyBenefits = [
+        {
+            icon: <VerifiedUserIcon sx={{ fontSize: 48 }} />,
+            title: 'Choose the Right Teammates',
+            description: 'Avoid frustration with group projects — see peer ratings and pick reliable collaborators in advance.',
+            color: '#667eea',
+        },
+        {
+            icon: <StarIcon sx={{ fontSize: 48 }} />,
+            title: 'Discover the Best Electives',
+            description: 'Learn from student feedback to select electives that match your interests and maximize your GPA.',
+            color: '#ec4899',
+        },
+        {
+            icon: <TrendingUpIcon sx={{ fontSize: 48 }} />,
+            title: 'Get Insights on Core Courses',
+            description: 'Know what challenges to expect, which topics demand extra focus, and how to succeed in required classes.',
+            color: '#f59e0b',
+        },
+        {
+            icon: <RateReviewIcon sx={{ fontSize: 48 }} />,
+            title: 'Share and Benefit from Peer Feedback',
+            description: 'Contribute your own experiences and tap into a community of reviews to make smarter academic choices.',
+            color: '#10b981',
+        },
+    ];
 
     const platformCards = [
         {
@@ -205,7 +254,214 @@ function Home() {
                 </Container>
             </Box>
 
-            {/* Join Our Community Section - Full Width like Explore Platform */}
+            {/* Search Section */}
+            <Box sx={{ py: 8, backgroundColor: 'white' }}>
+                <Container maxWidth="lg">
+                    <Box sx={{ textAlign: 'center', mb: 6 }}>
+                        <Typography
+                            variant="h4"
+                            component="h2"
+                            sx={{
+                                fontWeight: 700,
+                                mb: 3,
+                                color: '#1a202c'
+                            }}
+                        >
+                            Find Your Next Discovery
+                        </Typography>
+                        <Typography
+                            variant="subtitle1"
+                            color="textSecondary"
+                            sx={{ 
+                                maxWidth: '500px', 
+                                mx: 'auto', 
+                                lineHeight: 1.8,
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                mb: 4
+                            }}
+                        >
+                            Search for courses or find teammates to collaborate with
+                        </Typography>
+
+                        {/* Search Engine */}
+                        <Box
+                            component="form"
+                            onSubmit={handleSearch}
+                            sx={{
+                                display: 'flex',
+                                gap: 1,
+                                maxWidth: '600px',
+                                mx: 'auto',
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                alignItems: 'stretch'
+                            }}
+                        >
+                            <FormControl sx={{ minWidth: 140 }}>
+                                <Select
+                                    value={searchType}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                    sx={{
+                                        backgroundColor: '#f8f9fa',
+                                        borderRadius: '8px',
+                                        fontWeight: 500,
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: '#e5e7eb'
+                                        },
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: '#667eea'
+                                        },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: '#667eea'
+                                        }
+                                    }}
+                                >
+                                    <MenuItem value="course">Search Courses</MenuItem>
+                                    <MenuItem value="student">Find Teammates</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <TextField
+                                fullWidth
+                                placeholder={searchType === 'course' ? 'Enter course name or code...' : 'Enter student name...'}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        backgroundColor: '#f8f9fa',
+                                        borderRadius: '8px',
+                                        '& fieldset': {
+                                            borderColor: '#e5e7eb'
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: '#667eea'
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#667eea'
+                                        }
+                                    }
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon sx={{ color: '#9ca3af' }} />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                sx={{
+                                    backgroundColor: '#667eea',
+                                    color: 'white',
+                                    fontWeight: 600,
+                                    px: 4,
+                                    py: 1.75,
+                                    borderRadius: '8px',
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                    '&:hover': {
+                                        backgroundColor: '#5568d3',
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 8px 16px rgba(102, 126, 234, 0.3)'
+                                    },
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                Search
+                            </Button>
+                        </Box>
+                    </Box>
+                </Container>
+            </Box>
+
+            {/* Key Benefits Section */}
+            <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
+                <Container maxWidth="lg">
+                    <Box sx={{ textAlign: 'center', mb: 6 }}>
+                        <Typography
+                            variant="h4"
+                            component="h2"
+                            sx={{
+                                fontWeight: 700,
+                                mb: 2,
+                                color: '#1a202c'
+                            }}
+                        >
+                            Why Join EduNexus?
+                        </Typography>
+                        <Typography
+                            variant="subtitle1"
+                            color="textSecondary"
+                            sx={{ 
+                                maxWidth: '500px', 
+                                mx: 'auto', 
+                                lineHeight: 1.8,
+                                fontSize: '1rem',
+                                fontWeight: 500
+                            }}
+                        >
+                            Make informed decisions about your education and collaborate with the right people
+                        </Typography>
+                    </Box>
+
+                    <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' } }}>
+                        {keyBenefits.map((benefit, idx) => (
+                            <Grid item xs={12} sm={6} md={3} key={idx}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 4,
+                                        textAlign: 'center',
+                                        borderRadius: 2,
+                                        backgroundColor: 'white',
+                                        border: '1px solid #e5e7eb',
+                                        transition: 'all 0.3s ease',
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        '&:hover': {
+                                            boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
+                                            borderColor: benefit.color,
+                                            transform: 'translateY(-4px)'
+                                        }
+                                    }}
+                                >
+                                    <Box sx={{ mb: 2, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
+                                        {benefit.icon}
+                                    </Box>
+                                    <Typography 
+                                        variant="h6" 
+                                        sx={{ 
+                                            fontWeight: 700, 
+                                            mb: 2,
+                                            color: '#1a202c',
+                                            fontSize: '1.1rem'
+                                        }}
+                                    >
+                                        {benefit.title}
+                                    </Typography>
+                                    <Typography 
+                                        variant="body2" 
+                                        color="textSecondary" 
+                                        sx={{ 
+                                            flexGrow: 1,
+                                            fontSize: '0.95rem',
+                                            lineHeight: 1.6
+                                        }}
+                                    >
+                                        {benefit.description}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Container>
+            </Box>
+
+            {/* Join Our Community Section - Statistics */}
             <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
                 <Container maxWidth="lg">
                     <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -369,7 +625,7 @@ function Home() {
             </Box>
 
             {/* Explore Platform Section - 3 columns in a row */}
-            <Box sx={{ py: 8, backgroundColor: 'white' }}>
+            <Box sx={{ py: 8, backgroundColor: 'white', display: 'none' }}>
                 <Container maxWidth="lg">
                     <Box sx={{ textAlign: 'center', mb: 6 }}>
                         <Typography
@@ -535,9 +791,25 @@ function Home() {
                             </Button>
                         </Stack>
                     ) : (
-                        <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                            Start exploring courses, find teammates, and share your feedback today!
-                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="inherit"
+                            size="large"
+                            onClick={() => navigate('/course/list')}
+                            sx={{
+                                backgroundColor: 'white',
+                                color: '#667eea',
+                                fontWeight: 600,
+                                px: 4,
+                                py: 1.5,
+                                fontSize: '1rem',
+                                '&:hover': {
+                                    backgroundColor: '#f3f4f6',
+                                }
+                            }}
+                        >
+                            Start Exploring Now
+                        </Button>
                     )}
                 </Container>
             </Box>

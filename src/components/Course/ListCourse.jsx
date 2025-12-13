@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { list } from '../../services/coursesService.js';
 import ListItemCourse from './ListItemCourse.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import {
     Box,
@@ -29,6 +29,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 const ListCourse = () => {
     const { isAuth, user } = useAuth();
+    const location = useLocation();
     const [courseList, setCourseList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
@@ -57,10 +58,18 @@ const ListCourse = () => {
         });
     };
 
-    // When the component loads.
+    // When the component loads - check for URL search parameters
     useEffect(() => {
-        loadCourses();
-    }, []);
+        const params = new URLSearchParams(location.search);
+        const searchParam = params.get('search');
+        
+        if (searchParam) {
+            setSearchTerm(searchParam);
+            loadCourses(searchParam, '');
+        } else {
+            loadCourses();
+        }
+    }, [location.search]);
 
     // Handle search input with debouncing
     const handleSearchChange = (value) => {

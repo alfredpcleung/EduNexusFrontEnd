@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { list } from '../../services/usersService.js';
 import ListItemUser from './ListItemUser.jsx';
+import { useLocation } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -24,6 +25,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 const ListUser = () => {
+    const location = useLocation();
     const [userList, setUserList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
@@ -79,6 +81,19 @@ const ListUser = () => {
         }
     };
 
+    // When the component loads - check for URL search parameters
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const searchParam = params.get('search');
+        
+        if (searchParam) {
+            setSearchTerm(searchParam);
+            loadUsersWithFilters(searchParam, '');
+        } else {
+            loadUsers();
+        }
+    }, [location.search]);
+
     const handleSearchChange = (value) => {
         setSearchTerm(value);
 
@@ -99,11 +114,6 @@ const ListUser = () => {
         setIsLoading(true);
         loadUsersWithFilters(searchTerm, value);
     };
-
-    // When the component loads.
-    useEffect(() => {
-        loadUsers();
-    }, []);
 
     // When a User is removed.
     const handleRemove = () => {

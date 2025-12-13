@@ -52,16 +52,18 @@ const AddCourse = () => {
                     setTimeout(() => navigate("/course/list"), 2000);
                 } else if (data && (data.success === false || data.error)) {
                     setErrorMsg(data.message || 'Failed to create course');
-                } else if (data?.message?.includes("not authorized") || data?.message?.includes("instructor")) {
-                    setErrorMsg('You do not have permission to create courses. Contact your administrator for access.');
+                } else if (data?.message?.includes("not authorized")) {
+                    setErrorMsg(data.message || 'You do not have permission to create this course.');
                 } else {
                     setErrorMsg('Unexpected response from server');
                 }
             })
             .catch(err => {
-                // Handle 403 Forbidden or authorization errors
-                if (err.message?.includes("403") || err.message?.includes("not authorized")) {
-                    setErrorMsg('You do not have permission to create courses. Contact your administrator for access.');
+                // Handle HTTP status codes
+                if (err.status === 403) {
+                    setErrorMsg(err.message || 'You do not have permission to create this course.');
+                } else if (err.message?.includes("403") || err.message?.includes("not authorized")) {
+                    setErrorMsg('You do not have permission to create this course.');
                 } else if (err.message?.includes("404")) {
                     setErrorMsg('Course creation endpoint not found. Please check your account permissions.');
                 } else {

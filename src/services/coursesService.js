@@ -61,7 +61,18 @@ const create = async (course) => {
             },
             body: JSON.stringify(course)
         });
-        return await response.json();
+        
+        const data = await response.json();
+        
+        // Check for HTTP errors
+        if (!response.ok) {
+            if (response.status === 403) {
+                data.message = data.message || 'You do not have permission to create courses.';
+            }
+            throw { status: response.status, ...data };
+        }
+        
+        return data;
     } catch (err) {
         console.log('Create course error:', err);
         throw err;

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { remove } from "../../services/coursesService";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import useAuthorizationCheck from "../../hooks/useAuthorizationCheck";
+import use403Handler from "../../hooks/use403Handler";
 import { 
   TableRow, 
   TableCell, 
@@ -18,19 +20,21 @@ import {
   Chip,
   Stack,
   Typography,
+  Snackbar,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const ListItemCourse = ({ course, onRemoved }) => {
     const { isAuth, user } = useAuth();
+    const courseId = course.id || course._id;
+    const courseOwner = course.owner || course.uid;
+    const { canEdit, canDelete } = useAuthorizationCheck(courseOwner);
+    const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
+    
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
-
-    const courseId = course.id || course._id;
-    const courseOwner = course.owner || course.uid;
-    const isOwner = isAuth && user?.uid === courseOwner;
 
     // Get rating data (fallback handling for missing backend fields)
     const averageRating = course.averageRating ?? null;
@@ -62,17 +66,18 @@ const ListItemCourse = ({ course, onRemoved }) => {
             if (data && (data.success || data.deleted)) {
                 if (typeof onRemoved === 'function') onRemoved(courseId);
                 setDeleteDialogOpen(false);
+            } else if (data?.message?.includes("not authorized") || data?.message?.includes("403")) {
+                handleAuthError("You are not authorized to perform this action.");
             } else if (data?.success === false) {
-                // Check for 403 Forbidden (not owner)
-                if (data.message?.includes("not authorized") || data.message?.includes("owner")) {
-                    setDeleteError("You don't have permission to delete this course. Only the course owner can delete it.");
-                } else {
-                    setDeleteError(data.message || 'Failed to delete course');
-                }
+                setDeleteError(data.message || 'Failed to delete course');
             }
         } catch (err) {
             console.error("Error deleting course:", err);
-            setDeleteError(err.message || 'Error deleting course');
+            if (err.status === 403 || err.message?.includes("403")) {
+                handleAuthError("You are not authorized to perform this action.");
+            } else {
+                setDeleteError(err.message || 'Error deleting course');
+            }
         } finally {
             setIsDeleting(false);
         }
@@ -138,7 +143,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
                 </TableCell>
                 <TableCell align="center">
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        {isOwner ? (
+                        {canEdit && (
                             <>
                                 <IconButton
                                     component={Link}
@@ -158,7 +163,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
                                     <DeleteIcon fontSize="small" />
                                 </IconButton>
                             </>
-                        ) : isAuth ? (
+                        )}
                             <Box sx={{ fontSize: '0.75rem', color: 'textSecondary', p: 1 }}>
                                 Not owner
                             </Box>
@@ -198,6 +203,13 @@ const ListItemCourse = ({ course, onRemoved }) => {
                     )}
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={authErrorOpen}
+                autoHideDuration={6000}
+                onClose={clearAuthError}
+                message={authError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            />
         </>
     );
 };

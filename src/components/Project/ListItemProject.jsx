@@ -2,6 +2,8 @@ import { useState } from "react";
 import { remove } from "../../services/projectsService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import useAuthorizationCheck from "../../hooks/useAuthorizationCheck";
+import use403Handler from "../../hooks/use403Handler";
 import { 
   TableRow, 
   TableCell, 
@@ -17,6 +19,7 @@ import {
   Chip,
   Rating,
   Typography,
+  Snackbar,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,13 +27,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const ListItemProject = ({ project, onRemoved }) => {
     const { isAuth, user } = useAuth();
     const navigate = useNavigate();
+    const projectId = project.id || project._id;
+    const projectOwner = project.owner || project.uid;
+    const { canEdit, canDelete } = useAuthorizationCheck(projectOwner);
+    const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
-
-    const projectId = project.id || project._id;
-    const projectOwner = project.owner || project.uid;
-    const isOwner = isAuth && user?.uid === projectOwner;
 
     // Get rating data (fallback handling for missing backend fields)
     const averageRating = project.averageRating ?? null;
@@ -62,17 +65,18 @@ const ListItemProject = ({ project, onRemoved }) => {
             if (data && (data.success || data.deleted)) {
                 if (typeof onRemoved === 'function') onRemoved(projectId);
                 setDeleteDialogOpen(false);
+            } else if (data?.message?.includes("not authorized") || data?.message?.includes("403")) {
+                handleAuthError("You are not authorized to perform this action.");
             } else if (data?.success === false) {
-                // Check for 403 Forbidden (not owner)
-                if (data.message?.includes("not authorized") || data.message?.includes("owner")) {
-                    setDeleteError("You don't have permission to delete this project. Only the project owner can delete it.");
-                } else {
-                    setDeleteError(data.message || 'Failed to delete project');
-                }
+                setDeleteError(data.message || 'Failed to delete project');
             }
         } catch (err) {
             console.error("Error deleting project:", err);
-            setDeleteError(err.message || 'Error deleting project');
+            if (err.status === 403 || err.message?.includes("403")) {
+                handleAuthError("You are not authorized to perform this action.");
+            } else {
+                setDeleteError(err.message || 'Error deleting project');
+            }
         } finally {
             setIsDeleting(false);
         }
@@ -143,7 +147,7 @@ const ListItemProject = ({ project, onRemoved }) => {
                         >
                             View
                         </Button>
-                        {isOwner && (
+                        {canEdit && (
                             <>
                                 <IconButton
                                     size="small"
@@ -164,11 +168,6 @@ const ListItemProject = ({ project, onRemoved }) => {
                             </>
                         )}
                     </Box>
-                    {!isOwner && isAuth && (
-                        <Box sx={{ fontSize: '0.75rem', color: 'textSecondary', mt: 1 }}>
-                            Not owner
-                        </Box>
-                    )}
                 </TableCell>
             </TableRow>
 
@@ -203,6 +202,13 @@ const ListItemProject = ({ project, onRemoved }) => {
                     )}
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={authErrorOpen}
+                autoHideDuration={6000}
+                onClose={clearAuthError}
+                message={authError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            />
         </>
     );
 };

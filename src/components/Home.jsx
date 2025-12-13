@@ -203,23 +203,23 @@ function Home() {
                                         p: 3,
                                         textAlign: 'center',
                                         borderRadius: 3,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
                                         backdropFilter: 'blur(10px)',
                                         transition: 'all 0.3s ease',
                                         height: '100%',
-                                        minHeight: '200px',
+                                        minHeight: '220px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         '&:hover': {
                                             transform: 'translateY(-4px)',
                                             boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.92)',
                                         }
                                     }}
                                 >
                                     <Box sx={{ mb: 2, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
-                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 44 } })}
+                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 52 } })}
                                     </Box>
                                     <Typography 
                                         variant="body1" 
@@ -295,9 +295,11 @@ function Home() {
                                     color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
+                                    minHeight: '180px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(102, 126, 234, 0.3)',
@@ -339,9 +341,11 @@ function Home() {
                                     color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
+                                    minHeight: '180px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(236, 72, 153, 0.3)',
@@ -383,9 +387,11 @@ function Home() {
                                     color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
+                                    minHeight: '180px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(16, 185, 129, 0.3)',
@@ -427,9 +433,11 @@ function Home() {
                                     color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
+                                    minHeight: '180px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 12px 24px rgba(245, 158, 11, 0.3)',
@@ -505,6 +513,7 @@ function Home() {
                                         border: '1px solid #e5e7eb',
                                         transition: 'all 0.3s ease',
                                         height: '100%',
+                                        minHeight: '280px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         '&:hover': {
@@ -514,7 +523,7 @@ function Home() {
                                     }}
                                 >
                                     <Box sx={{ mb: 2, color: card.color }}>
-                                        {card.icon}
+                                        {React.cloneElement(card.icon, { sx: { fontSize: 52 } })}
                                     </Box>
                                     <Typography 
                                         variant="h6" 

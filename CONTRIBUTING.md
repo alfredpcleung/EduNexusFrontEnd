@@ -1,21 +1,17 @@
 # Contributing to EduNexus Frontend
 
-A comprehensive development guide covering architecture, API integration, authentication, testing, and best practices.
+Development guide covering architecture, testing, and best practices.
 
 ---
 
 ## Table of Contents
 
 1. [Architecture Overview](#architecture-overview)
-2. [API Integration](#api-integration)
-3. [Authentication Implementation](#authentication-implementation)
-4. [Component Guide](#component-guide)
-5. [Services Layer](#services-layer)
-6. [Testing Guide](#testing-guide)
-7. [Authorization & RBAC](#authorization--rbac)
-8. [Error Handling](#error-handling)
-9. [Development Workflow](#development-workflow)
-10. [Known Issues & Limitations](#known-issues--limitations)
+2. [Development Setup](#development-setup)
+3. [Component Guide](#component-guide)
+4. [Testing Guide](#testing-guide)
+5. [Code Standards](#code-standards)
+6. [Git Workflow](#git-workflow)
 
 ---
 
@@ -28,7 +24,7 @@ App.jsx (with AuthProvider)
     ↓
 MainRouter (Route definitions)
     ↓
-Layout (Navbar, footer, layout)
+Layout (Navbar, footer)
     ↓
 Pages/Components
     ↓
@@ -39,223 +35,89 @@ API Backend
 
 ### State Management
 
-EduNexus uses **React Context API** for global state management:
-
-- **AuthContext**: Manages authentication state, user info, login/logout
-- **Local State**: Component-level state for forms, modals, loading states
-- **localStorage**: Persistent storage for JWT tokens and user data
+- **AuthContext**: Global authentication state
+- **Local State**: Component-level forms, loading, errors
+- **localStorage**: JWT tokens and user data
 
 ### Data Flow
 
 ```
-User Action (button click)
-    ↓
-Component event handler
-    ↓
-Service call (e.g., coursesService.create())
-    ↓
-API request with JWT token
-    ↓
-Backend validates & responds
-    ↓
-Component updates state
-    ↓
-UI re-renders with new data
+User Action → Component Handler → Service Call → API Request
+                                                      ↓
+UI Update ← State Update ← Response Processing ← Backend Response
 ```
 
 ---
 
-## API Integration
+## Development Setup
 
-### Base URL Configuration
+### Prerequisites
 
-API base URL is configured in `src/services/api.js`:
-
-```javascript
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+```bash
+# Required
+node -v  # v16+
+npm -v   # v7+
 ```
 
-### Available Services
+### Quick Start
 
-#### 1. **Authentication Service** (`auth-helper.js`)
-
-```javascript
-// Sign up
-const result = await signup(uid, displayName, email, password, role);
-// Returns: { success: boolean, user?: object, message?: string, token?: string }
-
-// Sign in
-const result = await signin(email, password);
-// Returns: { success: boolean, user?: object, message?: string, token?: string }
-
-// Sign out
-logout();  // Clears localStorage
-
-// Check authentication
-const isAuth = isAuthenticated();  // Returns: boolean
-
-// Get stored token
-const token = getToken();  // Returns: string | null
-
-// Get stored user
-const user = getUser();  // Returns: object | null
+```bash
+git clone <repository-url>
+cd EduNexusFrontEnd
+npm install
+echo "VITE_API_BASE_URL=http://localhost:3000/api" > .env
+npm run dev
 ```
 
-#### 2. **Courses Service** (`coursesService.js`)
+### Adding New Features
 
-```javascript
-// List all courses
-const courses = await list();
-// GET /courses
-
-// Get single course
-const course = await read(id);
-// GET /courses/:id
-
-// Create course (protected)
-const newCourse = await create(courseData);
-// POST /courses
-// Headers: Authorization: Bearer <token>
-
-// Update course (protected)
-const updated = await update(id, courseData);
-// PUT /courses/:id
-// Headers: Authorization: Bearer <token>
-
-// Delete course (protected)
-await remove(id);
-// DELETE /courses/:id
-// Headers: Authorization: Bearer <token>
+1. **Create component structure**
+```bash
+mkdir -p src/components/NewFeature
+touch src/components/NewFeature/NewFeature.jsx
+touch src/components/NewFeature/NewFeature.test.jsx
 ```
 
-#### 3. **Projects Service** (`projectsService.js`)
-
-```javascript
-// List all projects
-const projects = await list();
-// GET /projects
-
-// Get single project
-const project = await read(id);
-// GET /projects/:id
-
-// Create project (protected)
-const newProject = await create(projectData);
-// POST /projects
-// Headers: Authorization: Bearer <token>
-
-// Update project (protected)
-const updated = await update(id, projectData);
-// PUT /projects/:id
-// Headers: Authorization: Bearer <token>
-
-// Delete project (protected)
-await remove(id);
-// DELETE /projects/:id
-// Headers: Authorization: Bearer <token>
+2. **Create service (if needed)**
+```bash
+touch src/services/newFeatureService.js
 ```
 
-#### 4. **Users Service** (`usersService.js`)
-
+3. **Add route to MainRouter.jsx**
 ```javascript
-// List all users
-const users = await list();
-// GET /users
+import NewFeature from './components/NewFeature/NewFeature';
 
-// Get single user
-const user = await read(uid);
-// GET /users/:uid
-
-// Update user (protected)
-const updated = await update(uid, userData);
-// PUT /users/:uid
-// Headers: Authorization: Bearer <token>
-
-// Delete user (protected)
-await remove(uid);
-// DELETE /users/:uid
-// Headers: Authorization: Bearer <token>
+<Route path="/new-feature" element={<NewFeature />} />
 ```
 
-#### 5. **Feedback Service** (`feedbackService.js`)
-
-```javascript
-// List feedback for project
-const feedback = await listForProject(projectId);
-// GET /feedback?projectId=:projectId
-
-// Create feedback (protected)
-const newFeedback = await create(feedbackData);
-// POST /feedback
-// Headers: Authorization: Bearer <token>
-// Body: { projectId, rating, comment, labels }
-
-// Update feedback (protected)
-const updated = await update(feedbackId, feedbackData);
-// PUT /feedback/:feedbackId
-// Headers: Authorization: Bearer <token>
-
-// Delete feedback (protected)
-await remove(feedbackId);
-// DELETE /feedback/:feedbackId
-// Headers: Authorization: Bearer <token>
-```
-
-### Making Authenticated Requests
-
-Use `authenticatedFetch()` helper for protected endpoints:
-
-```javascript
-// From auth-helper.js
-const response = await authenticatedFetch('/courses', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(courseData)
-});
-
-const data = await response.json();
-```
-
-**Key features:**
-- Automatically adds `Authorization: Bearer <token>` header
-- Handles 401 responses (expired token)
-- Auto-logout and redirect to signin on 401
-- Standard fetch API interface
+4. **Write tests** (see Testing Guide below)
 
 ---
 
-## Authentication Implementation
+## Component Guide
 
-### Overview
+### Component Categories
 
-JWT-based authentication with localStorage persistence and automatic token refresh.
+| Category | Location | Purpose |
+|----------|----------|---------|
+| Layout | `src/components/` | App structure (Layout, Home, NotFound) |
+| Auth | `src/components/auth/` | Authentication (Signin, Signup, AuthContext) |
+| CRUD | `src/components/[Entity]/` | Entity management (List, Add, Edit) |
+| Shared | MUI components | Buttons, Cards, Forms |
 
-### User Flow
+### CRUD Component Pattern
+
+Each entity follows this structure:
 
 ```
-1. User signs up/in
-2. Backend validates credentials
-3. Backend returns JWT token (7-day expiration)
-4. Frontend stores token in localStorage
-5. All future requests include token in Authorization header
-6. On token expiration: Backend returns 401
-7. Frontend auto-logout and redirect to signin
+Entity/
+├── ListEntity.jsx      # Grid view of all items
+├── ListItemEntity.jsx  # Individual item card
+├── AddEntity.jsx       # Create form
+└── EditEntity.jsx      # Update form
 ```
 
-### Token Storage
-
-**Keys:**
-- `token` - JWT string
-- `user` - JSON stringified user object
-
-**Example:**
-```javascript
-// In localStorage
-localStorage.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-localStorage.user = '{"uid":"john_doe","displayName":"John Doe","email":"john@example.com","role":"student"}'
-```
-
-### AuthContext Usage
+### Using AuthContext
 
 ```javascript
 import { useAuth } from './auth/AuthContext';
@@ -263,30 +125,16 @@ import { useAuth } from './auth/AuthContext';
 function MyComponent() {
   const { isAuth, user, loading, signin, signup, logout } = useAuth();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <CircularProgress />;
+  if (!isAuth) return <Navigate to="/users/signin" />;
 
-  if (!isAuth) {
-    return <div>Please sign in first</div>;
-  }
-
-  return (
-    <div>
-      <h1>Welcome, {user.displayName}!</h1>
-      <p>Role: {user.role}</p>
-      <button onClick={logout}>Logout</button>
-    </div>
-  );
+  return <div>Welcome, {user.displayName}!</div>;
 }
 ```
 
-### Protected Routes
-
-Components that require authentication should check `isAuth`:
+### Protected Routes Pattern
 
 ```javascript
-import { useAuth } from './auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
-
 function ProtectedComponent() {
   const { isAuth, loading } = useAuth();
   const navigate = useNavigate();
@@ -297,177 +145,25 @@ function ProtectedComponent() {
     }
   }, [isAuth, loading]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <CircularProgress />;
   if (!isAuth) return null;
 
   return <div>Protected content</div>;
 }
 ```
 
-### Token Expiration Handling
-
-**During API Request:**
-```javascript
-// authenticatedFetch detects 401 response
-// Calls logout() to clear token
-// Redirects to /users/signin
-// User must sign in again
-```
-
-**On Page Reload:**
-```javascript
-// AuthProvider checks stored token
-// Decodes JWT and checks expiration
-// If expired: removes token and sets isAuth = false
-// If valid: loads user and sets isAuth = true
-```
-
----
-
-## Component Guide
-
-### Authentication Components
-
-#### SignUp.jsx
-- Form fields: Full Name, Email, Role (optional), Password, Confirm Password
-- Validation: Name, email format, password length ≥ 6, password match
-- API call: `signup()` from AuthContext
-- Success: Stores token + user, redirects to home
-- Error: Displays error message, stays on page
-
-#### SignIn.jsx
-- Form fields: Email, Password
-- Validation: Email required, password required
-- API call: `signin()` from AuthContext
-- Success: Stores token + user, redirects to previous page or home
-- Error: Displays error message, stays on page
-
-### Course Components
-
-#### ListCourse.jsx
-- Features: List all courses, search, filter by status, pagination
-- Search: Real-time with 500ms debounce
-- Filter: Active/Draft/Archived status
-- Auth-aware: "Add Course" button only for instructors
-- Displays: Course title, instructor, status, average rating, top labels
-
-#### AddCourse.jsx
-- Protection: Requires authentication + instructor role
-- Form: Title, description, credits, status, instructor
-- Labels: Select up to 3 feedback labels
-- Validation: Title, description, credits required
-- Success: Redirects to course list
-- Error: Displays error message
-
-#### EditCourse.jsx
-- Protection: Requires authentication + course ownership
-- Form: Pre-populated with existing course data
-- Labels: Update selected feedback labels
-- Success: Redirects to course list
-- Error: 403 if not owner, displays error message
-
-### Project Components
-
-#### ListProject.jsx
-- Features: List all projects, search, filter by status
-- Search: Real-time with 500ms debounce
-- Filter: Active/Draft/Archived status
-- Displays: Project title, category, status, average rating, top labels
-- Action: "Add Project" button for authenticated users
-
-#### AddProject.jsx
-- Protection: Requires authentication
-- Form: Title, description, category, start/end dates, github link
-- Labels: Select up to 3 feedback labels
-- Success: Redirects to project list
-- Error: Displays error message
-
-#### EditProject.jsx
-- Protection: Requires authentication + project ownership
-- Form: Pre-populated with existing project data
-- Labels: Update selected feedback labels
-- Success: Redirects to project list
-- Error: 403 if not owner
-
-#### ProjectDetail.jsx
-- Display: Project info + all feedback
-- Feedback form: Only visible to authenticated users
-- Each user can submit one feedback per project (409 if duplicate)
-- Display user's own feedback with edit/delete buttons (if authorized)
-- Shows: Rating, comment, labels, timestamp, author
-
-### User Components
-
-#### ListUser.jsx
-- Display: All registered users with profiles
-- Fields: Avatar, name, email, role
-- Action: Edit/delete buttons (if authorized)
-- Search & filter: Optional features
-
-#### EditUser.jsx
-- Protection: Requires authentication
-- Form: Full name, email, role, password (optional)
-- Success: Redirects to user list
-- Error: Displays error message
-
-### Dashboard.jsx
-- Protection: Requires authentication
-- Displays:
-  - User's owned courses (with edit/delete)
-  - User's owned projects (with edit/delete)
-  - User's submitted feedback (with edit/delete)
-- API: `authenticatedFetch('/dashboard/me')`
-
----
-
-## Services Layer
-
-### Adding a New Service
-
-Example: Create `articlesService.js`
+### Role-Based UI
 
 ```javascript
-import api from './api';
+const { user } = useAuth();
 
-const articlesService = {
-  list: () => api.get('/articles'),
-  
-  read: (id) => api.get(`/articles/${id}`),
-  
-  create: (data) => api.post('/articles', data),
-  
-  update: (id, data) => api.put(`/articles/${id}`, data),
-  
-  remove: (id) => api.delete(`/articles/${id}`)
-};
+const isInstructor = user?.role === 'instructor';
+const isAdmin = user?.role === 'admin';
+const isOwner = resource?.uid === user?.uid;
 
-export default articlesService;
-```
-
-### API Helper Methods
-
-Located in `src/services/api.js`:
-
-```javascript
-const api = {
-  get: (endpoint) => authenticatedFetch(`${API_BASE_URL}${endpoint}`),
-  
-  post: (endpoint, data) => authenticatedFetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }),
-  
-  put: (endpoint, data) => authenticatedFetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }),
-  
-  delete: (endpoint) => authenticatedFetch(`${API_BASE_URL}${endpoint}`, {
-    method: 'DELETE'
-  })
-};
+// Conditionally render
+{(isInstructor || isAdmin) && <Button>Add Course</Button>}
+{(isOwner || isAdmin) && <Button>Edit</Button>}
 ```
 
 ---
@@ -479,27 +175,17 @@ const api = {
 #### Running Tests
 
 ```bash
-# Watch mode
-npm test
-
-# Single run
-npm test -- --run
-
-# With coverage
-npm test -- --coverage
-
-# Specific file
-npm test ListCourse
-
-# UI dashboard
-npm test -- --ui
+npm test              # Watch mode
+npm test -- --run     # Single run
+npm test -- --coverage # With coverage
+npm test -- --ui      # Interactive UI
 ```
 
 #### Test Structure
 
 ```javascript
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { AuthProvider } from './auth/AuthContext';
+import { AuthProvider } from '../auth/AuthContext';
 import MyComponent from './MyComponent';
 
 describe('MyComponent', () => {
@@ -519,402 +205,230 @@ describe('MyComponent', () => {
       </AuthProvider>
     );
     
-    const button = screen.getByRole('button', { name: /click me/i });
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     
     await waitFor(() => {
-      expect(screen.getByText('After click')).toBeInTheDocument();
+      expect(screen.getByText('Success')).toBeInTheDocument();
     });
   });
 });
 ```
 
-#### Best Practices
+#### Mocking Services
 
-1. **Wrap in AuthProvider**: Components using `useAuth()` need AuthProvider
-2. **Semantic queries**: Use `getByRole`, `getByText`, `getByPlaceholderText`
-3. **Avoid implementation details**: Test behavior, not internal state
-4. **Use waitFor for async**: Wait for DOM updates from async operations
-5. **Mock API calls**: Use `jest.mock()` for service calls
-6. **Clean up**: Tests auto-cleanup with React Testing Library
+```javascript
+import { vi } from 'vitest';
+import coursesService from '../services/coursesService';
+
+vi.mock('../services/coursesService');
+
+beforeEach(() => {
+  coursesService.list.mockResolvedValue([
+    { id: '1', title: 'Test Course' }
+  ]);
+});
+```
 
 ### E2E Tests (Cypress)
 
 #### Running E2E Tests
 
 ```bash
-# Interactive mode
-npm run cypress:open
-
-# Headless mode
-npm run cypress:run
-
-# Specific file
+npm run cypress:open   # Interactive mode
+npm run cypress:run    # Headless mode
 npm run cypress:run -- --spec "cypress/e2e/auth.cy.js"
-
-# Against production
-npm run cypress:run -- --baseUrl https://your-domain.com
 ```
 
 #### Test Structure
 
 ```javascript
 describe('Authentication', () => {
-  it('should sign up successfully', () => {
-    cy.visit('/users/signup');
-    cy.get('input[placeholder="Full Name"]').type('John Doe');
-    cy.get('input[placeholder="Email"]').type('john@example.com');
-    cy.get('input[placeholder="Password"]').type('password123');
-    cy.get('input[placeholder="Confirm Password"]').type('password123');
+  beforeEach(() => {
+    cy.clearLocalStorage();
+  });
+
+  it('should sign in successfully', () => {
+    cy.visit('/users/signin');
+    cy.get('input[type="email"]').type('test@example.com');
+    cy.get('input[type="password"]').type('password123');
     cy.get('button[type="submit"]').click();
     
-    cy.url().should('include', '/');
-    cy.contains('Welcome').should('be.visible');
+    cy.url().should('not.include', '/signin');
+    cy.window().its('localStorage.token').should('exist');
   });
 });
 ```
 
-#### Test Suites
-
-- **auth.cy.js**: Sign up, sign in, sign out, protected routes
-- **dashboard.cy.js**: Dashboard load, course/project display
-- **projects.cy.js**: Project CRUD, feedback submission
-- **feedback.cy.js**: Feedback creation, 409 Conflict, deletion, RBAC
-
 #### Best Practices
 
-1. **Use data-cy attributes**: Add `data-cy="unique-id"` to components for reliable selection
-2. **Test user flows**: Test what users actually do
-3. **Wait for API**: Use `cy.intercept()` to wait for API responses
-4. **Clear state**: Clear localStorage/cookies between tests
-5. **Avoid waits**: Use `cy.intercept()` instead of `cy.wait()`
-6. **Test errors**: Include error scenarios and edge cases
+- Use `data-cy` attributes for reliable selection
+- Clear state between tests (`cy.clearLocalStorage()`)
+- Use `cy.intercept()` for API mocking
+- Test user flows, not implementation details
 
 ### Test Coverage Goals
 
-- **Components**: 80%+ line coverage
-- **Services**: 90%+ coverage
-- **Utilities**: 100% coverage
-- **Hooks**: 85%+ coverage
-- **E2E**: All critical user paths
+| Category | Target |
+|----------|--------|
+| Components | 80%+ |
+| Services | 90%+ |
+| Utilities | 100% |
+| E2E | All critical paths |
 
 ---
 
-## Authorization & RBAC
+## Code Standards
 
-### Role Definitions
+### Naming Conventions
 
-| Role | Capabilities |
-|------|-----------|
-| **Student** | View all courses/projects, submit feedback, create projects, edit own profile |
-| **Instructor** | All student capabilities + create/edit/delete own courses |
-| **Admin** | All capabilities including editing/deleting any course/project |
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | `ListCourse.jsx` |
+| Functions | camelCase | `handleSubmit` |
+| Variables | camelCase | `courseList` |
+| Constants | SCREAMING_SNAKE | `API_BASE_URL` |
+| CSS classes | kebab-case | `card-container` |
 
-### Authorization Checks
-
-#### Frontend Checks
-
-```javascript
-// Check if user is instructor
-const isInstructor = user?.role === 'instructor';
-
-// Check if user is admin
-const isAdmin = user?.role === 'admin';
-
-// Check ownership
-const isOwner = course?.uid === user?.uid;
-```
-
-#### Backend Validation
-
-Always validate authorization server-side! Frontend checks are for UX only.
+### File Organization
 
 ```javascript
-// Example course creation
-if (!isInstructor && !isAdmin) {
-  return response.status(403).json({ message: 'Only instructors can create courses' });
-}
+// 1. External imports
+import React, { useState, useEffect } from 'react';
+import { Button, Card } from '@mui/material';
+
+// 2. Internal imports
+import { useAuth } from '../auth/AuthContext';
+import coursesService from '../../services/coursesService';
+
+// 3. Component definition
+const MyComponent = () => {
+  // State
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Effects
+  useEffect(() => {
+    loadData();
+  }, []);
+  
+  // Handlers
+  const handleSubmit = async () => { };
+  
+  // Render
+  return <div />;
+};
+
+export default MyComponent;
 ```
 
-### Common Errors
-
-**403 Forbidden**: User not authorized for this action
-```javascript
-// Frontend handling
-try {
-  await createCourse(courseData);
-} catch (error) {
-  if (error.status === 403) {
-    setErrorMsg('You are not authorized to create courses');
-  }
-}
-```
-
-**409 Conflict**: User already submitted feedback for this project
-```javascript
-// Frontend handling
-try {
-  await createFeedback(feedbackData);
-} catch (error) {
-  if (error.status === 409) {
-    setErrorMsg('You have already submitted feedback for this project');
-  }
-}
-```
-
----
-
-## Error Handling
-
-### Error Response Format
-
-```json
-{
-  "success": false,
-  "message": "Error description"
-}
-```
-
-### HTTP Status Codes
-
-| Code | Meaning | Frontend Action |
-|------|---------|-----------------|
-| 200 | Success | Process response |
-| 400 | Bad Request | Show validation error |
-| 401 | Unauthorized | Auto-logout, redirect to signin |
-| 403 | Forbidden | Show "Not authorized" error |
-| 404 | Not Found | Show "Resource not found" error |
-| 409 | Conflict | Show "Already exists" error (e.g., duplicate feedback) |
-| 500 | Server Error | Show "Server error" message |
-
-### Error Component Pattern
+### Error Handling Pattern
 
 ```javascript
-const [errorMsg, setErrorMsg] = useState('');
+const [error, setError] = useState('');
 const [loading, setLoading] = useState(false);
 
 const handleSubmit = async (data) => {
-  setErrorMsg('');
+  setError('');
   setLoading(true);
 
   try {
-    const result = await create(data);
+    const result = await service.create(data);
     if (result.success) {
-      navigate('/list');
+      navigate('/success');
     } else {
-      setErrorMsg(result.message);
+      setError(result.message);
     }
-  } catch (error) {
-    setErrorMsg(error.message || 'An error occurred');
+  } catch (err) {
+    setError(err.message || 'An error occurred');
   } finally {
     setLoading(false);
   }
 };
+```
 
-return (
-  <>
-    {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-    <form onSubmit={handleSubmit}>
-      {/* form fields */}
-    </form>
-  </>
-);
+### Comments
+
+```javascript
+/**
+ * Fetches and displays course list with search/filter.
+ * @component
+ */
+const ListCourse = () => {
+  // Search with 500ms debounce to reduce API calls
+  const debouncedSearch = useMemo(() => 
+    debounce((term) => fetchCourses(term), 500),
+    []
+  );
+
+  return <div />;
+};
 ```
 
 ---
 
-## Development Workflow
+## Git Workflow
 
-### Setting Up Development Environment
+### Branch Naming
 
-1. **Clone repository**
-```bash
-git clone <repository-url>
-cd EduNexusFrontEnd
-```
+| Type | Pattern | Example |
+|------|---------|---------|
+| Feature | `feature/description` | `feature/add-search` |
+| Bugfix | `fix/description` | `fix/login-redirect` |
+| Hotfix | `hotfix/description` | `hotfix/token-expiry` |
 
-2. **Install dependencies**
-```bash
-npm install
-```
-
-3. **Create .env file**
-```bash
-echo "VITE_API_BASE_URL=http://localhost:3000/api" > .env
-```
-
-4. **Start development server**
-```bash
-npm run dev
-```
-
-### Git Workflow
+### Commit Messages
 
 ```bash
-# Create feature branch
-git checkout -b feature/new-feature
+# Format: type(scope): description
 
-# Make changes and commit
-git add .
-git commit -m "Add new feature"
-
-# Push to GitHub
-git push origin feature/new-feature
-
-# Create Pull Request on GitHub
-# After review: Merge to main
+feat(auth): add password reset flow
+fix(courses): resolve search debounce issue
+docs(readme): update installation steps
+test(feedback): add unit tests for FeedbackForm
+refactor(services): extract common API helper
 ```
 
-### Adding New Features
+### Pull Request Process
 
-1. **Create component structure**
-```bash
-mkdir -p src/components/NewFeature
-touch src/components/NewFeature/NewFeature.jsx
-touch src/components/NewFeature/NewFeature.test.jsx
-```
-
-2. **Create service layer**
-```bash
-touch src/services/newFeatureService.js
-```
-
-3. **Add route to MainRouter.jsx**
-```javascript
-import NewFeature from './components/NewFeature/NewFeature';
-
-// In route definition
-<Route path="/new-feature" element={<NewFeature />} />
-```
-
-4. **Write tests**
-```javascript
-// NewFeature.test.jsx
-import { render, screen } from '@testing-library/react';
-import { AuthProvider } from '../auth/AuthContext';
-import NewFeature from './NewFeature';
-
-describe('NewFeature', () => {
-  it('should render', () => {
-    render(
-      <AuthProvider>
-        <NewFeature />
-      </AuthProvider>
-    );
-    expect(screen.getByText('Expected text')).toBeInTheDocument();
-  });
-});
-```
-
-5. **Write E2E tests**
-```javascript
-// cypress/e2e/new-feature.cy.js
-describe('New Feature', () => {
-  it('should work correctly', () => {
-    cy.visit('/new-feature');
-    // Test user interactions
-  });
-});
-```
-
-### Code Style
-
-- **Naming**: camelCase for variables/functions, PascalCase for components
-- **Formatting**: ESLint enforced, run `npm run lint`
-- **Comments**: Use JSDoc for functions, inline comments for complex logic
-- **Imports**: Organize by external, internal, and relative imports
+1. Create feature branch from `main`
+2. Make changes with meaningful commits
+3. Write/update tests
+4. Run `npm test -- --run` and `npm run lint`
+5. Push and create PR
+6. Address review feedback
+7. Merge after approval
 
 ---
 
-## Known Issues & Limitations
+## Documentation
 
-### Current Limitations
+For detailed documentation, see:
 
-1. **Token Expiration**: Users must re-login after 7 days (no refresh token)
-2. **Offline Support**: No offline mode or service worker
-3. **Real-time Updates**: No WebSocket support; manual page refresh needed
-4. **File Uploads**: Not supported (comments are text-only)
-5. **Pagination**: Limited pagination on list pages
-
-### Workarounds
-
-**Frequent Token Expiration**: Implement refresh token endpoint on backend
-```javascript
-// Future enhancement
-const { token, refreshToken } = await refreshAuth(oldToken);
-localStorage.setItem('token', token);
-localStorage.setItem('refreshToken', refreshToken);
-```
-
-**Real-time Updates**: Add polling or WebSocket listener
-```javascript
-// Future enhancement
-useEffect(() => {
-  const interval = setInterval(() => {
-    fetchLatestData();
-  }, 5000); // Poll every 5 seconds
-  
-  return () => clearInterval(interval);
-}, []);
-```
-
-### Reporting Issues
-
-Include:
-- Browser/version
-- Error message and stack trace
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots (if applicable)
+| Document | Description |
+|----------|-------------|
+| [docs/api.md](docs/api.md) | API endpoints and integration |
+| [docs/design.md](docs/design.md) | UI/UX design and components |
+| [docs/project_requirements.md](docs/project_requirements.md) | Full requirements |
 
 ---
 
-## Performance Tips
+## Known Limitations
 
-### Optimization Techniques
-
-1. **Code Splitting**: Use React.lazy() for route-based splitting
-```javascript
-const Dashboard = lazy(() => import('./components/Dashboard'));
-```
-
-2. **Memoization**: Use `useMemo()` for expensive calculations
-```javascript
-const filteredCourses = useMemo(
-  () => courses.filter(c => c.status === filter),
-  [courses, filter]
-);
-```
-
-3. **useCallback**: Memoize callback functions
-```javascript
-const handleDelete = useCallback((id) => {
-  deleteCourse(id);
-}, []);
-```
-
-4. **Lazy Load Images**: Use `loading="lazy"` on images
-```jsx
-<img src="course.jpg" loading="lazy" />
-```
+1. **Token Expiration**: 7-day tokens, no refresh mechanism
+2. **Offline Support**: No service worker
+3. **Real-time Updates**: Manual refresh required
+4. **File Uploads**: Text-only content
 
 ---
 
 ## Resources
 
-- **React Documentation**: https://react.dev
-- **Material-UI Docs**: https://mui.com
-- **Vite Documentation**: https://vitejs.dev
-- **Vitest Documentation**: https://vitest.dev
-- **Cypress Documentation**: https://cypress.io
-- **JWT Guide**: https://jwt.io/introduction
+- [React Documentation](https://react.dev)
+- [Material-UI Docs](https://mui.com)
+- [Vite Documentation](https://vitejs.dev)
+- [Vitest Documentation](https://vitest.dev)
+- [Cypress Documentation](https://cypress.io)
 
 ---
 
-## License
-
-MIT
-
----
-
-**Questions?** Open an issue on GitHub or check [README.md](./README.md) for quick start guide.
+**Questions?** Open an issue on GitHub.

@@ -76,25 +76,25 @@ function Home() {
 
     const keyBenefits = [
         {
-            icon: <VerifiedUserIcon sx={{ fontSize: 48 }} />,
+            icon: <VerifiedUserIcon sx={{ fontSize: 64 }} />,
             title: 'Choose the Right Teammates',
             description: 'See peer ratings and pick reliable collaborators.',
             color: '#667eea',
         },
         {
-            icon: <StarIcon sx={{ fontSize: 48 }} />,
+            icon: <StarIcon sx={{ fontSize: 64 }} />,
             title: 'Discover the Best Electives',
             description: 'Learn from feedback and maximize your GPA.',
             color: '#ec4899',
         },
         {
-            icon: <TrendingUpIcon sx={{ fontSize: 48 }} />,
+            icon: <TrendingUpIcon sx={{ fontSize: 64 }} />,
             title: 'Get Insights on Core Courses',
             description: 'Know what to expect and how to succeed.',
             color: '#f59e0b',
         },
         {
-            icon: <RateReviewIcon sx={{ fontSize: 48 }} />,
+            icon: <RateReviewIcon sx={{ fontSize: 64 }} />,
             title: 'Benefit from Peer Feedback',
             description: 'Make smarter academic choices with community reviews.',
             color: '#10b981',
@@ -103,7 +103,7 @@ function Home() {
 
     const platformCards = [
         {
-            icon: <BookIcon sx={{ fontSize: 48 }} />,
+            icon: <BookIcon sx={{ fontSize: 64 }} />,
             title: 'Browse Courses',
             description: 'Explore courses with peer ratings and detailed feedback to help you choose wisely.',
             color: '#667eea',
@@ -112,7 +112,7 @@ function Home() {
             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
         },
         {
-            icon: <PersonIcon sx={{ fontSize: 48 }} />,
+            icon: <PersonIcon sx={{ fontSize: 64 }} />,
             title: 'Connect with Peers',
             description: 'Find teammates and colleagues based on verified credentials and peer reviews.',
             color: '#ec4899',
@@ -121,7 +121,7 @@ function Home() {
             gradient: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)'
         },
         {
-            icon: <FolderIcon sx={{ fontSize: 48 }} />,
+            icon: <FolderIcon sx={{ fontSize: 64 }} />,
             title: 'Showcase Projects',
             description: 'View student projects and showcase your own work with peer collaboration feedback.',
             color: '#f59e0b',
@@ -163,7 +163,7 @@ function Home() {
                         sx={{
                             fontWeight: 700,
                             mb: 2,
-                            fontSize: { xs: '1.75rem', md: '2.25rem' },
+                            fontSize: { xs: '2rem', md: '2.75rem' },
                             letterSpacing: '-0.5px'
                         }}
                     >
@@ -173,7 +173,7 @@ function Home() {
                         variant="body1"
                         sx={{
                             mb: 5,
-                            fontSize: { xs: '0.95rem', md: '1.05rem' },
+                            fontSize: { xs: '1.1rem', md: '1.25rem' },
                             fontWeight: 400,
                             opacity: 0.95,
                             maxWidth: '700px',
@@ -198,23 +198,23 @@ function Home() {
                                         p: 3,
                                         textAlign: 'center',
                                         borderRadius: 3,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                                        backdropFilter: 'blur(10px)',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                                        backdropFilter: 'blur(8px)',
                                         transition: 'all 0.3s ease',
                                         height: '100%',
-                                        minHeight: '220px',
+                                        minHeight: '240px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         '&:hover': {
                                             transform: 'translateY(-4px)',
                                             boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
-                                            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
                                         }
                                     }}
                                 >
                                     <Box sx={{ mb: 2, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
-                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 52 } })}
+                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 64 } })}
                                     </Box>
                                     <Typography 
                                         variant="body1" 
@@ -222,7 +222,7 @@ function Home() {
                                             fontWeight: 700, 
                                             mb: 1.5,
                                             color: '#1a202c',
-                                            fontSize: '0.95rem',
+                                            fontSize: '1.1rem',
                                             lineHeight: 1.3
                                         }}
                                     >
@@ -232,9 +232,9 @@ function Home() {
                                         variant="body2" 
                                         sx={{ 
                                             flexGrow: 1,
-                                            fontSize: '0.85rem',
+                                            fontSize: '1rem',
                                             lineHeight: 1.5,
-                                            color: '#5f6368'
+                                            color: '#374151'
                                         }}
                                     >
                                         {benefit.description}
@@ -256,7 +256,7 @@ function Home() {
                             sx={{
                                 fontWeight: 700,
                                 mb: 2,
-                                fontSize: { xs: '1.75rem', md: '2.25rem' },
+                                fontSize: { xs: '2rem', md: '2.5rem' },
                                 color: '#1a202c'
                             }}
                         >
@@ -269,7 +269,7 @@ function Home() {
                                 maxWidth: '600px', 
                                 mx: 'auto', 
                                 lineHeight: 1.6,
-                                fontSize: { xs: '0.95rem', md: '1.05rem' },
+                                fontSize: { xs: '1.1rem', md: '1.2rem' },
                                 fontWeight: 400
                             }}
                         >
@@ -302,7 +302,7 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <PersonIcon sx={{ fontSize: 48 }} />
+                                    <PersonIcon sx={{ fontSize: 56 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
@@ -310,14 +310,14 @@ function Home() {
                                         fontWeight: 800,
                                         mb: 0.5,
                                         color: 'white',
-                                        fontSize: '2rem'
+                                        fontSize: '2.25rem'
                                     }}
                                 >
                                     {loading ? '...' : (stats.registeredStudents !== null ? stats.registeredStudents : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
+                                    sx={{ fontWeight: 500, fontSize: '1rem', opacity: 0.9 }}
                                 >
                                     Registered Students
                                 </Typography>
@@ -348,7 +348,7 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <StarIcon sx={{ fontSize: 48 }} />
+                                    <StarIcon sx={{ fontSize: 56 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
@@ -356,14 +356,14 @@ function Home() {
                                         fontWeight: 800,
                                         mb: 0.5,
                                         color: 'white',
-                                        fontSize: '2rem'
+                                        fontSize: '2.25rem'
                                     }}
                                 >
                                     {loading ? '...' : (stats.coursesWithReviews !== null ? stats.coursesWithReviews : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
+                                    sx={{ fontWeight: 500, fontSize: '1rem', opacity: 0.9 }}
                                 >
                                     Courses with Reviews
                                 </Typography>
@@ -394,7 +394,7 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <SchoolIcon sx={{ fontSize: 48 }} />
+                                    <SchoolIcon sx={{ fontSize: 56 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
@@ -402,14 +402,14 @@ function Home() {
                                         fontWeight: 800,
                                         mb: 0.5,
                                         color: 'white',
-                                        fontSize: '2rem'
+                                        fontSize: '2.25rem'
                                     }}
                                 >
                                     {loading ? '...' : (stats.activeStudents !== null ? stats.activeStudents : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
+                                    sx={{ fontWeight: 500, fontSize: '1rem', opacity: 0.9 }}
                                 >
                                     Active Students
                                 </Typography>
@@ -440,7 +440,7 @@ function Home() {
                                 }}
                             >
                                 <Box sx={{ mb: 2, color: 'white' }}>
-                                    <WorkIcon sx={{ fontSize: 48 }} />
+                                    <WorkIcon sx={{ fontSize: 56 }} />
                                 </Box>
                                 <Typography
                                     variant="h4"
@@ -448,14 +448,14 @@ function Home() {
                                         fontWeight: 800,
                                         mb: 0.5,
                                         color: 'white',
-                                        fontSize: '2rem'
+                                        fontSize: '2.25rem'
                                     }}
                                 >
                                     {loading ? '...' : (stats.projectsRecruiting !== null ? stats.projectsRecruiting : '—')}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
+                                    sx={{ fontWeight: 500, fontSize: '1rem', opacity: 0.9 }}
                                 >
                                     Projects Recruiting
                                 </Typography>

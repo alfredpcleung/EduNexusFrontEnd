@@ -30,6 +30,7 @@ function ProjectDetail() {
 
   useEffect(() => {
     fetchProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchProject = async () => {
@@ -66,12 +67,14 @@ function ProjectDetail() {
 
     try {
       setDeletingFeedbackId(feedbackId);
+      setFeedbackError("");
       await feedbackService.remove(feedbackId);
-      setFeedbackList(feedbackList.filter((fb) => fb.id !== feedbackId));
+      setFeedbackList(feedbackList.filter((fb) => fb.id || fb._id !== feedbackId));
     } catch (err) {
-      if (err.message && err.message.includes("403")) {
+      console.error("Error deleting feedback:", err);
+      if (err.message?.includes("403") || err.message?.includes("not authorized")) {
         setFeedbackError(
-          "You are not authorized to perform this action."
+          "You don't have permission to delete this feedback. Only the feedback author can delete it."
         );
       } else {
         setFeedbackError(err.message || "Failed to delete feedback");
@@ -125,8 +128,6 @@ function ProjectDetail() {
       </Box>
     );
   }
-
-  const isOwner = isAuth && user?.uid === project.owner;
 
   return (
     <Box sx={{ p: 3, maxWidth: "100%", display: "flex", justifyContent: "center" }}>

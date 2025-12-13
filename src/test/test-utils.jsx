@@ -1,8 +1,9 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from '../components/auth/AuthContext';
 
 /**
- * Custom render function that wraps components with necessary providers
+ * Custom render function that wraps components with BrowserRouter only
  */
 export const renderWithRouter = (component) => {
   return render(
@@ -13,14 +14,32 @@ export const renderWithRouter = (component) => {
 };
 
 /**
+ * Custom render function that wraps components with AuthProvider + BrowserRouter
+ * Use this for components that call useAuth
+ */
+export const renderWithAuth = (component) => {
+  return render(
+    <AuthProvider>
+      <BrowserRouter>
+        {component}
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
+
+/**
  * Mock fetch implementation for tests
  */
 export const mockFetch = (data, options = {}) => {
   const { shouldFail = false, status = 200 } = options;
 
-  global.fetch = jest.fn(() =>
+  // eslint-disable-next-line no-undef
+  global.fetch = vi.fn(() =>
     Promise.resolve({
-      json: () => (shouldFail ? Promise.reject(new Error('Fetch failed')) : Promise.resolve(data)),
+      json: () =>
+        shouldFail
+          ? Promise.reject(new Error('Fetch failed'))
+          : Promise.resolve(data),
       ok: !shouldFail,
       status: status,
     })
@@ -31,8 +50,10 @@ export const mockFetch = (data, options = {}) => {
  * Wait for async operations to complete
  */
 export const waitForLoadingToFinish = async () => {
+  // eslint-disable-next-line no-undef
   const { waitFor } = require('@testing-library/react');
   await waitFor(() => {
+    // eslint-disable-next-line no-undef
     expect(document.querySelector('[role="progressbar"]')).not.toBeInTheDocument();
   });
 };
@@ -68,6 +89,7 @@ export const createMockUser = (overrides = {}) => {
 
 export default {
   renderWithRouter,
+  renderWithAuth,
   mockFetch,
   waitForLoadingToFinish,
   createMockCourse,

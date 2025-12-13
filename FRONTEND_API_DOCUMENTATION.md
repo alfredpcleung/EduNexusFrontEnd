@@ -4,11 +4,13 @@
 
 This document provides comprehensive documentation for the EduNexus frontend application. It details how the frontend integrates with backend APIs, manages authentication, maintains state, and handles user interactions.
 
-**Version:** 1.0  
-**Last Updated:** December 2025  
+**Version:** 1.0.1  
+**Last Updated:** December 12, 2025  
+**Status:** ✅ Production Ready  
 **Framework:** React 19 + Vite  
 **State Management:** Context API  
 **UI Library:** Material-UI (MUI)  
+**Testing:** Vitest 4.0.15 + Cypress E2E Tests  
 
 ---
 
@@ -492,6 +494,165 @@ remove(uid)
 
 ---
 
+### Projects Service
+
+**File:** `src/services/projectsService.js`
+
+**Public Endpoints:**
+
+```javascript
+// Get all projects (no auth required)
+list() 
+  → GET /projects
+  → Returns: Array<Project>
+
+// Get single project (no auth required)
+read(id) 
+  → GET /projects/:id
+  → Returns: Project
+```
+
+**Protected Endpoints:**
+
+```javascript
+// Create project (auth required)
+create(projectData) 
+  → POST /projects
+  → Headers: Authorization: Bearer <token>
+  → Returns: Created Project object
+
+// Update project (auth + ownership required)
+update(id, projectData) 
+  → PUT /projects/:id
+  → Headers: Authorization: Bearer <token>
+  → Returns: Updated Project object
+  → Error 403: Not owner
+
+// Delete project (auth + ownership required)
+remove(id) 
+  → DELETE /projects/:id
+  → Headers: Authorization: Bearer <token>
+  → Returns: { success: true }
+  → Error 403: Not owner
+```
+
+**Example Usage:**
+```javascript
+import { list, create, read, update, remove } from '../../services/projectsService';
+
+// List projects
+const projects = await list();
+
+// Create project (only for authenticated users)
+const newProject = await create({
+  title: "E-Commerce Platform",
+  description: "Full-stack e-commerce application",
+  category: "Full Stack",
+  startDate: "2025-01-01",
+  endDate: "2025-03-01",
+  github: "https://github.com/user/ecommerce"
+});
+
+// Update project (only owner)
+const updated = await update(projectId, { title: "Advanced E-Commerce" });
+
+// Delete project (only owner)
+await remove(projectId);
+```
+
+---
+
+### Feedback Service
+
+**File:** `src/services/feedbackService.js`
+
+**Public Endpoints:**
+
+```javascript
+// Get feedback for a project (no auth required)
+listForProject(projectId) 
+  → GET /feedback?projectId=<projectId>
+  → Returns: Array<Feedback>
+```
+
+**Protected Endpoints:**
+
+```javascript
+// Create feedback (auth required)
+create(feedbackData) 
+  → POST /feedback
+  → Headers: Authorization: Bearer <token>
+  → Body: { projectId, rating, comment, author: userId }
+  → Returns: Created Feedback object
+
+// Update feedback (auth + author required)
+update(id, feedbackData) 
+  → PUT /feedback/:id
+  → Headers: Authorization: Bearer <token>
+  → Returns: Updated Feedback object
+  → Error 403: Not author
+
+// Delete feedback (auth + author required)
+remove(id) 
+  → DELETE /feedback/:id
+  → Headers: Authorization: Bearer <token>
+  → Returns: { success: true }
+  → Error 403: Not author
+```
+
+**Example Usage:**
+```javascript
+import { listForProject, create, update, remove } from '../../services/feedbackService';
+
+// Get feedback for a project
+const feedback = await listForProject(projectId);
+
+// Create feedback (only for authenticated users)
+const newFeedback = await create({
+  projectId: "project_123",
+  rating: 5,
+  comment: "Excellent work on this project!"
+});
+
+// Update feedback (only author)
+const updated = await update(feedbackId, { rating: 4, comment: "Good work" });
+
+// Delete feedback (only author)
+await remove(feedbackId);
+```
+
+---
+
+### Dashboard Service
+
+**File:** `src/services/dashboardService.js` (implied in API calls)
+
+**Protected Endpoints:**
+
+```javascript
+// Get user dashboard data (auth required)
+getDashboard() 
+  → GET /dashboard/me
+  → Headers: Authorization: Bearer <token>
+  → Returns: {
+      user: User,
+      courses: Array<Course>,
+      projects: Array<Project>,
+      feedback: Array<Feedback>
+    }
+```
+
+**Example Usage:**
+```javascript
+// Typically called in Dashboard.jsx
+const response = await authenticatedFetch(`${API_BASE_URL}/dashboard/me`, {
+  headers: { 'Cache-Control': 'no-cache' }
+});
+const dashboardData = await response.json();
+```
+
+---
+
 ### Authenticated Fetch Wrapper
 
 **File:** `src/components/auth/auth-helper.js`
@@ -539,6 +700,7 @@ const data = await response.json();
 ```
 /
 ├── / (Home)
+├── /dashboard (Dashboard - Protected)
 ├── /users/signin (Sign In)
 ├── /users/signup (Sign Up)
 ├── /users/list (List Users - Public)
@@ -546,6 +708,10 @@ const data = await response.json();
 ├── /course/list (List Courses - Public)
 ├── /course/add (Add Course - Protected)
 ├── /course/edit/:id (Edit Course - Protected)
+├── /project/list (List Projects - Public)
+├── /project/add (Add Project - Protected)
+├── /project/edit/:id (Edit Project - Protected)
+├── /project/:id (Project Details - Public)
 └── * (Not Found)
 ```
 
@@ -797,6 +963,232 @@ const users = await list();
 
 ---
 
+#### 11. EditUser.jsx
+**Location:** `src/components/User/EditUser.jsx`
+
+**Purpose:** Form to edit user profile
+
+**Protection:** Auth Required ✅
+- Redirects unauthenticated users to `/users/signin`
+- Users can only edit their own profiles
+
+**Key Features:**
+- Load user data by UID
+- Pre-populate form with existing data
+- Edit display name and bio
+- Email field removed for security
+- Loading state while fetching and updating
+- Error handling
+- Redirect to home page on success
+
+**Auth Integration:**
+- `useAuth()` hook checks authentication
+- Updates user via `update()` service with auth header
+- Shows permission error if not own profile
+
+**Route:** `/users/edit/:uid`
+
+---
+
+#### 12. ListProject.jsx
+**Location:** `src/components/Project/ListProject.jsx`
+
+**Purpose:** Display all projects in a list or grid
+
+**Key Features:**
+- Fetch all projects (public endpoint)
+- Display project details: Title, Category, Description
+- "Add Project" button (only visible to authenticated users)
+- Loading state while fetching
+- Error handling and display
+- Reload functionality
+
+**Auth Integration:**
+- Uses `useAuth()` to check if user is authenticated
+- "Add Project" button conditionally visible
+- Edit/Delete buttons visible only to authenticated users
+
+**API Calls:**
+```javascript
+// Public endpoint
+const projects = await list();
+```
+
+**Route:** `/project/list`
+
+---
+
+#### 13. AddProject.jsx
+**Location:** `src/components/Project/AddProject.jsx`
+
+**Purpose:** Form to create new project
+
+**Protection:** Auth Required ✅
+- Redirects unauthenticated users to `/users/signin`
+- Shows loading state while checking auth
+
+**Key Features:**
+- Project form (title, description, category, dates, github link)
+- Form validation
+- Loading state during submission
+- Error handling
+- Redirect to projects list on success
+
+**Auth Integration:**
+- `useAuth()` hook checks authentication
+- Creates project via `create()` service with auth header
+- Auto-logout on token expiration (401 response)
+
+**API Call:**
+```javascript
+const newProject = await create(projectData);
+```
+
+**Route:** `/project/add`
+
+---
+
+#### 14. EditProject.jsx
+**Location:** `src/components/Project/EditProject.jsx`
+
+**Purpose:** Form to edit existing project
+
+**Protection:** Auth Required ✅
+- Redirects unauthenticated users to `/users/signin`
+- Backend validates ownership (403 if not owner)
+
+**Key Features:**
+- Load project data by ID
+- Pre-populate form with existing data
+- Edit project details
+- Loading state while fetching and updating
+- Error handling
+- Redirect to projects list on success
+
+**Auth Integration:**
+- `useAuth()` hook checks authentication
+- Updates project via `update()` service with auth header
+- Shows ownership error if applicable
+
+**API Calls:**
+```javascript
+// Public endpoint
+const projectData = await read(projectId);
+
+// Protected endpoint
+const updated = await update(projectId, newData);
+```
+
+**Route:** `/project/edit/:id`
+
+---
+
+#### 15. ProjectDetail.jsx
+**Location:** `src/components/ProjectDetail.jsx`
+
+**Purpose:** Display project details with feedback section
+
+**Key Features:**
+- Display project information: Title, Description, Category, Dates, GitHub link
+- Show all feedback for the project
+- Feedback form (for authenticated users)
+- Leave feedback with 1-5 star rating
+- Edit/Delete own feedback
+- Responsive layout (feedback cards + form side-by-side on desktop)
+- Loading and error states
+
+**Auth Integration:**
+- Feedback form visible only to authenticated users
+- Edit/Delete feedback buttons visible only to feedback author
+- `useAuth()` hook for current user info
+
+**API Calls:**
+```javascript
+// Get project details (public)
+const project = await read(projectId);
+
+// Get feedback (public)
+const feedback = await listForProject(projectId);
+
+// Create/Update/Delete feedback (protected)
+await create(feedbackData);
+await update(feedbackId, updatedData);
+await remove(feedbackId);
+```
+
+**Route:** `/project/:id`
+
+---
+
+#### 16. FeedbackForm.jsx
+**Location:** `src/components/Feedback/FeedbackForm.jsx`
+
+**Purpose:** Form component for creating/editing feedback
+
+**Key Features:**
+- Star rating selector (1-5 stars)
+- Comment text area
+- Form validation
+- Loading state during submission
+- Error handling
+- Submit and cancel buttons
+
+**Used By:**
+- ProjectDetail.jsx (for creating feedback)
+- Feedback edit flows
+
+---
+
+#### 17. Dashboard.jsx
+**Location:** `src/components/Dashboard.jsx`
+
+**Purpose:** Personal dashboard showing user's data
+
+**Protection:** Auth Required ✅
+- Redirects unauthenticated users to `/users/signin`
+- Shows only logged-in user's data
+
+**Key Features:**
+- Display user's courses (owned)
+- Display user's projects (owned)
+- Display user's feedback (authored)
+- Edit links to modify courses/projects
+- Delete functionality for owned items
+- Loading and error states
+- Cache-busting headers for fresh data
+
+**Auth Integration:**
+- `useAuth()` hook for current user
+- `authenticatedFetch()` for protected endpoint
+- Data filtered by current user on backend
+
+**API Calls:**
+```javascript
+// Protected endpoint
+const dashboard = await authenticatedFetch(`${API_BASE_URL}/dashboard/me`);
+const data = await dashboard.json();
+```
+
+**Route:** `/dashboard`
+
+---
+
+#### 18. Home.jsx
+**Location:** `src/components/Home.jsx`
+
+**Purpose:** Landing page
+
+**Key Features:**
+- Application overview
+- Three feature cards (Courses, Users, Projects)
+- Links to main sections
+- Welcoming introduction
+- Responsive design
+
+**Route:** `/`
+
+---
+
 ### Component Data Flow
 
 ```
@@ -807,11 +1199,19 @@ MainRouter
 Layout (shows auth state in navbar)
   ↓
 Routes
+  ├── Home → Feature cards
   ├── Signin/Signup → AuthContext → localStorage
+  ├── Dashboard → authenticatedFetch(/dashboard/me) → Display
   ├── ListCourse → coursesService.list() → Display
   ├── AddCourse → coursesService.create() → Redirect
   ├── EditCourse → coursesService.read/update() → Redirect
   ├── ListUser → usersService.list() → Display
+  ├── EditUser → usersService.read/update() → Redirect
+  ├── ListProject → projectsService.list() → Display
+  ├── AddProject → projectsService.create() → Redirect
+  ├── EditProject → projectsService.read/update() → Redirect
+  ├── ProjectDetail → read project + feedbackService.list() → Display
+  │                → feedbackService.create/update/remove() → Update
   └── ListItemUser → usersService.remove() → Reload
 ```
 

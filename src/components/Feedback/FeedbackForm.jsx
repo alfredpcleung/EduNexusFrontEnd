@@ -8,15 +8,23 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  Snackbar,
+  Chip,
+  Stack,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 import * as feedbackService from "../../services/feedbackService";
+import { PROJECT_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
 
 function FeedbackForm({ projectId, onFeedbackCreated }) {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,21 +42,20 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
     try {
       setLoading(true);
       setError("");
-      setSuccess("");
 
       const newFeedback = await feedbackService.create({
         projectId,
         rating: parseInt(rating),
         comment: comment.trim(),
+        labels: formatLabelsForSubmission(selectedLabels)
       });
 
       setComment("");
       setRating(5);
-      setSuccess("Feedback submitted successfully!");
+      setSelectedLabels([]);
+      setSuccessMsg("Feedback submitted successfully!");
+      setOpenSnackbar(true);
       onFeedbackCreated(newFeedback);
-
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error submitting feedback:", err);
       setError(err.message || "Failed to submit feedback");
@@ -58,6 +65,7 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
   };
 
   return (
+    <Box>
     <Card>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 2 }}>
@@ -65,14 +73,8 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
             {error}
-          </Alert>
-        )}
-
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
           </Alert>
         )}
 
@@ -102,6 +104,37 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
             />
           </Box>
 
+          {/* Feedback Labels */}
+          <Box sx={{ mb: 3 }}>
+            <FormControl fullWidth>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Labels (select up to 3)
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                {PROJECT_LABELS.map(label => (
+                  <Chip
+                    key={label}
+                    label={label}
+                    onClick={() => {
+                      const updated = selectedLabels.includes(label)
+                        ? selectedLabels.filter(l => l !== label)
+                        : selectedLabels.length < 3
+                        ? [...selectedLabels, label]
+                        : selectedLabels;
+                      setSelectedLabels(updated);
+                    }}
+                    color={selectedLabels.includes(label) ? 'primary' : 'default'}
+                    variant={selectedLabels.includes(label) ? 'filled' : 'outlined'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </Stack>
+              <FormHelperText>
+                {selectedLabels.length}/3 labels selected
+              </FormHelperText>
+            </FormControl>
+          </Box>
+
           <Button
             type="submit"
             variant="contained"
@@ -113,6 +146,14 @@ function FeedbackForm({ projectId, onFeedbackCreated }) {
         </form>
       </CardContent>
     </Card>
+    <Snackbar 
+      open={openSnackbar}
+      autoHideDuration={3000}
+      onClose={() => setOpenSnackbar(false)}
+      message={successMsg}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    />
+  </Box>
   );
 }
 

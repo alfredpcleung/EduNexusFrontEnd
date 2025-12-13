@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
 import ListItemUser from '../../components/User/ListItemUser';
+import { renderWithAuth } from '../../test/test-utils.jsx';   // ✅ use custom helper
 
 describe('ListItemUser Component', () => {
   const mockUser = {
@@ -20,14 +20,12 @@ describe('ListItemUser Component', () => {
   });
 
   it('should render user information correctly', () => {
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -37,14 +35,12 @@ describe('ListItemUser Component', () => {
   });
 
   it('should render action buttons', () => {
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     const buttons = screen.getAllByRole('button');
@@ -55,34 +51,32 @@ describe('ListItemUser Component', () => {
     const user = userEvent.setup();
     window.confirm = vi.fn().mockReturnValue(false);
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     const deleteButton = screen.getAllByRole('button').pop();
     await user.click(deleteButton);
 
-    expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this user?');
+    expect(window.confirm).toHaveBeenCalledWith(
+      'Are you sure you want to delete this user?'
+    );
   });
 
   it('should not call onRemoved when delete is cancelled', async () => {
     const user = userEvent.setup();
     window.confirm = vi.fn().mockReturnValue(false);
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     const deleteButton = screen.getAllByRole('button').pop();
@@ -100,14 +94,12 @@ describe('ListItemUser Component', () => {
       bio: 'Teaching is my passion',
     };
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={userWithUnderscoreId} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={userWithUnderscoreId} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
@@ -120,19 +112,16 @@ describe('ListItemUser Component', () => {
       // missing email, role, bio
     };
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={incompleteUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={incompleteUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     expect(screen.getByText('Bob')).toBeInTheDocument();
     const naElements = screen.getAllByText('N/A');
-    // At least email and role fields should show N/A
     expect(naElements.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -145,28 +134,24 @@ describe('ListItemUser Component', () => {
       bio: 'Teaching',
     };
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={instructorUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={instructorUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     expect(screen.getByText('instructor')).toBeInTheDocument();
   });
 
   it('should have edit button (but disabled)', () => {
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     const buttons = screen.getAllByRole('button');
@@ -180,17 +165,14 @@ describe('ListItemUser Component', () => {
       displayName: 'User',
       email: 'user@example.com',
       bio: 'Bio',
-      // missing role
     };
 
-    render(
-      <BrowserRouter>
-        <table>
-          <tbody>
-            <ListItemUser user={userWithoutRole} onRemoved={mockOnRemoved} />
-          </tbody>
-        </table>
-      </BrowserRouter>
+    renderWithAuth(
+      <table>
+        <tbody>
+          <ListItemUser user={userWithoutRole} onRemoved={mockOnRemoved} />
+        </tbody>
+      </table>
     );
 
     expect(screen.getByText('student')).toBeInTheDocument();

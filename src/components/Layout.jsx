@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import {
     AppBar,
@@ -22,7 +22,6 @@ import FolderIcon from '@mui/icons-material/Folder';
 import { useState } from 'react';
 
 function Layout() {
-    const location = useLocation();
     const { isAuth, user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
 

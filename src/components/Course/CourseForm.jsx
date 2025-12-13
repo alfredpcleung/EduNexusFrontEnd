@@ -15,11 +15,14 @@ import {
     FormHelperText,
     Divider,
     Paper,
+    Chip,
+    Stack,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { COURSE_LABELS } from '../../utils/feedbackLabels';
 
-const CourseForm = ({ course = {}, handleChange, handleSubmit }) => {
+const CourseForm = ({ course = {}, handleChange, handleSubmit, selectedLabels = [], onLabelsChange }) => {
     const navigate = useNavigate();
 
     return (
@@ -138,6 +141,37 @@ const CourseForm = ({ course = {}, handleChange, handleSubmit }) => {
                                         },
                                     }}
                                 />
+                            </Grid>
+
+                            {/* Feedback Labels */}
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                                        Course Labels (select up to 3)
+                                    </Typography>
+                                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                                        {COURSE_LABELS.map(label => (
+                                            <Chip
+                                                key={label}
+                                                label={label}
+                                                onClick={() => {
+                                                    const updated = selectedLabels.includes(label)
+                                                        ? selectedLabels.filter(l => l !== label)
+                                                        : selectedLabels.length < 3
+                                                        ? [...selectedLabels, label]
+                                                        : selectedLabels;
+                                                    if (onLabelsChange) onLabelsChange(updated);
+                                                }}
+                                                color={selectedLabels.includes(label) ? 'primary' : 'default'}
+                                                variant={selectedLabels.includes(label) ? 'filled' : 'outlined'}
+                                                sx={{ cursor: 'pointer' }}
+                                            />
+                                        ))}
+                                    </Stack>
+                                    <FormHelperText>
+                                        {selectedLabels.length}/3 labels selected
+                                    </FormHelperText>
+                                </FormControl>
                             </Grid>
 
                             {/* Divider before actions */}

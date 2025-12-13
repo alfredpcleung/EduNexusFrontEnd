@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ListCourse from '../../components/Course/ListCourse';
 import * as coursesService from '../../services/coursesService';
@@ -189,7 +188,7 @@ describe('ListCourse Component', () => {
     coursesService.list.mockResolvedValue(mockCourses);
     coursesService.remove.mockResolvedValue({ success: true });
 
-    const { rerender } = render(
+    render(
       <BrowserRouter>
         <ListCourse />
       </BrowserRouter>

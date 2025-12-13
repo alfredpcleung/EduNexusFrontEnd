@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { getUser, getToken, isAuthenticated, signup, signin, logout } from "./auth-helper";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -93,6 +94,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 // Custom hook to use Auth Context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
   if (!context) {

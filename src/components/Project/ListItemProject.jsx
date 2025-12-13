@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { remove } from "../../services/coursesService";
-import { Link } from "react-router-dom";
+import { remove } from "../../services/projectsService";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { 
   TableRow, 
@@ -14,28 +14,28 @@ import {
   DialogActions,
   Button,
   Alert,
-  Rating,
   Chip,
-  Stack,
+  Rating,
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const ListItemCourse = ({ course, onRemoved }) => {
+const ListItemProject = ({ project, onRemoved }) => {
     const { isAuth, user } = useAuth();
+    const navigate = useNavigate();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const courseId = course.id || course._id;
-    const courseOwner = course.owner || course.uid;
-    const isOwner = isAuth && user?.uid === courseOwner;
+    const projectId = project.id || project._id;
+    const projectOwner = project.owner || project.uid;
+    const isOwner = isAuth && user?.uid === projectOwner;
 
     // Get rating data (fallback handling for missing backend fields)
-    const averageRating = course.averageRating ?? null;
-    const reviewCount = course.reviewCount ?? 0;
-    const labels = course.labels || [];
+    const averageRating = project.averageRating ?? null;
+    const reviewCount = project.reviewCount ?? 0;
+    const labels = project.labels || [];
 
     // Calculate top 3 labels sorted by count
     const topLabels = labels
@@ -57,22 +57,22 @@ const ListItemCourse = ({ course, onRemoved }) => {
             setIsDeleting(true);
             setDeleteError("");
             
-            const data = await remove(courseId);
+            const data = await remove(projectId);
             
             if (data && (data.success || data.deleted)) {
-                if (typeof onRemoved === 'function') onRemoved(courseId);
+                if (typeof onRemoved === 'function') onRemoved(projectId);
                 setDeleteDialogOpen(false);
             } else if (data?.success === false) {
                 // Check for 403 Forbidden (not owner)
                 if (data.message?.includes("not authorized") || data.message?.includes("owner")) {
-                    setDeleteError("You don't have permission to delete this course. Only the course owner can delete it.");
+                    setDeleteError("You don't have permission to delete this project. Only the project owner can delete it.");
                 } else {
-                    setDeleteError(data.message || 'Failed to delete course');
+                    setDeleteError(data.message || 'Failed to delete project');
                 }
             }
         } catch (err) {
-            console.error("Error deleting course:", err);
-            setDeleteError(err.message || 'Error deleting course');
+            console.error("Error deleting project:", err);
+            setDeleteError(err.message || 'Error deleting project');
         } finally {
             setIsDeleting(false);
         }
@@ -83,7 +83,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
             <TableRow hover>
                 <TableCell>
                     <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{course.title || 'N/A'}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>{project.title || 'N/A'}</Typography>
                         {/* Rating Section */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                             {averageRating !== null ? (
@@ -120,32 +120,36 @@ const ListItemCourse = ({ course, onRemoved }) => {
                         )}
                     </Box>
                 </TableCell>
-                <TableCell>{course.instructor || 'N/A'}</TableCell>
-                <TableCell align="center">{course.credits || 0}</TableCell>
-                <TableCell align="center">
-                    <span
-                        style={{
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            backgroundColor: course.status === 'active' ? '#c8e6c9' : '#ffccbc',
-                            color: course.status === 'active' ? '#2e7d32' : '#d84315',
-                        }}
-                    >
-                        {course.status || 'unknown'}
-                    </span>
+                <TableCell>
+                    <Chip
+                        label={project.status || "N/A"}
+                        size="small"
+                        variant="outlined"
+                    />
+                </TableCell>
+                <TableCell>
+                    {isAuth && user?.uid === projectOwner ? (
+                        <Chip label="You" color="primary" size="small" />
+                    ) : (
+                        <span>{project.ownerName || "Unknown"}</span>
+                    )}
                 </TableCell>
                 <TableCell align="center">
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                        {isOwner ? (
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => navigate(`/project/${projectId}`)}
+                        >
+                            View
+                        </Button>
+                        {isOwner && (
                             <>
                                 <IconButton
-                                    component={Link}
-                                    to={'/course/edit/' + courseId}
                                     size="small"
                                     color="primary"
-                                    title="Edit course"
+                                    onClick={() => navigate(`/project/edit/${projectId}`)}
+                                    title="Edit project"
                                 >
                                     <EditIcon fontSize="small" />
                                 </IconButton>
@@ -153,23 +157,24 @@ const ListItemCourse = ({ course, onRemoved }) => {
                                     size="small"
                                     color="error"
                                     onClick={handleDeleteClick}
-                                    title="Delete course"
+                                    title="Delete project"
                                 >
                                     <DeleteIcon fontSize="small" />
                                 </IconButton>
                             </>
-                        ) : isAuth ? (
-                            <Box sx={{ fontSize: '0.75rem', color: 'textSecondary', p: 1 }}>
-                                Not owner
-                            </Box>
-                        ) : null}
+                        )}
                     </Box>
+                    {!isOwner && isAuth && (
+                        <Box sx={{ fontSize: '0.75rem', color: 'textSecondary', mt: 1 }}>
+                            Not owner
+                        </Box>
+                    )}
                 </TableCell>
             </TableRow>
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
-                <DialogTitle>Delete Course</DialogTitle>
+                <DialogTitle>Delete Project</DialogTitle>
                 <DialogContent>
                     {deleteError && (
                         <Alert severity="error" sx={{ mb: 2 }}>
@@ -178,7 +183,7 @@ const ListItemCourse = ({ course, onRemoved }) => {
                     )}
                     {!deleteError && (
                         <DialogContentText>
-                            Are you sure you want to delete "{course.title}"? This action cannot be undone.
+                            Are you sure you want to delete "{project.title}"? This action cannot be undone.
                         </DialogContentText>
                     )}
                 </DialogContent>
@@ -202,4 +207,4 @@ const ListItemCourse = ({ course, onRemoved }) => {
     );
 };
 
-export default ListItemCourse;
+export default ListItemProject;

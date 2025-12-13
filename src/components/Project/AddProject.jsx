@@ -8,12 +8,19 @@ import {
   Box,
   CircularProgress,
   Alert,
+  Snackbar,
+  Chip,
+  Stack,
+  FormControl,
+  FormHelperText,
+  Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import * as projectsService from "../../services/projectsService";
+import { PROJECT_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
 
 function AddProject() {
-  const { isAuth, user, loading: authLoading } = useAuth();
+  const { isAuth, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -25,6 +32,9 @@ function AddProject() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -62,10 +72,14 @@ function AddProject() {
         tags: formData.tags
           ? formData.tags.split(",").map((tag) => tag.trim())
           : undefined,
+        labels: formatLabelsForSubmission(selectedLabels)
       };
 
       await projectsService.create(projectData);
-      navigate("/project/list");
+      setSuccessMsg("Project created successfully!");
+      setOpenSnackbar(true);
+      // Redirect after snackbar auto-dismisses
+      setTimeout(() => navigate("/project/list"), 2000);
     } catch (err) {
       console.error("Error creating project:", err);
       setError(err.message || "Failed to create project");
@@ -96,7 +110,7 @@ function AddProject() {
           <h2>Create New Project</h2>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
               {error}
             </Alert>
           )}
@@ -167,6 +181,37 @@ function AddProject() {
               />
             </Box>
 
+            {/* Project Labels */}
+            <Box sx={{ mb: 3 }}>
+              <FormControl fullWidth>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                  Project Labels (select up to 3)
+                </Typography>
+                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                  {PROJECT_LABELS.map(label => (
+                    <Chip
+                      key={label}
+                      label={label}
+                      onClick={() => {
+                        const updated = selectedLabels.includes(label)
+                          ? selectedLabels.filter(l => l !== label)
+                          : selectedLabels.length < 3
+                          ? [...selectedLabels, label]
+                          : selectedLabels;
+                        setSelectedLabels(updated);
+                      }}
+                      color={selectedLabels.includes(label) ? 'primary' : 'default'}
+                      variant={selectedLabels.includes(label) ? 'filled' : 'outlined'}
+                      sx={{ cursor: 'pointer' }}
+                    />
+                  ))}
+                </Stack>
+                <FormHelperText>
+                  {selectedLabels.length}/3 labels selected
+                </FormHelperText>
+              </FormControl>
+            </Box>
+
             <Box sx={{ display: "flex", gap: 2 }}>
               <Button
                 type="submit"
@@ -189,6 +234,13 @@ function AddProject() {
           </form>
         </CardContent>
       </Card>
+      <Snackbar 
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        message={successMsg}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Box>
   );
 }

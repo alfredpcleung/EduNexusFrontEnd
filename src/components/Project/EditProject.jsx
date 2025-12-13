@@ -9,7 +9,9 @@ import {
   Box,
   CircularProgress,
   Alert,
+  Typography,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import * as projectsService from "../../services/projectsService";
 
 function EditProject() {
@@ -27,6 +29,10 @@ function EditProject() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [projectOwner, setProjectOwner] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isForbidden, setIsForbidden] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -37,13 +43,17 @@ function EditProject() {
     }
 
     fetchProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isAuth, authLoading, navigate]);
 
   const fetchProject = async () => {
     try {
       setLoading(true);
       setError("");
+      setIsForbidden(false);
       const project = await projectsService.read(id);
+      const ownerUid = project.owner || project.uid;
+      setProjectOwner(ownerUid);
 
       setFormData({
         title: project.title || "",
@@ -52,6 +62,12 @@ function EditProject() {
         tags: project.tags ? project.tags.join(", ") : "",
         status: project.status || "draft",
       });
+
+      // Check ownership
+      if (user?.uid !== ownerUid) {
+        setError("You don't have permission to perform this action.");
+        setIsForbidden(true);
+      }
     } catch (err) {
       console.error("Error fetching project:", err);
       setError(err.message || "Failed to load project");
@@ -76,9 +92,16 @@ function EditProject() {
       return;
     }
 
+    // Verify ownership before submission
+    if (user?.uid !== projectOwner) {
+      setSubmitError("You don't have permission to perform this action.");
+      return;
+    }
+
     try {
-      setLoading(true);
+      setIsSubmitting(true);
       setSubmitError("");
+      setSuccessMsg("");
 
       const projectData = {
         title: formData.title.trim(),
@@ -91,16 +114,17 @@ function EditProject() {
       };
 
       await projectsService.update(id, projectData);
-      navigate("/project/list");
+      setSuccessMsg('Project updated successfully!');
+      setTimeout(() => navigate("/project/list"), 1500);
     } catch (err) {
       console.error("Error updating project:", err);
-      if (err.message && err.message.includes("403")) {
-        setSubmitError("You don't have permission to edit this project.");
+      if (err.message?.includes("403") || err.message?.includes("not authorized")) {
+        setSubmitError("You don't have permission to perform this action.");
       } else {
         setSubmitError(err.message || "Failed to update project");
       }
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -119,14 +143,16 @@ function EditProject() {
     );
   }
 
-  if (error) {
+  if (error && user?.uid !== projectOwner) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">{error}</Alert>
+      <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
         <Button
           variant="contained"
+          startIcon={<ArrowBackIcon />}
           onClick={() => navigate("/project/list")}
-          sx={{ mt: 2 }}
         >
           Back to Projects
         </Button>
@@ -136,17 +162,41 @@ function EditProject() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 600, mx: "auto" }}>
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Button 
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/project/list")}
+          variant="text"
+        >
+          Back to Projects
+        </Button>
+      </Box>
+
       <Card>
         <CardContent>
-          <h2>Edit Project</h2>
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>Edit Project</Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+              {error}
+            </Alert>
+          )}
 
           {submitError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setSubmitError('')}>
               {submitError}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit}>
+          {successMsg && (
+            <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMsg('')}>
+              {successMsg}
+            </Alert>
+          )}
+
+          {/* Always show form, but disable if forbidden */}
+          <Box sx={{ opacity: isForbidden ? 0.6 : 1, pointerEvents: isForbidden ? 'none' : 'auto' }}>
+            <form onSubmit={handleSubmit}>
             <Box sx={{ mb: 2 }}>
               <TextField
                 label="Title"
@@ -218,20 +268,22 @@ function EditProject() {
                 variant="contained"
                 color="primary"
                 fullWidth
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? "Updating..." : "Update Project"}
+                {isSubmitting ? "Updating..." : "Update Project"}
               </Button>
               <Button
                 type="button"
                 variant="outlined"
                 fullWidth
                 onClick={() => navigate("/project/list")}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
             </Box>
-          </form>
+            </form>
+          </Box>
         </CardContent>
       </Card>
     </Box>

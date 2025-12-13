@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../auth/AuthContext";
 import {
   Table,
@@ -12,28 +12,46 @@ import {
   Box,
   CircularProgress,
   Alert,
-  Chip,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Card,
+  Container,
+  Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import * as projectsService from "../../services/projectsService";
+import ListItemProject from "./ListItemProject";
 
 function ListProject() {
-  const { isAuth, user } = useAuth();
+  const { isAuth } = useAuth();
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const searchTimeoutRef = useRef(null);
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (search = "", status = "") => {
     try {
       setLoading(true);
       setError("");
-      const data = await projectsService.list();
+      
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (status) params.append("status", status);
+      
+      // Call backend with query params (fallback to full list if not supported)
+      const data = await projectsService.list(params.toString() || undefined);
       setProjects(data);
     } catch (err) {
       console.error("Error fetching projects:", err);
@@ -43,7 +61,32 @@ function ListProject() {
     }
   };
 
-  if (loading) {
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set new timeout for debounced search
+    searchTimeoutRef.current = setTimeout(() => {
+      setLoading(true);
+      fetchProjects(value, statusFilter);
+    }, 500);
+  };
+
+  const handleStatusChange = (value) => {
+    setStatusFilter(value);
+    setLoading(true);
+    fetchProjects(searchTerm, value);
+  };
+
+  const handleProjectRemoved = (projectId) => {
+    setProjects(projects.filter(p => (p.id || p._id) !== projectId));
+  };
+
+  if (loading && projects.length === 0) {
     return (
       <Box
         sx={{
@@ -59,9 +102,11 @@ function ListProject() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-        <h1>Projects</h1>
+        <Typography variant="h4" component="h1">
+          Projects
+        </Typography>
         {isAuth && (
           <Button
             variant="contained"
@@ -73,10 +118,40 @@ function ListProject() {
         )}
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>{error}</Alert>}
+
+      {/* Search and Filter Section */}
+      <Card sx={{ mb: 3, p: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, alignItems: "flex-end", flexWrap: "wrap" }}>
+          <TextField
+            label="Search Projects"
+            placeholder="Search by title or tags..."
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            sx={{ minWidth: 250 }}
+          />
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              label="Status"
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Archived">Archived</MenuItem>
+              <MenuItem value="Draft">Draft</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Card>
 
       {projects.length === 0 ? (
-        <Alert severity="info">No projects found</Alert>
+        <Alert severity="info">
+          {searchTerm || statusFilter ? "No projects match your filters." : "No projects found"}
+        </Alert>
       ) : (
         <TableContainer component={Paper}>
           <Table>
@@ -90,38 +165,17 @@ function ListProject() {
             </TableHead>
             <TableBody>
               {projects.map((project) => (
-                <TableRow key={project.id} hover>
-                  <TableCell>{project.title}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={project.status || "N/A"}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {isAuth && user?.uid === project.owner ? (
-                      <Chip label="You" color="primary" size="small" />
-                    ) : (
-                      <span>{project.ownerName || "Unknown"}</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => navigate(`/project/${project.id}`)}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                <ListItemProject 
+                  key={project.id || project._id} 
+                  project={project}
+                  onRemoved={handleProjectRemoved}
+                />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
-    </Box>
+    </Container>
   );
 }
 

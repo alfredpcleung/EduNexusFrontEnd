@@ -4,13 +4,17 @@ import { useAuth } from "../auth/AuthContext";
 import CourseModel from "../../datasource/CourseModel";
 import { create } from "../../services/coursesService";
 import CourseForm from "./CourseForm";
-import { Container, Alert, Box, CircularProgress, Typography } from '@mui/material';
+import { COURSE_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
+import { Container, Alert, Box, CircularProgress, Typography, Snackbar } from '@mui/material';
 
 const AddCourse = () => {
     const navigate = useNavigate();
     const { isAuth, loading } = useAuth();
     const [course, setCourse] = useState(new CourseModel());
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [selectedLabels, setSelectedLabels] = useState([]);
 
     // Redirect to signin if not authenticated
     useEffect(() => {
@@ -33,15 +37,18 @@ const AddCourse = () => {
             description: course.description,
             credits: parseFloat(course.credits) || 0,
             status: course.status,
-            instructor: course.instructor
+            instructor: course.instructor,
+            labels: formatLabelsForSubmission(selectedLabels)
         };
 
         create(submitCourse)
             .then(data => {
                 if (data && data.title) {
                     // Backend returns the created course object directly
-                    alert(`Course added successfully: ${data.title}`);
-                    navigate("/course/list");
+                    setSuccessMsg(`Course "${data.title}" added successfully!`);
+                    setOpenSnackbar(true);
+                    // Redirect after snackbar auto-dismisses
+                    setTimeout(() => navigate("/course/list"), 2000);
                 } else if (data && (data.success === false || data.error)) {
                     setErrorMsg(data.message || 'Failed to create course');
                 } else {
@@ -90,8 +97,17 @@ const AddCourse = () => {
                     course={course}
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
+                    selectedLabels={selectedLabels}
+                    onLabelsChange={setSelectedLabels}
                 />
             </Container>
+            <Snackbar 
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={() => setOpenSnackbar(false)}
+                message={successMsg}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            />
         </Box>
     );
 };

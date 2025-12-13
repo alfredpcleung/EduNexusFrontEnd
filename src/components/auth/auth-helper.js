@@ -143,9 +143,10 @@ const authenticatedFetch = async (url, options = {}) => {
     headers,
   });
 
-  // Handle token expiration
+  // Handle token expiration - clone response to read body without consuming it
   if (response.status === 401) {
-    const data = await response.json();
+    const clonedResponse = response.clone();
+    const data = await clonedResponse.json();
     if (
       data.message === "Token has expired. Please sign in again." ||
       data.message === "Invalid token. Please authenticate."

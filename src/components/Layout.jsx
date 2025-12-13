@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import {
     AppBar,
@@ -10,6 +10,9 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    TextField,
+    Select,
+    InputAdornment,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -19,11 +22,15 @@ import PeopleIcon from '@mui/icons-material/People';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FolderIcon from '@mui/icons-material/Folder';
+import SearchIcon from '@mui/icons-material/Search';
 import { useState } from 'react';
 
 function Layout() {
     const { isAuth, user, logout } = useAuth();
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [searchType, setSearchType] = useState('course');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -39,99 +46,146 @@ function Layout() {
         window.location.href = '/';
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        if (searchType === 'course') {
+            navigate(`/course/list?search=${encodeURIComponent(searchQuery)}`);
+        } else if (searchType === 'student') {
+            navigate(`/users/list?search=${encodeURIComponent(searchQuery)}`);
+        }
+        setSearchQuery('');
+    };
+
     return (
         <>
             <AppBar position="static" sx={{ mb: 0 }}>
-                <Toolbar>
-                    {/* Logo/Title */}
+                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+                    {/* Logo/Title - Left */}
                     <Typography
                         variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}
+                        component={Link}
+                        to="/"
+                        sx={{ 
+                            fontWeight: 'bold', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 1,
+                            color: 'inherit',
+                            textDecoration: 'none',
+                            flexShrink: 0
+                        }}
                     >
                         <BookIcon />
                         EduNexus
                     </Typography>
 
-                    {/* Desktop Navigation */}
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
-                        {/* Home Link */}
-                        <Button
-                            component={Link}
-                            to="/"
-                            color="inherit"
-                            startIcon={<HomeIcon />}
+                    {/* Search Bar - Middle (Desktop Only) */}
+                    <Box
+                        component="form"
+                        onSubmit={handleSearch}
+                        sx={{
+                            display: { xs: 'none', md: 'flex' },
+                            gap: 1,
+                            alignItems: 'center',
+                            flexGrow: 1,
+                            maxWidth: '400px',
+                            mx: 'auto'
+                        }}
+                    >
+                        <Select
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value)}
                             sx={{
-                                textTransform: 'none',
-                                fontSize: '1rem',
-                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                                backgroundColor: 'rgba(255,255,255,0.15)',
+                                borderRadius: '4px',
+                                color: 'white',
+                                fontSize: '0.9rem',
+                                minWidth: '120px',
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(255,255,255,0.3)'
+                                },
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(255,255,255,0.5)'
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'white'
+                                },
+                                '& .MuiSvgIcon-root': {
+                                    color: 'white'
+                                },
+                                '& .MuiOutlinedInput-input': {
+                                    color: 'white',
+                                    '&::placeholder': {
+                                        color: 'rgba(255,255,255,0.7)',
+                                        opacity: 1
+                                    }
+                                }
                             }}
                         >
-                            Home
-                        </Button>
+                            <MenuItem value="course">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <BookIcon sx={{ fontSize: '1.2rem' }} />
+                                    <span>Courses</span>
+                                </Box>
+                            </MenuItem>
+                            <MenuItem value="student">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <PeopleIcon sx={{ fontSize: '1.2rem' }} />
+                                    <span>Teammates</span>
+                                </Box>
+                            </MenuItem>
+                        </Select>
 
-                        {/* Courses Link */}
-                        <Button
-                            component={Link}
-                            to="/course/list"
-                            color="inherit"
-                            startIcon={<BookIcon />}
+                        <TextField
+                            placeholder={searchType === 'course' ? 'Search courses...' : 'Search students...'}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            size="small"
                             sx={{
-                                textTransform: 'none',
-                                fontSize: '1rem',
-                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                                flex: 1,
+                                '& .MuiOutlinedInput-root': {
+                                    backgroundColor: 'rgba(255,255,255,0.15)',
+                                    borderRadius: '4px',
+                                    color: 'white',
+                                    fontSize: '0.9rem',
+                                    '& fieldset': {
+                                        borderColor: 'rgba(255,255,255,0.3)'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'rgba(255,255,255,0.5)'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'white'
+                                    },
+                                    '& input::placeholder': {
+                                        color: 'rgba(255,255,255,0.7)',
+                                        opacity: 1
+                                    }
+                                },
+                                '& .MuiOutlinedInput-input': {
+                                    color: 'white'
+                                }
+                            }}
+                        />
+
+                        <IconButton
+                            type="submit"
+                            color="inherit"
+                            sx={{
+                                padding: '8px',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                }
                             }}
                         >
-                            Courses
-                        </Button>
+                            <SearchIcon />
+                        </IconButton>
+                    </Box>
 
-                        {/* Users Link */}
-                        <Button
-                            component={Link}
-                            to="/users/list"
-                            color="inherit"
-                            startIcon={<PeopleIcon />}
-                            sx={{
-                                textTransform: 'none',
-                                fontSize: '1rem',
-                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-                            }}
-                        >
-                            Users
-                        </Button>
-
-                        {/* Projects Link */}
-                        <Button
-                            component={Link}
-                            to="/project/list"
-                            color="inherit"
-                            startIcon={<FolderIcon />}
-                            sx={{
-                                textTransform: 'none',
-                                fontSize: '1rem',
-                                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-                            }}
-                        >
-                            Projects
-                        </Button>
-
-                        {/* Dashboard Link - Only for authenticated users */}
-                        {isAuth && (
-                            <Button
-                                component={Link}
-                                to="/dashboard"
-                                color="inherit"
-                                sx={{
-                                    textTransform: 'none',
-                                    fontSize: '1rem',
-                                    '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-                                }}
-                            >
-                                Dashboard
-                            </Button>
-                        )}
-
-                        {/* Auth Buttons */}
+                    {/* Auth Buttons - Right (Desktop) */}
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center', flexShrink: 0 }}>
                         {!isAuth ? (
                             <>
                                 <Button
@@ -140,7 +194,8 @@ function Layout() {
                                     variant="outlined"
                                     color="inherit"
                                     startIcon={<LoginIcon />}
-                                    sx={{ textTransform: 'none' }}
+                                    size="small"
+                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
                                 >
                                     Sign In
                                 </Button>
@@ -149,7 +204,9 @@ function Layout() {
                                     to="/users/signup"
                                     variant="contained"
                                     color="secondary"
-                                    sx={{ textTransform: 'none' }}
+                                    startIcon={<BookIcon />}
+                                    size="small"
+                                    sx={{ textTransform: 'none', fontSize: '0.9rem' }}
                                 >
                                     Sign Up
                                 </Button>
@@ -162,7 +219,9 @@ function Layout() {
                                     sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                                 >
                                     <AccountCircleIcon />
-                                    <Typography variant="body2">{user?.displayName || 'User'}</Typography>
+                                    <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                                        {user?.displayName || 'User'}
+                                    </Typography>
                                 </IconButton>
                                 <Menu
                                     anchorEl={anchorEl}
@@ -197,30 +256,13 @@ function Layout() {
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}
                         >
-                            <MenuItem component={Link} to="/" onClick={handleMenuClose}>
-                                <HomeIcon sx={{ mr: 1 }} /> Home
-                            </MenuItem>
-                            <MenuItem component={Link} to="/course/list" onClick={handleMenuClose}>
-                                <BookIcon sx={{ mr: 1 }} /> Courses
-                            </MenuItem>
-                            <MenuItem component={Link} to="/users/list" onClick={handleMenuClose}>
-                                <PeopleIcon sx={{ mr: 1 }} /> Users
-                            </MenuItem>
-                            <MenuItem component={Link} to="/project/list" onClick={handleMenuClose}>
-                                <FolderIcon sx={{ mr: 1 }} /> Projects
-                            </MenuItem>
-                            {isAuth && (
-                                <MenuItem component={Link} to="/dashboard" onClick={handleMenuClose}>
-                                    Dashboard
-                                </MenuItem>
-                            )}
                             {!isAuth ? (
                                 <>
                                     <MenuItem component={Link} to="/users/signin" onClick={handleMenuClose}>
                                         <LoginIcon sx={{ mr: 1 }} /> Sign In
                                     </MenuItem>
                                     <MenuItem component={Link} to="/users/signup" onClick={handleMenuClose}>
-                                        Sign Up
+                                        <BookIcon sx={{ mr: 1 }} /> Sign Up
                                     </MenuItem>
                                 </>
                             ) : (

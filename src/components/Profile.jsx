@@ -15,6 +15,10 @@ const Profile = () => {
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({});
+    const [errors, setErrors] = useState({});
+
+    // Debug the Router context
+    console.log('useNavigate context:', useNavigate);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -42,12 +46,34 @@ const Profile = () => {
         fetchUser();
     }, []);
 
+    const validateUrls = (data) => {
+        const newErrors = {};
+        // Simple regex for GitHub and LinkedIn URLs
+        const githubPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+$/;
+        const linkedinPattern = /^https:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/;
+        if (data.github && !githubPattern.test(data.github)) {
+            newErrors.github = 'Please enter a valid GitHub URL';
+        }
+        if (data.linkedin && !linkedinPattern.test(data.linkedin)) {
+            newErrors.linkedin = 'Please enter a valid LinkedIn URL';
+        }
+        return newErrors;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const updatedForm = { ...formData, [name]: value };
+        setFormData(updatedForm);
+        // Validate on change for instant feedback
+        setErrors(validateUrls(updatedForm));
     };
 
     const handleSave = async () => {
+        const validationErrors = validateUrls(formData);
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            return;
+        }
         try {
             const userId = 'current-user-id'; // Replace with actual user ID retrieval logic
             await update(userId, formData);
@@ -135,6 +161,8 @@ const Profile = () => {
                             name="github"
                             value={formData.github || ''}
                             onChange={handleChange}
+                            error={!!errors.github}
+                            helperText={errors.github}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -153,6 +181,8 @@ const Profile = () => {
                             name="linkedin"
                             value={formData.linkedin || ''}
                             onChange={handleChange}
+                            error={!!errors.linkedin}
+                            helperText={errors.linkedin}
                         />
                     </Grid>
                     <Grid item xs={12}>

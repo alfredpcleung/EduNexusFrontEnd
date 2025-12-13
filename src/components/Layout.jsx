@@ -244,24 +244,46 @@ function Layout() {
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleMenuClose}
+                                    MenuListProps={{ autoFocusItem: false }}
+                                    PaperProps={{
+                                        sx: {
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            minWidth: 220,
+                                            pb: 0,
+                                            boxShadow: 'none',
+                                            m: 0,
+                                            p: 0,
+                                            backgroundClip: 'padding-box',
+                                        }
+                                    }}
                                 >
-                                    <MenuItem onClick={() => navigate('/profile')}>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/profile'); }}>
                                         <PersonIcon sx={{ mr: 1 }} /> Profile
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/settings')}>
-                                        <SettingsIcon sx={{ mr: 1 }} /> Settings
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/settings'); }}>
+                                        <SettingsIcon sx={{ mr: 1 }} /> Account Settings
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/academic-record')}>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/academic-record'); }}>
                                         <SchoolIcon sx={{ mr: 1 }} /> Your Academic Record
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/course-reviews')}>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/course-reviews'); }}>
                                         <RateReviewIcon sx={{ mr: 1 }} /> Your Course Reviews
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/group-projects')}>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/group-projects'); }}>
                                         <GroupWorkIcon sx={{ mr: 1 }} /> Your Group Projects
                                     </MenuItem>
-                                    <MenuItem onClick={() => navigate('/teammate-reviews')}>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/teammate-reviews'); }}>
                                         <StarIcon sx={{ mr: 1 }} /> Your Teammate Reviews
+                                    </MenuItem>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    <MenuItem
+                                        onClick={() => {
+                                            handleSignout();
+                                        }}
+                                        sx={{ mt: 1, borderTop: '1px solid #eee', color: 'error.main' }}
+                                    >
+                                        <LogoutIcon sx={{ mr: 1 }} /> Log Out
                                     </MenuItem>
                                 </Menu>
                             </Box>

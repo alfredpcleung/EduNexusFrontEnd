@@ -2,8 +2,8 @@
  * User Service
  * Handles all user-related API calls (authentication, user creation, etc.)
  */
-import { getApiUrl } from './api';
-import { authenticatedFetch } from '../components/auth/auth-helper';
+import { getApiUrl } from './api.js';
+import { authenticatedFetch } from '../components/auth/auth-helper.js';
 
 /**
  * List all users (Public endpoint)

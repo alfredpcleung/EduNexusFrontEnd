@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { read, update } from '../services/usersService';
+import useAutosave from '../hooks/useAutosave';
 import {
     Box,
     Button,
@@ -83,19 +84,18 @@ const Profile = () => {
         }
     };
 
-    useEffect(() => {
-        const autosave = setInterval(async () => {
-            try {
-                const userId = 'current-user-id'; // Replace with actual user ID retrieval logic
-                await update(userId, formData);
-                console.log('Autosave successful');
-            } catch (error) {
-                console.error('Autosave failed:', error);
-            }
-        }, 30000); // Autosave every 30 seconds
-
-        return () => clearInterval(autosave);
+    // Memoize autosave callback for stable reference
+    const autosaveCallback = useCallback(async () => {
+        try {
+            const userId = 'current-user-id'; // Replace with actual user ID retrieval logic
+            await update(userId, formData);
+            console.log('Autosave successful');
+        } catch (error) {
+            console.error('Autosave failed:', error);
+        }
     }, [formData]);
+
+    useAutosave(autosaveCallback, [formData], 30000);
 
     const handleCancel = () => {
         if (JSON.stringify(formData) !== JSON.stringify(user)) {

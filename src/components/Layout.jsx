@@ -49,7 +49,7 @@ function Layout() {
     const handleSignout = () => {
         logout();
         handleMenuClose();
-        window.location.href = '/';
+        navigate('/');
     };
 
     const handleSearch = (e) => {
@@ -244,21 +244,22 @@ function Layout() {
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleMenuClose}
-                                    MenuListProps={{ autoFocusItem: false }}
+                                    MenuListProps={{ autoFocusItem: false, disablePadding: true }}
                                     PaperProps={{
+                                        elevation: 0,
                                         sx: {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             minWidth: 220,
-                                            pb: 0,
-                                            boxShadow: 'none',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                                             m: 0,
                                             p: 0,
                                             backgroundClip: 'padding-box',
+                                            borderRadius: 2,
                                         }
                                     }}
                                 >
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/profile'); }}>
+                                    <MenuItem onClick={() => { handleMenuClose(); setTimeout(() => navigate('/profile'), 0); }}>
                                         <PersonIcon sx={{ mr: 1 }} /> Profile
                                     </MenuItem>
                                     <MenuItem onClick={() => { handleMenuClose(); navigate('/settings'); }}>
@@ -278,9 +279,7 @@ function Layout() {
                                     </MenuItem>
                                     <Box sx={{ flexGrow: 1 }} />
                                     <MenuItem
-                                        onClick={() => {
-                                            handleSignout();
-                                        }}
+                                        onClick={handleSignout}
                                         sx={{ mt: 1, borderTop: '1px solid #eee', color: 'error.main' }}
                                     >
                                         <LogoutIcon sx={{ mr: 1 }} /> Log Out

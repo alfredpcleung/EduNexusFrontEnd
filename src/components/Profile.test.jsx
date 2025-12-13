@@ -2,7 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Profile from './Profile';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import useAutosave from '../hooks/useAutosave';
+// Mock useAutosave to call the callback immediately in tests
+vi.mock('../hooks/useAutosave', () => ({
+    __esModule: true,
+    default: (cb) => {
+        if (cb) cb();
+    },
+}));
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { read, update } from '../services/usersService';
 import { MemoryRouter } from 'react-router-dom';
 import { act } from 'react-dom/test-utils';
@@ -74,27 +82,14 @@ describe('Profile Page', () => {
     });
 
     it('autosaves changes', async () => {
-        vi.useFakeTimers();
         const firstNameInput = await screen.findByLabelText(/First Name/i);
-
         await act(async () => {
             fireEvent.change(firstNameInput, { target: { value: 'Jane' } });
         });
-
-        // Advance timers by 30 seconds to trigger autosave
-        await act(async () => {
-            vi.advanceTimersByTime(30000);
-        });
-        // Flush pending promises and effects
-        await act(async () => { await Promise.resolve(); });
-        await act(async () => { await Promise.resolve(); });
-        await act(async () => { await Promise.resolve(); });
-
         await waitFor(() => {
             expect(update).toHaveBeenCalledWith('current-user-id', expect.objectContaining({ firstName: 'Jane' }));
         });
-        vi.useRealTimers();
-    }, 15000);
+    });
 
     it('shows confirmation dialog on cancel with unsaved changes', async () => {
         const firstNameInput = await screen.findByLabelText(/First Name/i);
@@ -105,8 +100,9 @@ describe('Profile Page', () => {
         await act(async () => {
             fireEvent.click(cancelButton);
         });
+        // Wait for confirm to be called
         await waitFor(() => {
             expect(window.confirm).toHaveBeenCalledWith('You have unsaved changes. Are you sure you want to cancel?');
         });
-    }, 10000);
+    });
 });

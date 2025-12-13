@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { list } from '../../services/coursesService.js';
 import ListItemCourse from './ListItemCourse.jsx';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import {
     Box,
     Button,
@@ -22,16 +23,21 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
+    Tooltip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 const ListCourse = () => {
+    const { user } = useAuth();
     const [courseList, setCourseList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const searchTimeoutRef = useRef(null);
+
+    // Check if user is instructor
+    const isInstructor = user?.role === 'instructor';
 
     const loadCourses = (search = '', status = '') => {
         // Build query parameters
@@ -102,15 +108,30 @@ const ListCourse = () => {
                 <Typography variant="h4" component="h1">
                     Courses
                 </Typography>
-                <Button
-                    component={Link}
-                    to="/course/add"
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                >
-                    Add Course
-                </Button>
+                {isInstructor ? (
+                    <Button
+                        component={Link}
+                        to="/course/add"
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                    >
+                        Add Course
+                    </Button>
+                ) : (
+                    <Tooltip title="Only instructors can create courses">
+                        <span>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon />}
+                                disabled
+                            >
+                                Add Course
+                            </Button>
+                        </span>
+                    </Tooltip>
+                )}
             </Box>
 
             {/* Error Alert */}

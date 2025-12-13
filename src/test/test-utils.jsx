@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '../components/auth/AuthContext';
+import { AuthContext } from '../components/auth/AuthContext';
 
 /**
  * Custom render function that wraps components with BrowserRouter only
@@ -17,13 +17,23 @@ export const renderWithRouter = (component) => {
  * Custom render function that wraps components with AuthProvider + BrowserRouter
  * Use this for components that call useAuth
  */
-export const renderWithAuth = (component) => {
+export const renderWithAuth = (component, { user = null, isAuth = false } = {}) => {
+  const mockContextValue = {
+    user,
+    isAuth,
+    loading: false,
+    error: null,
+    handleSignup: () => {},
+    handleSignin: () => {},
+    handleLogout: () => {},
+  };
+
   return render(
-    <AuthProvider>
+    <AuthContext.Provider value={mockContextValue}>
       <BrowserRouter>
         {component}
       </BrowserRouter>
-    </AuthProvider>
+    </AuthContext.Provider>
   );
 };
 

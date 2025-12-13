@@ -1,11 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
 import ListCourse from '../../components/Course/ListCourse';
+import { renderWithAuth } from '../../test/test-utils';
 import * as coursesService from '../../services/coursesService';
 
 // Mock the coursesService
 vi.mock('../../services/coursesService');
+
+// Mock user data
+const mockUser = {
+  id: '1',
+  name: 'Test User',
+  email: 'test@example.com',
+  role: 'student',
+};
 
 // Mock course data
 const mockCourses = [
@@ -44,11 +52,7 @@ describe('ListCourse Component', () => {
     // Mock list to return a promise that never resolves
     coursesService.list.mockImplementation(() => new Promise(() => {}));
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
@@ -56,11 +60,7 @@ describe('ListCourse Component', () => {
   it('should render courses list when data is loaded', async () => {
     coursesService.list.mockResolvedValue(mockCourses);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     // Wait for loading to finish and courses to appear
     await waitFor(() => {
@@ -87,11 +87,7 @@ describe('ListCourse Component', () => {
     const errorMessage = 'Failed to load courses';
     coursesService.list.mockRejectedValue(new Error(errorMessage));
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(errorMessage, 'i'))).toBeInTheDocument();
@@ -101,11 +97,7 @@ describe('ListCourse Component', () => {
   it('should display "No courses found" when list is empty', async () => {
     coursesService.list.mockResolvedValue([]);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(screen.getByText('No courses found')).toBeInTheDocument();
@@ -115,11 +107,7 @@ describe('ListCourse Component', () => {
   it('should have Add Course button that navigates to /course/add', async () => {
     coursesService.list.mockResolvedValue(mockCourses);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />, { user: { ...mockUser, role: 'instructor' }, isAuth: true });
 
     // Button is rendered as a Link (anchor tag) in Material UI
     const addButton = await screen.findByRole('link', { name: /add course/i });
@@ -130,11 +118,7 @@ describe('ListCourse Component', () => {
   it('should call list() on component mount', async () => {
     coursesService.list.mockResolvedValue(mockCourses);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(coursesService.list).toHaveBeenCalledTimes(1);
@@ -144,17 +128,15 @@ describe('ListCourse Component', () => {
   it('should display table headers correctly', async () => {
     coursesService.list.mockResolvedValue(mockCourses);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(screen.getByText('Title')).toBeInTheDocument();
       expect(screen.getByText('Instructor')).toBeInTheDocument();
       expect(screen.getByText('Credits')).toBeInTheDocument();
-      expect(screen.getByText('Status')).toBeInTheDocument();
+      // Use getAllByText since Status appears multiple times (in filter and table header)
+      const statusElements = screen.getAllByText('Status');
+      expect(statusElements.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText('Actions')).toBeInTheDocument();
     });
   });
@@ -173,11 +155,7 @@ describe('ListCourse Component', () => {
 
     coursesService.list.mockResolvedValue(coursesWithUnderscoreId);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(screen.getByText('Course 1')).toBeInTheDocument();
@@ -188,11 +166,7 @@ describe('ListCourse Component', () => {
     coursesService.list.mockResolvedValue(mockCourses);
     coursesService.remove.mockResolvedValue({ success: true });
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       expect(screen.getByText('React Fundamentals')).toBeInTheDocument();
@@ -206,11 +180,7 @@ describe('ListCourse Component', () => {
   it('should display status badges with correct styling', async () => {
     coursesService.list.mockResolvedValue(mockCourses);
 
-    render(
-      <BrowserRouter>
-        <ListCourse />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListCourse />);
 
     await waitFor(() => {
       const statusElements = screen.getAllByText(/active|inactive/i);

@@ -40,11 +40,16 @@ describe('ListItemUser Component', () => {
         <tbody>
           <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
         </tbody>
-      </table>
+      </table>,
+      { user: mockUser, isAuth: true }
     );
 
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThanOrEqual(2);
+    // IconButton as Link doesn't have button role, so we check for the Edit link and delete button
+    const editLink = screen.getByRole('link', { name: /edit/i });
+    expect(editLink).toBeInTheDocument();
+    
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
+    expect(deleteButton).toBeInTheDocument();
   });
 
   it('should show confirmation dialog when delete button is clicked', async () => {
@@ -56,7 +61,8 @@ describe('ListItemUser Component', () => {
         <tbody>
           <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
         </tbody>
-      </table>
+      </table>,
+      { user: mockUser, isAuth: true }
     );
 
     const deleteButton = screen.getAllByRole('button').pop();
@@ -76,7 +82,8 @@ describe('ListItemUser Component', () => {
         <tbody>
           <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
         </tbody>
-      </table>
+      </table>,
+      { user: mockUser, isAuth: true }
     );
 
     const deleteButton = screen.getAllByRole('button').pop();
@@ -151,12 +158,15 @@ describe('ListItemUser Component', () => {
         <tbody>
           <ListItemUser user={mockUser} onRemoved={mockOnRemoved} />
         </tbody>
-      </table>
+      </table>,
+      { user: mockUser, isAuth: true }
     );
 
-    const buttons = screen.getAllByRole('button');
-    const editButton = buttons[0];
-    expect(editButton).toBeDisabled();
+    // Edit is rendered as a Link via IconButton
+    const editLink = screen.getByRole('link', { name: /edit/i });
+    expect(editLink).toBeInTheDocument();
+    // Links via IconButton are disabled by not allowing interaction, but the Link itself isn't disabled
+    expect(editLink).toHaveAttribute('href', `/users/edit/${mockUser.uid}`);
   });
 
   it('should default to "student" role if not provided', () => {

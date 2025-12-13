@@ -5,16 +5,20 @@ import CourseModel from "../../datasource/CourseModel";
 import { create } from "../../services/coursesService";
 import CourseForm from "./CourseForm";
 import { COURSE_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
-import { Container, Alert, Box, CircularProgress, Typography, Snackbar } from '@mui/material';
+import { Container, Alert, Box, CircularProgress, Typography, Snackbar, Button } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const AddCourse = () => {
     const navigate = useNavigate();
-    const { isAuth, loading } = useAuth();
+    const { isAuth, user, loading } = useAuth();
     const [course, setCourse] = useState(new CourseModel());
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [selectedLabels, setSelectedLabels] = useState([]);
+
+    // Check if user is instructor
+    const isInstructor = user?.role === 'instructor';
 
     // Redirect to signin if not authenticated
     useEffect(() => {
@@ -22,6 +26,13 @@ const AddCourse = () => {
             navigate('/users/signin', { state: { from: { pathname: '/course/add' } } });
         }
     }, [isAuth, loading, navigate]);
+
+    // Redirect if user is not an instructor
+    useEffect(() => {
+        if (!loading && isAuth && !isInstructor) {
+            setErrorMsg('Only instructors can create courses. Your current role is: ' + (user?.role || 'unknown'));
+        }
+    }, [isAuth, loading, isInstructor, user?.role]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -51,12 +62,21 @@ const AddCourse = () => {
                     setTimeout(() => navigate("/course/list"), 2000);
                 } else if (data && (data.success === false || data.error)) {
                     setErrorMsg(data.message || 'Failed to create course');
+                } else if (data?.message?.includes("not authorized") || data?.message?.includes("instructor")) {
+                    setErrorMsg('Only instructors can create courses. Please contact an administrator if you need instructor access.');
                 } else {
                     setErrorMsg('Unexpected response from server');
                 }
             })
             .catch(err => {
-                setErrorMsg(err.message || 'Error creating course');
+                // Handle 403 Forbidden or authorization errors
+                if (err.message?.includes("403") || err.message?.includes("not authorized")) {
+                    setErrorMsg('Only instructors can create courses. Please contact an administrator if you need instructor access.');
+                } else if (err.message?.includes("404")) {
+                    setErrorMsg('Course creation endpoint not found. Please check your account permissions.');
+                } else {
+                    setErrorMsg(err.message || 'Error creating course');
+                }
                 console.log(err);
             });
     };
@@ -73,6 +93,37 @@ const AddCourse = () => {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                 <Typography>Redirecting to sign in...</Typography>
+            </Box>
+        );
+    }
+
+    // Show message if user is not an instructor
+    if (!isInstructor) {
+        return (
+            <Box sx={{ 
+                minHeight: '100vh', 
+                background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                py: 4
+            }}>
+                <Container maxWidth="sm">
+                    <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Button 
+                            startIcon={<ArrowBackIcon />}
+                            onClick={() => navigate('/course/list')}
+                        >
+                            Back to Courses
+                        </Button>
+                    </Box>
+                    <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                        <Typography variant="h6" sx={{ mb: 1 }}>Access Restricted</Typography>
+                        <Typography>
+                            Only instructors can create courses. Your current role is: <strong>{user?.role || 'unknown'}</strong>
+                        </Typography>
+                        <Typography sx={{ mt: 2 }}>
+                            If you need instructor access, please contact an administrator.
+                        </Typography>
+                    </Alert>
+                </Container>
             </Box>
         );
     }

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, waitFor } from '@testing-library/react';
 import ListUser from '../../components/User/ListUser';
+import { renderWithAuth } from '../../test/test-utils';
 import * as usersService from '../../services/usersService';
 
 // Mock the usersService
@@ -41,11 +41,7 @@ describe('ListUser Component', () => {
     // Mock list to return a promise that never resolves
     usersService.list.mockImplementation(() => new Promise(() => {}));
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
@@ -53,11 +49,7 @@ describe('ListUser Component', () => {
   it('should render users list when data is loaded', async () => {
     usersService.list.mockResolvedValue(mockUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     // Wait for loading to finish and users to appear
     await waitFor(() => {
@@ -83,11 +75,7 @@ describe('ListUser Component', () => {
     const errorMessage = 'Failed to load users';
     usersService.list.mockRejectedValue(new Error(errorMessage));
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(errorMessage, 'i'))).toBeInTheDocument();
@@ -97,11 +85,7 @@ describe('ListUser Component', () => {
   it('should display "No users found" when list is empty', async () => {
     usersService.list.mockResolvedValue([]);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText('No users found')).toBeInTheDocument();
@@ -111,11 +95,7 @@ describe('ListUser Component', () => {
   it('should call list() on component mount', async () => {
     usersService.list.mockResolvedValue(mockUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(usersService.list).toHaveBeenCalledTimes(1);
@@ -125,11 +105,7 @@ describe('ListUser Component', () => {
   it('should display table headers correctly', async () => {
     usersService.list.mockResolvedValue(mockUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText('Display Name')).toBeInTheDocument();
@@ -153,11 +129,7 @@ describe('ListUser Component', () => {
 
     usersService.list.mockResolvedValue(usersWithUnderscoreId);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText('User 1')).toBeInTheDocument();
@@ -167,11 +139,7 @@ describe('ListUser Component', () => {
   it('should display role badges with correct styling', async () => {
     usersService.list.mockResolvedValue(mockUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       const roleElements = screen.getAllByText(/student|instructor|admin/i);
@@ -186,11 +154,7 @@ describe('ListUser Component', () => {
 
     usersService.list.mockResolvedValue(nestedData);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -201,11 +165,7 @@ describe('ListUser Component', () => {
   it('should display "Users" title', async () => {
     usersService.list.mockResolvedValue(mockUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Users' })).toBeInTheDocument();
@@ -223,11 +183,7 @@ describe('ListUser Component', () => {
 
     usersService.list.mockResolvedValue(incompleteUsers);
 
-    render(
-      <BrowserRouter>
-        <ListUser />
-      </BrowserRouter>
-    );
+    renderWithAuth(<ListUser />);
 
     await waitFor(() => {
       expect(screen.getByText('User 1')).toBeInTheDocument();

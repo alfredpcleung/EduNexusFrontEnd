@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated } from './auth/auth-helper';
 import { useState, useEffect } from 'react';
@@ -138,20 +139,17 @@ function Home() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            {/* Hero Section with Background Image */}
+            {/* Hero Section with Background Image and Key Benefits */}
             <Box
                 sx={{
                     backgroundImage: 'url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=600&fit=crop")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     color: 'white',
-                    py: { xs: 6, md: 10 },
-                    pt: 0,
-                    pb: { xs: 6, md: 10 },
+                    py: { xs: 6, md: 8 },
                     textAlign: 'center',
                     position: 'relative',
                     overflow: 'hidden',
-                    mt: 0,
                     '&::before': {
                         content: '""',
                         position: 'absolute',
@@ -159,7 +157,7 @@ function Home() {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundColor: 'rgba(102, 126, 234, 0.5)',
+                        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%)',
                         zIndex: 1,
                     }
                 }}
@@ -171,7 +169,7 @@ function Home() {
                         sx={{
                             fontWeight: 800,
                             mb: 2,
-                            fontSize: { xs: '2.5rem', md: '3.5rem' },
+                            fontSize: { xs: '2rem', md: '3rem' },
                             letterSpacing: '-1px'
                         }}
                     >
@@ -180,92 +178,66 @@ function Home() {
                     <Typography
                         variant="subtitle1"
                         sx={{
-                            mb: 4,
-                            fontSize: { xs: '1rem', md: '1.25rem' },
-                            fontWeight: 500,
+                            mb: 5,
+                            fontSize: { xs: '1rem', md: '1.15rem' },
+                            fontWeight: 400,
                             opacity: 0.95,
                             maxWidth: '700px',
                             mx: 'auto'
                         }}
                     >
-                        Find reliable teammates, discover great courses, and share peer feedback.
+                        Make informed decisions about your education and collaborate with the right people
                     </Typography>
-                </Container>
-            </Box>
 
-            {/* Key Benefits Section */}
-            <Box sx={{ py: 8, backgroundColor: '#f8f9fa' }}>
-                <Container maxWidth="lg">
-                    <Box sx={{ textAlign: 'center', mb: 6 }}>
-                        <Typography
-                            variant="h4"
-                            component="h2"
-                            sx={{
-                                fontWeight: 700,
-                                mb: 2,
-                                color: '#1a202c'
-                            }}
-                        >
-                            Why Join EduNexus?
-                        </Typography>
-                        <Typography
-                            variant="subtitle1"
-                            color="textSecondary"
-                            sx={{ 
-                                maxWidth: '100%',
-                                lineHeight: 1.6,
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                whiteSpace: 'nowrap'
-                            }}
-                        >
-                            Make informed decisions about your education and collaborate with the right people
-                        </Typography>
-                    </Box>
-
-                    <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' } }}>
+                    {/* Key Benefits Cards - Inside Hero */}
+                    <Grid container spacing={3} sx={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+                        maxWidth: '1100px',
+                        mx: 'auto'
+                    }}>
                         {keyBenefits.map((benefit, idx) => (
                             <Grid item xs={12} sm={6} md={3} key={idx}>
                                 <Paper
                                     elevation={0}
                                     sx={{
-                                        p: 4,
+                                        p: 3,
                                         textAlign: 'center',
-                                        borderRadius: 2,
-                                        backgroundColor: 'white',
-                                        border: '1px solid #e5e7eb',
+                                        borderRadius: 3,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                        backdropFilter: 'blur(10px)',
                                         transition: 'all 0.3s ease',
                                         height: '100%',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         '&:hover': {
-                                            boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                            borderColor: benefit.color,
-                                            transform: 'translateY(-4px)'
+                                            transform: 'translateY(-4px)',
+                                            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
                                         }
                                     }}
                                 >
-                                    <Box sx={{ mb: 2, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
-                                        {benefit.icon}
+                                    <Box sx={{ mb: 1.5, color: benefit.color, display: 'flex', justifyContent: 'center' }}>
+                                        {React.cloneElement(benefit.icon, { sx: { fontSize: 36 } })}
                                     </Box>
                                     <Typography 
-                                        variant="h6" 
+                                        variant="subtitle1" 
                                         sx={{ 
                                             fontWeight: 700, 
-                                            mb: 2,
+                                            mb: 1,
                                             color: '#1a202c',
-                                            fontSize: '1.1rem'
+                                            fontSize: '0.95rem',
+                                            lineHeight: 1.3
                                         }}
                                     >
                                         {benefit.title}
                                     </Typography>
                                     <Typography 
                                         variant="body2" 
-                                        color="textSecondary" 
                                         sx={{ 
                                             flexGrow: 1,
-                                            fontSize: '0.95rem',
-                                            lineHeight: 1.6
+                                            fontSize: '0.85rem',
+                                            lineHeight: 1.5,
+                                            color: '#5f6368'
                                         }}
                                     >
                                         {benefit.description}
@@ -298,16 +270,16 @@ function Home() {
                             sx={{ 
                                 maxWidth: '500px', 
                                 mx: 'auto', 
-                                lineHeight: 1.8,
+                                lineHeight: 1.6,
                                 fontSize: '1rem',
-                                fontWeight: 500
+                                fontWeight: 400
                             }}
                         >
-                            Connect with students, instructors, and peers from around the world
+                            Connect with students and peers from around the world
                         </Typography>
                     </Box>
 
-                    <Grid container spacing={3} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' } }}>
+                    <Grid container spacing={4} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr', md: 'repeat(3, 1fr)' }, maxWidth: '900px', mx: 'auto' }}>
                         {/* Students Card */}
                         <Grid item xs={12} sm={12} md={4}>
                             <Paper
@@ -315,36 +287,35 @@ function Home() {
                                 sx={{
                                     p: 4,
                                     textAlign: 'center',
-                                    borderRadius: 2,
-                                    backgroundColor: 'white',
-                                    border: '1px solid #e5e7eb',
+                                    borderRadius: 3,
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     '&:hover': {
-                                        boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        borderColor: '#667eea',
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 12px 24px rgba(102, 126, 234, 0.3)',
                                     }
                                 }}
                             >
-                                <Box sx={{ mb: 2, color: '#667eea' }}>
-                                    <PersonIcon sx={{ fontSize: 48 }} />
+                                <Box sx={{ mb: 2, color: 'white' }}>
+                                    <PersonIcon sx={{ fontSize: 40 }} />
                                 </Box>
                                 <Typography
-                                    variant="h6"
+                                    variant="h4"
                                     sx={{
-                                        fontWeight: 700,
-                                        mb: 1,
-                                        color: '#1a202c'
+                                        fontWeight: 800,
+                                        mb: 0.5,
+                                        color: 'white'
                                     }}
                                 >
                                     {loading ? '...' : stats.students}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    color="textSecondary" 
-                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
                                     Active Students
                                 </Typography>
@@ -358,36 +329,35 @@ function Home() {
                                 sx={{
                                     p: 4,
                                     textAlign: 'center',
-                                    borderRadius: 2,
-                                    backgroundColor: 'white',
-                                    border: '1px solid #e5e7eb',
+                                    borderRadius: 3,
+                                    background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)',
+                                    color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     '&:hover': {
-                                        boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        borderColor: '#667eea',
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 12px 24px rgba(236, 72, 153, 0.3)',
                                     }
                                 }}
                             >
-                                <Box sx={{ mb: 2, color: '#667eea' }}>
-                                    <BookIcon sx={{ fontSize: 48 }} />
+                                <Box sx={{ mb: 2, color: 'white' }}>
+                                    <BookIcon sx={{ fontSize: 40 }} />
                                 </Box>
                                 <Typography
-                                    variant="h6"
+                                    variant="h4"
                                     sx={{
-                                        fontWeight: 700,
-                                        mb: 1,
-                                        color: '#1a202c'
+                                        fontWeight: 800,
+                                        mb: 0.5,
+                                        color: 'white'
                                     }}
                                 >
                                     {loading ? '...' : stats.courses}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    color="textSecondary" 
-                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
                                     Available Courses
                                 </Typography>
@@ -401,36 +371,35 @@ function Home() {
                                 sx={{
                                     p: 4,
                                     textAlign: 'center',
-                                    borderRadius: 2,
-                                    backgroundColor: 'white',
-                                    border: '1px solid #e5e7eb',
+                                    borderRadius: 3,
+                                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                    color: 'white',
                                     transition: 'all 0.3s ease',
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     '&:hover': {
-                                        boxShadow: '0 12px 24px rgba(102, 126, 234, 0.15)',
-                                        borderColor: '#667eea',
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 12px 24px rgba(245, 158, 11, 0.3)',
                                     }
                                 }}
                             >
-                                <Box sx={{ mb: 2, color: '#667eea' }}>
-                                    <FolderIcon sx={{ fontSize: 48 }} />
+                                <Box sx={{ mb: 2, color: 'white' }}>
+                                    <FolderIcon sx={{ fontSize: 40 }} />
                                 </Box>
                                 <Typography
-                                    variant="h6"
+                                    variant="h4"
                                     sx={{
-                                        fontWeight: 700,
-                                        mb: 1,
-                                        color: '#1a202c'
+                                        fontWeight: 800,
+                                        mb: 0.5,
+                                        color: 'white'
                                     }}
                                 >
                                     {loading ? '...' : stats.projects}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    color="textSecondary" 
-                                    sx={{ fontWeight: 500, fontSize: '0.95rem' }}
+                                    sx={{ fontWeight: 500, fontSize: '0.9rem', opacity: 0.9 }}
                                 >
                                     Shared Projects
                                 </Typography>

@@ -81,102 +81,111 @@ function Layout() {
                         EduNexus
                     </Typography>
 
-                    {/* Search Bar - Middle (Desktop Only) */}
+                    {/* Search Bar - Middle (Desktop Only) - Google-style design */}
                     <Box
                         component="form"
                         onSubmit={handleSearch}
                         sx={{
                             display: { xs: 'none', md: 'flex' },
-                            gap: 1,
                             alignItems: 'center',
                             flexGrow: 1,
-                            maxWidth: '400px',
-                            mx: 'auto'
+                            maxWidth: '500px',
+                            mx: 'auto',
+                            backgroundColor: 'white',
+                            borderRadius: '24px',
+                            boxShadow: '0 1px 6px rgba(32, 33, 36, 0.28)',
+                            overflow: 'hidden',
+                            '&:hover': {
+                                boxShadow: '0 1px 6px rgba(32, 33, 36, 0.4)',
+                            }
                         }}
                     >
                         <Select
                             value={searchType}
                             onChange={(e) => setSearchType(e.target.value)}
+                            size="small"
                             sx={{
-                                backgroundColor: 'rgba(255,255,255,0.15)',
-                                borderRadius: '4px',
-                                color: 'white',
-                                fontSize: '0.9rem',
-                                minWidth: '120px',
+                                backgroundColor: 'transparent',
+                                color: '#5f6368',
+                                fontSize: '0.875rem',
+                                minWidth: '130px',
+                                height: '44px',
                                 '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'rgba(255,255,255,0.3)'
+                                    border: 'none'
                                 },
                                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'rgba(255,255,255,0.5)'
+                                    border: 'none'
                                 },
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'white'
+                                    border: 'none'
                                 },
                                 '& .MuiSvgIcon-root': {
-                                    color: 'white'
+                                    color: '#5f6368'
                                 },
-                                '& .MuiOutlinedInput-input': {
-                                    color: 'white',
-                                    '&::placeholder': {
-                                        color: 'rgba(255,255,255,0.7)',
-                                        opacity: 1
-                                    }
+                                '& .MuiSelect-select': {
+                                    paddingLeft: '16px',
+                                    paddingRight: '8px !important'
                                 }
                             }}
                         >
                             <MenuItem value="course">
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <BookIcon sx={{ fontSize: '1.2rem' }} />
+                                    <BookIcon sx={{ fontSize: '1.1rem', color: '#667eea' }} />
                                     <span>Courses</span>
                                 </Box>
                             </MenuItem>
                             <MenuItem value="student">
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <PeopleIcon sx={{ fontSize: '1.2rem' }} />
+                                    <PeopleIcon sx={{ fontSize: '1.1rem', color: '#667eea' }} />
                                     <span>Teammates</span>
                                 </Box>
                             </MenuItem>
                         </Select>
 
+                        <Box sx={{ width: '1px', height: '24px', backgroundColor: '#dfe1e5' }} />
+
                         <TextField
-                            placeholder={searchType === 'course' ? 'Search courses...' : 'Search students...'}
+                            placeholder="Search..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             size="small"
                             sx={{
                                 flex: 1,
+                                minWidth: '200px',
                                 '& .MuiOutlinedInput-root': {
-                                    backgroundColor: 'rgba(255,255,255,0.15)',
-                                    borderRadius: '4px',
-                                    color: 'white',
-                                    fontSize: '0.9rem',
+                                    backgroundColor: 'transparent',
+                                    height: '44px',
+                                    color: '#202124',
+                                    fontSize: '0.875rem',
                                     '& fieldset': {
-                                        borderColor: 'rgba(255,255,255,0.3)'
+                                        border: 'none'
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: 'rgba(255,255,255,0.5)'
+                                        border: 'none'
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: 'white'
+                                        border: 'none'
                                     },
                                     '& input::placeholder': {
-                                        color: 'rgba(255,255,255,0.7)',
+                                        color: '#9aa0a6',
                                         opacity: 1
                                     }
                                 },
                                 '& .MuiOutlinedInput-input': {
-                                    color: 'white'
+                                    color: '#202124',
+                                    padding: '10px 16px'
                                 }
                             }}
                         />
 
                         <IconButton
                             type="submit"
-                            color="inherit"
                             sx={{
-                                padding: '8px',
+                                padding: '10px',
+                                marginRight: '4px',
+                                color: '#667eea',
                                 '&:hover': {
-                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                    backgroundColor: 'rgba(102, 126, 234, 0.1)'
                                 }
                             }}
                         >

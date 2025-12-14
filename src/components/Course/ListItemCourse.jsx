@@ -28,7 +28,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const ListItemCourse = ({ course, onRemoved }) => {
     const { user } = useAuth();
     const courseId = course.id || course._id;
-    const courseOwner = course.owner || course.uid;
+    const courseOwner = course.owner || course.createdBy;
     const { canEdit, canDelete } = useAuthorizationCheck(courseOwner);
     const { error: authError, open: authErrorOpen, handleError: handleAuthError, clearError: clearAuthError } = use403Handler();
     

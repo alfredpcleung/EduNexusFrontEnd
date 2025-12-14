@@ -20,6 +20,16 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoginIcon from '@mui/icons-material/Login';
 
 const Signup = () => {
+    console.log('Signup render');
+    if (typeof window !== 'undefined') {
+        setTimeout(() => {
+            const el = document.querySelector('form');
+            if (el) {
+                console.log('Signup form parent:', el.parentElement?.tagName, el.parentElement?.className);
+                console.log('Signup form HTML:', el.outerHTML);
+            }
+        }, 100);
+    }
     let navigate = useNavigate();
     const { signup, loading, error: authError } = useAuth();
 

@@ -26,7 +26,7 @@ const list = async (queryString = "") => {
         });
         return await response.json();
     } catch (err) {
-        console.log('List users error:', err);
+        // Optionally log to an error reporting service
         throw err;
     }
 };
@@ -47,7 +47,7 @@ const read = async (uid) => {
         });
         return await response.json();
     } catch (err) {
-        console.log('Read user error:', err);
+        // Optionally log to an error reporting service
         throw err;
     }
 };
@@ -70,7 +70,7 @@ const update = async (uid, user) => {
         });
         return await response.json();
     } catch (err) {
-        console.log('Update user error:', err);
+        // Optionally log to an error reporting service
         throw err;
     }
 };
@@ -91,7 +91,7 @@ const remove = async (uid) => {
         });
         return await response.json();
     } catch (err) {
-        console.log('Delete user error:', err);
+        // Optionally log to an error reporting service
         throw err;
     }
 };

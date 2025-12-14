@@ -33,6 +33,13 @@ import { getApiUrl } from '../services/api';
 function Home() {
     const navigate = useNavigate();
     const isAuth = isAuthenticated();
+
+    // Redirect authenticated users to dashboard
+    useEffect(() => {
+        if (isAuth) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [isAuth, navigate]);
     const [stats, setStats] = useState({
         registeredStudents: null,
         coursesWithReviews: null,
@@ -69,10 +76,9 @@ function Home() {
         fetchStats();
     }, []);
 
-    // Search handler - reserved for future navbar search integration
-    // Uses searchType and searchQuery state when implemented
-    void searchType;
-    void searchQuery;
+    // Reserved for future navbar search integration
+    // (searchType and searchQuery state are currently unused)
+    // Cleaned up for production
 
     const keyBenefits = [
         {

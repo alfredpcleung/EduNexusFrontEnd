@@ -15,7 +15,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import * as feedbackService from "../../services/feedbackService";
-import { PROJECT_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
+// import { PROJECT_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
 
 function FeedbackForm({ projectId, onFeedbackCreated }) {
   const [rating, setRating] = useState(5);

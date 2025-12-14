@@ -1,3 +1,10 @@
+# Cypress test artifacts
+cypress/screenshots/
+cypress/videos/
+
+# Vite/React build output
+dist/
+build.log
 # Logs
 logs
 *.log

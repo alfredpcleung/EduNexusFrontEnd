@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { COURSE_LABELS } from '../../utils/feedbackLabels';
 
 const CourseForm = ({ course = {}, handleChange, handleSubmit, selectedLabels = [], onLabelsChange }) => {
     const navigate = useNavigate();
@@ -36,82 +35,166 @@ const CourseForm = ({ course = {}, handleChange, handleSubmit, selectedLabels = 
                 <Divider />
                 <CardContent sx={{ pt: 3 }}>
                     <form onSubmit={handleSubmit}>
-                        <Grid container spacing={3}>
-                            {/* Course Title */}
+                        <Grid container spacing={3} direction="column">
+                            {/* School */}
                             <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="school">
+                                    School
+                                </Typography>
                                 <TextField
                                     fullWidth
-                                    label="Course Title"
+                                    id="school"
+                                    name="school"
+                                    placeholder="Enter the school name"
+                                    value={course.school || ""}
+                                    onChange={handleChange}
+                                    required
+                                    inputProps={{ maxLength: 50 }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Course Subject */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="courseSubject">
+                                    Course Subject
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="courseSubject"
+                                    name="courseSubject"
+                                    placeholder="e.g. CS"
+                                    value={course.courseSubject || ""}
+                                    onChange={handleChange}
+                                    required
+                                    inputProps={{ pattern: '[A-Z]{2,5}', maxLength: 5 }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Course Number */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="courseNumber">
+                                    Course Number
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="courseNumber"
+                                    name="courseNumber"
+                                    placeholder="e.g. 101"
+                                    value={course.courseNumber || ""}
+                                    onChange={handleChange}
+                                    required
+                                    inputProps={{ pattern: '\\d{2,4}', maxLength: 4 }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Title */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="title">
+                                    Course Title
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="title"
                                     name="title"
                                     placeholder="Enter the course title"
                                     value={course.title || ""}
                                     onChange={handleChange}
                                     required
                                     variant="outlined"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#1976d2',
-                                            },
-                                        },
-                                    }}
                                 />
                             </Grid>
-
-                            {/* Instructor */}
+                            {/* Description */}
                             <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="description">
+                                    Course Description
+                                </Typography>
                                 <TextField
                                     fullWidth
-                                    label="Instructor Name"
-                                    name="instructor"
-                                    placeholder="Enter the instructor name"
-                                    value={course.instructor || ""}
+                                    id="description"
+                                    name="description"
+                                    placeholder="Describe what students will learn in this course..."
+                                    value={course.description || ""}
                                     onChange={handleChange}
+                                    multiline
+                                    rows={4}
                                     variant="outlined"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#1976d2',
-                                            },
-                                        },
-                                    }}
                                 />
                             </Grid>
-
-                            {/* Credits and Status Row */}
-                            <Grid item xs={12} sm={6}>
+                            {/* Credits */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="credits">
+                                    Credits
+                                </Typography>
                                 <TextField
                                     fullWidth
-                                    label="Credits"
+                                    id="credits"
                                     name="credits"
                                     type="number"
-                                    placeholder="0"
-                                    value={course.credits || 0}
+                                    placeholder="4"
+                                    value={course.credits || 4}
                                     onChange={handleChange}
-                                    inputProps={{ min: 0, step: 0.5 }}
+                                    inputProps={{ min: 0, max: 12 }}
                                     variant="outlined"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#1976d2',
-                                            },
-                                        },
-                                    }}
                                 />
                             </Grid>
-
-                            <Grid item xs={12} sm={6}>
+                            {/* Syllabus Revision Date */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="syllabusRevisionDate">
+                                    Syllabus Revision Date
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="syllabusRevisionDate"
+                                    name="syllabusRevisionDate"
+                                    type="date"
+                                    value={course.syllabusRevisionDate ? course.syllabusRevisionDate.substring(0, 10) : ''}
+                                    onChange={handleChange}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Prerequisites */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="prerequisites">
+                                    Prerequisites (comma separated)
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="prerequisites"
+                                    name="prerequisites"
+                                    placeholder="e.g. CS100, MATH101"
+                                    value={Array.isArray(course.prerequisites) ? course.prerequisites.join(', ') : course.prerequisites || ''}
+                                    onChange={e => handleChange({ target: { name: 'prerequisites', value: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } })}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Corequisites */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="corequisites">
+                                    Corequisites (comma separated)
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    id="corequisites"
+                                    name="corequisites"
+                                    placeholder="e.g. PHYS101"
+                                    value={Array.isArray(course.corequisites) ? course.corequisites.join(', ') : course.corequisites || ''}
+                                    onChange={e => handleChange({ target: { name: 'corequisites', value: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } })}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {/* Status */}
+                            <Grid item xs={12}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }} component="label" htmlFor="status">
+                                    Course Status
+                                </Typography>
                                 <FormControl fullWidth variant="outlined">
                                     <Select
+                                        id="status"
                                         name="status"
                                         value={course.status || 'active'}
                                         onChange={handleChange}
                                         displayEmpty
-                                        sx={{
-                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#1976d2',
-                                            },
-                                        }}
                                     >
                                         <MenuItem value="active">Active</MenuItem>
                                         <MenuItem value="inactive">Inactive</MenuItem>
@@ -120,65 +203,10 @@ const CourseForm = ({ course = {}, handleChange, handleSubmit, selectedLabels = 
                                     <FormHelperText>Course Status</FormHelperText>
                                 </FormControl>
                             </Grid>
-
-                            {/* Description */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Course Description"
-                                    name="description"
-                                    placeholder="Describe what students will learn in this course..."
-                                    value={course.description || ""}
-                                    onChange={handleChange}
-                                    multiline
-                                    rows={4}
-                                    variant="outlined"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#1976d2',
-                                            },
-                                        },
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Feedback Labels */}
-                            <Grid item xs={12}>
-                                <FormControl fullWidth>
-                                    <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                                        Course Labels (select up to 3)
-                                    </Typography>
-                                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                                        {COURSE_LABELS.map(label => (
-                                            <Chip
-                                                key={label}
-                                                label={label}
-                                                onClick={() => {
-                                                    const updated = selectedLabels.includes(label)
-                                                        ? selectedLabels.filter(l => l !== label)
-                                                        : selectedLabels.length < 3
-                                                        ? [...selectedLabels, label]
-                                                        : selectedLabels;
-                                                    if (onLabelsChange) onLabelsChange(updated);
-                                                }}
-                                                color={selectedLabels.includes(label) ? 'primary' : 'default'}
-                                                variant={selectedLabels.includes(label) ? 'filled' : 'outlined'}
-                                                sx={{ cursor: 'pointer' }}
-                                            />
-                                        ))}
-                                    </Stack>
-                                    <FormHelperText>
-                                        {selectedLabels.length}/3 labels selected
-                                    </FormHelperText>
-                                </FormControl>
-                            </Grid>
-
                             {/* Divider before actions */}
                             <Grid item xs={12}>
                                 <Divider sx={{ my: 1 }} />
                             </Grid>
-
                             {/* Action Buttons */}
                             <Grid item xs={12}>
                                 <Box sx={{ 

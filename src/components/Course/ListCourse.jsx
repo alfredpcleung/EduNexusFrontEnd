@@ -28,7 +28,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 const ListCourse = () => {
-    const { isAuth } = useAuth();
+    const { isAuth, user } = useAuth();
     const location = useLocation();
     const [courseList, setCourseList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,11 +45,17 @@ const ListCourse = () => {
         
         // Call backend with query params (fallback to full list if not supported)
         list(params.toString() || undefined).then((data) => {
+            let allCourses = [];
             if (data && Array.isArray(data)) {
-                setCourseList(data || []);
+                allCourses = data;
             } else if (data && data.data) {
-                setCourseList(data.data || []);
+                allCourses = data.data;
             }
+            // Only show courses created by the logged-in user
+            const filteredCourses = user && user.uid
+                ? allCourses.filter(course => String(course.owner || course.createdBy) === String(user.uid))
+                : [];
+            setCourseList(filteredCourses);
             setIsLoading(false);
         }).catch(err => {
             setErrorMsg(err.message || 'Error loading courses');
@@ -112,7 +118,7 @@ const ListCourse = () => {
             {/* Header with Add Button */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4" component="h1">
-                    Courses
+                    My Courses
                 </Typography>
                 {isAuth ? (
                     <Button

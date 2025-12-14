@@ -4,18 +4,16 @@ import { useAuth } from "../auth/AuthContext";
 import CourseModel from "../../datasource/CourseModel";
 import { create } from "../../services/coursesService";
 import CourseForm from "./CourseForm";
-import { COURSE_LABELS, formatLabelsForSubmission } from "../../utils/feedbackLabels";
 import { Container, Alert, Box, CircularProgress, Typography, Snackbar, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const AddCourse = () => {
     const navigate = useNavigate();
-    const { isAuth, loading } = useAuth();
+    const { isAuth, loading, user } = useAuth();
     const [course, setCourse] = useState(new CourseModel());
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [selectedLabels, setSelectedLabels] = useState([]);
 
     // Redirect to signin if not authenticated
     useEffect(() => {
@@ -33,13 +31,18 @@ const AddCourse = () => {
         event.preventDefault();
         console.log("Submitting course: ", course);
 
+
         const submitCourse = {
+            school: course.school,
+            courseSubject: course.courseSubject,
+            courseNumber: course.courseNumber,
             title: course.title,
             description: course.description,
-            credits: parseFloat(course.credits) || 0,
-            status: course.status,
-            instructor: course.instructor,
-            labels: formatLabelsForSubmission(selectedLabels)
+            credits: parseFloat(course.credits) || 4,
+            syllabusRevisionDate: course.syllabusRevisionDate || null,
+            prerequisites: Array.isArray(course.prerequisites) ? course.prerequisites : [],
+            corequisites: Array.isArray(course.corequisites) ? course.corequisites : [],
+            status: course.status || 'active'
         };
 
         create(submitCourse)
@@ -114,8 +117,6 @@ const AddCourse = () => {
                     course={course}
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
-                    selectedLabels={selectedLabels}
-                    onLabelsChange={setSelectedLabels}
                 />
             </Container>
             <Snackbar 

@@ -8,7 +8,8 @@ import { useAuth } from '../components/auth/AuthContext';
 export const useAuthorizationCheck = (resourceOwnerId) => {
   const { user } = useAuth();
 
-  const isOwner = user?.uid === resourceOwnerId;
+  // Use _id for ownership check
+  const isOwner = user?._id === resourceOwnerId;
   const isAdmin = user?.role === 'admin';
   const isAuthorized = isOwner || isAdmin;
 

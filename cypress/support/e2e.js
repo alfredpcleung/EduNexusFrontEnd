@@ -15,5 +15,5 @@ try {
     app.document.head.removeAttribute('data-hide-command-log-request');
   }
 } catch (e) {
-  console.log('Cypress console log suppression not available');
+  // Suppressed Cypress console log (removed for production cleanliness)
 }

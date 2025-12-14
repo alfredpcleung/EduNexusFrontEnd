@@ -113,50 +113,53 @@ function ProjectDetail() {
   return (
     <Box sx={{ p: 3, maxWidth: "100%", display: "flex", justifyContent: "center" }}>
       <Box sx={{ width: "100%", maxWidth: 900 }}>
-      {/* Feedback Section */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column" }}>
-          <FeedbackList 
-            feedbackList={feedbackList}
-            onFeedbackDeleted={handleFeedbackDeleted}
-            feedbackError={feedbackError}
-          />
+        <Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 700 }}>
+          My Group Projects
+        </Typography>
+        {/* Feedback Section */}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column" }}>
+            <FeedbackList 
+              feedbackList={feedbackList}
+              onFeedbackDeleted={handleFeedbackDeleted}
+              feedbackError={feedbackError}
+            />
+          </Grid>
+
+          {/* Feedback Form */}
+          {isAuth && (
+            <Grid item xs={12} md={6}>
+              <Card sx={{ boxShadow: 2, position: "sticky", top: 20 }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+                    ✍️ Leave Feedback
+                  </Typography>
+                  <FeedbackForm projectId={id} onFeedbackCreated={handleFeedbackCreated} />
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
         </Grid>
 
-        {/* Feedback Form */}
-        {isAuth && (
-          <Grid item xs={12} md={6}>
-            <Card sx={{ boxShadow: 2, position: "sticky", top: 20 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
-                  ✍️ Leave Feedback
-                </Typography>
-                <FeedbackForm projectId={id} onFeedbackCreated={handleFeedbackCreated} />
-              </CardContent>
-            </Card>
-          </Grid>
+        {!isAuth && (
+          <Card sx={{ mt: 4, backgroundColor: "#f5f5f5", boxShadow: 2 }}>
+            <CardContent sx={{ py: 3, textAlign: "center" }}>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                📝 Want to share your feedback?
+              </Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+                Sign in to leave feedback and help others learn from this project.
+              </Typography>
+              <Button
+                variant="contained"
+                href="/users/signin"
+                size="medium"
+              >
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
         )}
-      </Grid>
-
-      {!isAuth && (
-        <Card sx={{ mt: 4, backgroundColor: "#f5f5f5", boxShadow: 2 }}>
-          <CardContent sx={{ py: 3, textAlign: "center" }}>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              📝 Want to share your feedback?
-            </Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-              Sign in to leave feedback and help others learn from this project.
-            </Typography>
-            <Button
-              variant="contained"
-              href="/users/signin"
-              size="medium"
-            >
-              Sign In
-            </Button>
-          </CardContent>
-        </Card>
-      )}
       </Box>
     </Box>
   );

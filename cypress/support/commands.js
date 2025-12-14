@@ -6,13 +6,11 @@
  */
 Cypress.Commands.add('login', (email, password) => {
   cy.visit('/users/signin');
-  cy.get('input[placeholder*="Email"]').type(email, { force: true });
-  cy.get('input[placeholder*="Password"]').type(password, { force: true });
+  cy.get('input[name="email"]').type(email, { force: true });
+  cy.get('input[name="password"]').type(password, { force: true });
   cy.get('button').contains('Sign In').click();
-  
   // Wait for redirect to home
   cy.url().should('include', '/');
-  
   // Verify token is stored
   cy.window().then((win) => {
     expect(win.localStorage.getItem('token')).to.exist;
@@ -34,7 +32,6 @@ Cypress.Commands.add('logout', () => {
   // Verify redirect to home
   cy.url().should('include', '/');
   
-  // Verify token is removed
   cy.window().then((win) => {
     expect(win.localStorage.getItem('token')).to.be.null;
     expect(win.localStorage.getItem('user')).to.be.null;
@@ -56,21 +53,28 @@ Cypress.Commands.add('cleanup', () => {
  * Custom command to register a new user
  * Usage: cy.signup(uid, displayName, email, password, role)
  */
-Cypress.Commands.add('signup', (uid, displayName, email, password, role = 'student') => {
+/**
+ * Custom command to register a new user (firstName/lastName version, no role dropdown)
+ * Usage: cy.signup(uid, firstName, lastName, email, password)
+ */
+Cypress.Commands.add('signup', (uid, firstName, lastName, email, password) => {
   cy.visit('/users/signup');
-  
-  // Fill form
-  cy.get('input[placeholder*="Full"]').type(displayName, { force: true });
-  cy.get('input[placeholder*="Email"]').type(email, { force: true });
-  cy.get('select').first().select(role);
-  cy.get('input[placeholder*="Password"]').first().type(password, { force: true });
-  cy.get('input[placeholder*="Confirm"]').type(password, { force: true });
-  
-  // Submit
-  cy.get('button').contains('Sign Up').click();
-  
+  cy.screenshot('signup-page-loaded');
+  cy.url().should('include', '/users/signup');
+  cy.get('form').first().should('be.visible');
+  cy.get('input[name="firstName"]').should('be.visible').type(firstName, { force: true });
+  cy.get('input[name="lastName"]').should('be.visible').type(lastName, { force: true });
+  cy.get('input[name="school"]').should('be.visible').type('Test University', { force: true });
+  cy.get('input[name="fieldOfStudy"]').should('be.visible').type('Testing', { force: true });
+  cy.get('input[name="email"]').should('be.visible').type(email, { force: true });
+  cy.get('input[name="password"]').should('be.visible').type(password, { force: true });
+  cy.get('input[name="confirmPassword"]').should('be.visible').type(password, { force: true });
+  cy.screenshot('signup-form-filled');
+  cy.get('button').contains('Sign Up').should('be.visible').click();
+  cy.wait(1000);
+  cy.screenshot('after-signup-submit');
   // Wait for redirect to home
-  cy.url().should('include', '/');
+  cy.url({ timeout: 10000 }).should('include', '/');
 });
 
 /**

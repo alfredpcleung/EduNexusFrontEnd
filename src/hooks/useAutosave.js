@@ -20,6 +20,6 @@ export default function useAutosave(onSave, deps = [], intervalMs = 30000) {
     const handler = () => savedCallback.current && savedCallback.current();
     const id = setInterval(handler, intervalMs);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Cleaned up for production
   }, [...deps, intervalMs]);
 }

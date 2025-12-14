@@ -256,10 +256,10 @@ function LayoutMain() {
                                     <MenuItem onClick={handleAccountSettings}>
                                         <SettingsIcon sx={{ mr: 1 }} /> Account Settings
                                     </MenuItem>
-                                    <MenuItem disabled>
+                                    <MenuItem onClick={() => { navigate('/course/list'); handleMenuClose(); }}>
                                         <SchoolIcon sx={{ mr: 1 }} /> My Courses
                                     </MenuItem>
-                                    <MenuItem disabled>
+                                    <MenuItem onClick={() => { navigate('/project/list'); handleMenuClose(); }}>
                                         <GroupWorkIcon sx={{ mr: 1 }} /> My Group Projects
                                     </MenuItem>
                                     <MenuItem disabled>

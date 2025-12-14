@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Cypress E2E tests for profile/account flows",
+			"type": "shell",
+			"command": "npx cypress run --spec cypress/e2e/profile_settings.cy.js",
+			"isBackground": false,
+			"group": "test"
+		}
+	]
+}

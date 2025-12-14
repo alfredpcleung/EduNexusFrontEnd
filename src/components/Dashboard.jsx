@@ -41,7 +41,6 @@ function Dashboard() {
     }
 
     fetchDashboard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuth, authLoading, navigate]);
 
   const fetchDashboard = async () => {

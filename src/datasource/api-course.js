@@ -12,7 +12,7 @@ const list = async () => {
         })
         return await response.json()
     } catch (err) {
-        console.log(err)
+        // Optionally log to an error reporting service
     }
 }
 
@@ -28,7 +28,7 @@ const remove = async (id) => {
         })
         return await response.json()
     } catch (err) {
-        console.log(err)
+        // Optionally log to an error reporting service
     }
 }
 
@@ -45,7 +45,7 @@ const create = async (product) => {
         })
         return await response.json()
     } catch (err) {
-        console.log(err)
+        // Optionally log to an error reporting service
     }
 }
 

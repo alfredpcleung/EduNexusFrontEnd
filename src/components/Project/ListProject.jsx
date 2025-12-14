@@ -108,7 +108,7 @@ function ListProject() {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <Typography variant="h4" component="h1">
-          Projects
+          My Group Projects
         </Typography>
         {isAuth && (
           <Button

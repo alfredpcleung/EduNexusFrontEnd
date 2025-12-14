@@ -43,7 +43,6 @@ export const renderWithAuth = (component, { user = null, isAuth = false } = {}) 
 export const mockFetch = (data, options = {}) => {
   const { shouldFail = false, status = 200 } = options;
 
-  // eslint-disable-next-line no-undef
   global.fetch = vi.fn(() =>
     Promise.resolve({
       json: () =>
@@ -60,10 +59,8 @@ export const mockFetch = (data, options = {}) => {
  * Wait for async operations to complete
  */
 export const waitForLoadingToFinish = async () => {
-  // eslint-disable-next-line no-undef
   const { waitFor } = require('@testing-library/react');
   await waitFor(() => {
-    // eslint-disable-next-line no-undef
     expect(document.querySelector('[role="progressbar"]')).not.toBeInTheDocument();
   });
 };

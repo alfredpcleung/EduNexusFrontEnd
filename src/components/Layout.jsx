@@ -32,12 +32,33 @@ import StarIcon from '@mui/icons-material/Star';
 import { useState } from 'react';
 
 function Layout() {
-    const { isAuth } = useAuth();
+        console.log({ isAuth, user });
+    const { isAuth, user, logout } = useAuth();
     const navigate = useNavigate();
     const [searchType, setSearchType] = useState('course');
     const [searchQuery, setSearchQuery] = useState('');
+    // Account/profile menu logic
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    // Removed account/profile menu logic for clean rebuild
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleProfile = () => {
+        navigate('/users/profile');
+        handleMenuClose();
+    };
+    const handleAccountSettings = () => {
+        navigate('/users/account-settings');
+        handleMenuClose();
+    };
+    const handleLogout = () => {
+        logout();
+        navigate('/users/signin');
+        handleMenuClose();
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -188,7 +209,47 @@ function Layout() {
 
                     {/* Auth Buttons - Right (Desktop) */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center', flexShrink: 0 }}>
-                        {/* Account/profile menu removed for clean rebuild */}
+                        <>
+                            {isAuth && (
+                                <IconButton
+                                    color="inherit"
+                                    onClick={handleMenuOpen}
+                                    size="large"
+                                    sx={{ ml: 1 }}
+                                    id="account-menu-button"
+                                >
+                                    <AccountCircleIcon />
+                                </IconButton>
+                            )}
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                keepMounted
+                            >
+                                {isAuth && [
+                                    <MenuItem onClick={handleProfile} key="profile">
+                                        <PersonIcon sx={{ mr: 1 }} /> Profile
+                                    </MenuItem>,
+                                    <MenuItem onClick={handleAccountSettings} key="settings">
+                                        <SettingsIcon sx={{ mr: 1 }} /> Account Settings
+                                    </MenuItem>,
+                                    <MenuItem onClick={handleLogout} key="logout">
+                                        <LogoutIcon sx={{ mr: 1 }} /> Logout
+                                    </MenuItem>
+                                ]}
+                                {!isAuth && [
+                                    <MenuItem onClick={() => navigate('/users/signin')} key="signin">
+                                        <LoginIcon sx={{ mr: 1 }} /> Sign In
+                                    </MenuItem>,
+                                    <MenuItem onClick={() => navigate('/users/signup')} key="signup">
+                                        <PersonIcon sx={{ mr: 1 }} /> Sign Up
+                                    </MenuItem>
+                                ]}
+                            </Menu>
+                        </>
                     </Box>
 
                     {/* Mobile Menu removed for clean rebuild */}

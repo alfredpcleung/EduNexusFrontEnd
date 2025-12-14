@@ -1,3 +1,6 @@
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react"
 import { useAuth } from './AuthContext.jsx';
@@ -12,6 +15,7 @@ import {
     Alert,
     Stack,
 } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoginIcon from '@mui/icons-material/Login';
 
@@ -28,8 +32,17 @@ const Signup = () => {
         confirmPassword: '',
         school: '',
         fieldOfStudy: '',
-        role: 'student' // still fixed to student, but not shown in UI
+        role: 'student',
+        github: '',
+        personalWebsite: '',
+        linkedin: '',
+        bio: '',
+        profilePic: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -40,7 +53,6 @@ const Signup = () => {
         event.preventDefault();
 
         // Validation
-
         if (!formData.firstName.trim()) {
             setErrorMsg("ERROR: First name is required.");
             return;
@@ -49,17 +61,22 @@ const Signup = () => {
             setErrorMsg("ERROR: Last name is required.");
             return;
         }
-
         if (!formData.email.trim()) {
             setErrorMsg("ERROR: Email is required.");
             return;
         }
-
+        if (!formData.school.trim()) {
+            setErrorMsg("ERROR: School is required.");
+            return;
+        }
+        if (!formData.fieldOfStudy.trim()) {
+            setErrorMsg("ERROR: Field of Study is required.");
+            return;
+        }
         if (formData.password !== formData.confirmPassword) {
             setErrorMsg("ERROR: Passwords don't match. Please try again.");
             return;
         }
-
         if (formData.password.length < 6) {
             setErrorMsg("ERROR: Password must be at least 6 characters long.");
             return;
@@ -69,7 +86,6 @@ const Signup = () => {
         const uid = formData.email.split('@')[0] + '_' + Date.now();
 
         // Call signup from AuthContext
-
         const result = await signup(
             uid,
             formData.firstName,
@@ -78,14 +94,26 @@ const Signup = () => {
             formData.password,
             formData.role,
             formData.school,
-            formData.fieldOfStudy
+            formData.fieldOfStudy,
+            formData.github,
+            formData.personalWebsite,
+            formData.linkedin,
+            formData.bio,
+            formData.profilePic
         );
 
-        if (result.success) {
+        if (result && result.success) {
             // Redirect to home page after successful signup
             navigate('/');
         } else {
-            setErrorMsg(result.message || 'Error creating account');
+            // Try to show the most informative error message
+            let msg = 'Error creating account';
+            if (result) {
+                if (result.message) msg = result.message;
+                else if (typeof result === 'string') msg = result;
+            }
+            setErrorMsg(msg);
+            console.log('Signup error message:', msg);
         }
     };
 
@@ -102,7 +130,7 @@ const Signup = () => {
                             {errorMsg}
                         </Alert>
                     )}
-                    {authError && (
+                    {authError && !errorMsg && (
                         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setErrorMsg('')}>
                             {authError}
                         </Alert>
@@ -110,7 +138,7 @@ const Signup = () => {
 
                     <form onSubmit={handleSubmit}>
                         <Stack spacing={3}>
-                            {/* First Name */}
+                            {/* First Name (required) */}
                             <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                                     First Name <span style={{ color: 'red' }}>*</span>
@@ -126,7 +154,7 @@ const Signup = () => {
                                     size="small"
                                 />
                             </Box>
-                            {/* Last Name */}
+                            {/* Last Name (required) */}
                             <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                                     Last Name <span style={{ color: 'red' }}>*</span>
@@ -142,32 +170,34 @@ const Signup = () => {
                                     size="small"
                                 />
                             </Box>
-                            {/* School (optional) */}
+                            {/* School (required) */}
                             <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    School (optional)
+                                    School <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
                                     name="school"
-                                    placeholder="Enter your school (optional)"
+                                    placeholder="Enter your school"
                                     value={formData.school || ''}
                                     onChange={handleChange}
+                                    required
                                     variant="outlined"
                                     size="small"
                                 />
                             </Box>
-                            {/* Field of Study (optional) */}
+                            {/* Field of Study (required) */}
                             <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    Field of Study (optional)
+                                    Field of Study <span style={{ color: 'red' }}>*</span>
                                 </Typography>
                                 <TextField
                                     fullWidth
                                     name="fieldOfStudy"
-                                    placeholder="Enter your field of study (optional)"
+                                    placeholder="Enter your field of study"
                                     value={formData.fieldOfStudy || ''}
                                     onChange={handleChange}
+                                    required
                                     variant="outlined"
                                     size="small"
                                 />
@@ -199,13 +229,26 @@ const Signup = () => {
                                 <TextField
                                     fullWidth
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     placeholder="Enter a password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
                                     variant="outlined"
                                     size="small"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                    onClick={handleClickShowPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
                                 />
                             </Box>
 
@@ -217,13 +260,26 @@ const Signup = () => {
                                 <TextField
                                     fullWidth
                                     name="confirmPassword"
-                                    type="password"
+                                    type={showConfirmPassword ? 'text' : 'password'}
                                     placeholder="Confirm your password"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
                                     variant="outlined"
                                     size="small"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                                    onClick={handleClickShowConfirmPassword}
+                                                    edge="end"
+                                                >
+                                                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
                                 />
                             </Box>
 
@@ -244,13 +300,14 @@ const Signup = () => {
                             <Box sx={{ textAlign: 'center', mt: 2 }}>
                                 <Typography variant="body2">
                                     Already have an account?{' '}
-                                    <Box
-                                        component={Link}
+                                    <Link
                                         to="/users/signin"
-                                        sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                                        style={{ color: '#1976d2', fontWeight: 600, textDecoration: 'none' }}
+                                        onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'}
+                                        onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}
                                     >
                                         Sign In
-                                    </Box>
+                                    </Link>
                                 </Typography>
                             </Box>
                         </Stack>

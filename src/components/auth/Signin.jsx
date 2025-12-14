@@ -1,5 +1,8 @@
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react"
+import { useState } from "react";
 import { useAuth } from './AuthContext.jsx';
 import {
     Box,
@@ -14,6 +17,7 @@ import {
     Divider,
     Stack,
 } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
@@ -36,17 +40,19 @@ const Signin = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        setErrorMsg(''); // Clear previous error
         const result = await signin(formData.email, formData.password);
-
         if (result.success) {
-            // Redirect to the page user was trying to access or home
             navigate(from, { replace: true });
         } else {
             setErrorMsg(result.message || 'Sign in failed. Please try again.');
         }
     };
 
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    // Only show one error message, preferring local errorMsg
+    const displayError = errorMsg || (authError && !errorMsg ? authError : '');
     return (
         <Container maxWidth="sm" sx={{ py: 6 }}>
             <Card>
@@ -55,14 +61,9 @@ const Signin = () => {
                         Sign In
                     </Typography>
 
-                    {errorMsg && (
+                    {displayError && (
                         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setErrorMsg('')}>
-                            {errorMsg}
-                        </Alert>
-                    )}
-                    {authError && (
-                        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setErrorMsg('')}>
-                            {authError}
+                            {displayError}
                         </Alert>
                     )}
 
@@ -94,13 +95,26 @@ const Signin = () => {
                                 <TextField
                                     fullWidth
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     placeholder="Enter your password"
                                     value={formData.password || ''}
                                     onChange={handleChange}
                                     required
                                     variant="outlined"
                                     size="small"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                    onClick={handleClickShowPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
                                 />
                             </Box>
 
@@ -121,13 +135,14 @@ const Signin = () => {
                             <Box sx={{ textAlign: 'center', mt: 2 }}>
                                 <Typography variant="body2">
                                     Don't have an account?{' '}
-                                    <Box
-                                        component={Link}
+                                    <Link
                                         to="/users/signup"
-                                        sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                                        style={{ color: '#1976d2', fontWeight: 600, textDecoration: 'none' }}
+                                        onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'}
+                                        onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}
                                     >
                                         Sign Up
-                                    </Box>
+                                    </Link>
                                 </Typography>
                             </Box>
                         </Stack>

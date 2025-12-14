@@ -32,8 +32,28 @@ import StarIcon from '@mui/icons-material/Star';
 import { useState } from 'react';
 
 function LayoutMain() {
-    const { isAuth } = useAuth();
+    const { isAuth, user, logout } = useAuth();
     const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleProfile = () => {
+        navigate('/users/profile');
+        handleMenuClose();
+    };
+    const handleAccountSettings = () => {
+        navigate('/users/account-settings');
+        handleMenuClose();
+    };
+    const handleLogout = () => {
+        logout();
+        handleMenuClose();
+        navigate('/');
+    };
     const [searchType, setSearchType] = useState('course');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -186,9 +206,9 @@ function LayoutMain() {
                         </IconButton>
                     </Box>
 
-                    {/* Auth Buttons - Right (Desktop) */}
+                    {/* Auth Buttons or User Menu - Right (Desktop) */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, alignItems: 'center', flexShrink: 0 }}>
-                        {!isAuth && (
+                        {!isAuth ? (
                             <>
                                 <Button
                                     component={Link}
@@ -212,6 +232,46 @@ function LayoutMain() {
                                 >
                                     Sign Up
                                 </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    color="inherit"
+                                    startIcon={<AccountCircleIcon />}
+                                    onClick={handleMenuOpen}
+                                    sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 500 }}
+                                >
+                                    {`Hi, ${user?.firstName || 'User'}`}
+                                </Button>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                >
+                                    <MenuItem onClick={handleProfile}>
+                                        <PersonIcon sx={{ mr: 1 }} /> Profile
+                                    </MenuItem>
+                                    <MenuItem onClick={handleAccountSettings}>
+                                        <SettingsIcon sx={{ mr: 1 }} /> Account Settings
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <SchoolIcon sx={{ mr: 1 }} /> My Courses
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <GroupWorkIcon sx={{ mr: 1 }} /> My Group Projects
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <RateReviewIcon sx={{ mr: 1 }} /> My Course Reviews
+                                    </MenuItem>
+                                    <MenuItem disabled>
+                                        <StarIcon sx={{ mr: 1 }} /> My Teammate Reviews
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout}>
+                                        <LogoutIcon sx={{ mr: 1 }} /> Logout
+                                    </MenuItem>
+                                </Menu>
                             </>
                         )}
                     </Box>

@@ -58,7 +58,21 @@ const getUser = () => {
 
 // ========== AUTHENTICATION FLOWS ==========
 // Updated: displayName is deprecated and not sent to backend. Use firstName, lastName, school, fieldOfStudy.
-const signup = async (uid, firstName, lastName, email, password, role = "student", school = '', fieldOfStudy = '') => {
+const signup = async (
+  uid,
+  firstName,
+  lastName,
+  email,
+  password,
+  role = "student",
+  school = '',
+  fieldOfStudy = '',
+  github = '',
+  personalWebsite = '',
+  linkedin = '',
+  bio = '',
+  profilePic = ''
+) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: "POST",
@@ -73,7 +87,15 @@ const signup = async (uid, firstName, lastName, email, password, role = "student
         password,
         role,
         school,
-        fieldOfStudy
+        fieldOfStudy,
+        // Legacy fields for backend compatibility
+        schoolName: school,
+        programName: fieldOfStudy,
+        github,
+        personalWebsite,
+        linkedin,
+        bio,
+        profilePic
       }),
     });
 

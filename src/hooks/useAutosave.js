@@ -15,6 +15,8 @@ export default function useAutosave(onSave, deps = [], intervalMs = 30000) {
 
   useEffect(() => {
     if (!onSave) return;
+    // Call onSave immediately on deps change
+    savedCallback.current && savedCallback.current();
     const handler = () => savedCallback.current && savedCallback.current();
     const id = setInterval(handler, intervalMs);
     return () => clearInterval(id);
